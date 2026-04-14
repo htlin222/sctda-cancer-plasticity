@@ -1,0 +1,105 @@
+# ──────────────────────────────────────────────
+# Raw/interim data — NEVER commit (download via `make download`)
+# ──────────────────────────────────────────────
+data/raw/
+data/interim/
+data/external/
+
+# ──────────────────────────────────────────────
+# Processed data — too large for git (host on Zenodo)
+# ──────────────────────────────────────────────
+data/processed/*.h5ad
+data/processed/*.h5
+data/processed/*.loom
+
+# Keep small processed metadata
+!data/processed/.gitkeep
+!data/processed/qc_metrics.csv
+
+# ──────────────────────────────────────────────
+# Results — keep figures and small tables, skip huge CSVs (replaced by parquet)
+# ──────────────────────────────────────────────
+# (figures and small tables ARE tracked)
+results/tables/marker_genes_leiden.csv
+results/tables/gene_connectivity_scores.csv
+results/tables/pdx_gene_connectivity_scores.csv
+results/tables/de_dtp_vs_untreated.csv
+results/tables/pdx_de_residual_vs_untreated.csv
+
+# Persistence diagrams (npy) and Mapper pickles — keep, they're small
+# HTML Mapper graphs — keep, they're small interactive visualizations
+
+# ──────────────────────────────────────────────
+# Models
+# ──────────────────────────────────────────────
+models/
+
+# ──────────────────────────────────────────────
+# Secrets
+# ──────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ──────────────────────────────────────────────
+# Python
+# ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# ──────────────────────────────────────────────
+# Jupyter
+# ──────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ──────────────────────────────────────────────
+# OS
+# ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ──────────────────────────────────────────────
+# IDE
+# ──────────────────────────────────────────────
+.idea/
+.vscode/settings.json
+.ruff_cache/
+.pytest_cache/
+
+# ──────────────────────────────────────────────
+# LaTeX build artifacts (keep the source .tex, .bib, and final .pdf)
+# ──────────────────────────────────────────────
+manuscript/*.aux
+manuscript/*.log
+manuscript/*.bbl
+manuscript/*.blg
+manuscript/*.out
+manuscript/*.toc
+manuscript/*.lof
+manuscript/*.lot
+manuscript/*.synctex.gz
+manuscript/*.fdb_latexmk
+manuscript/*.fls
+
+# ──────────────────────────────────────────────
+# Claude / LLM tooling
+# ──────────────────────────────────────────────
+.claude/
+*.swp
+*.swo
+
+# ──────────────────────────────────────────────
+# Conda / venv
+# ──────────────────────────────────────────────
+.conda/
+venv/
+.venv/

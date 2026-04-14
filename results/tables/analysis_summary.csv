@@ -1,0 +1,12 @@
+,0
+n_cells,2942.0
+n_genes,3000.0
+n_clusters_leiden_0.8,6.0
+cells_D0,1560.0
+cells_D1,324.0
+cells_D2,230.0
+cells_D4,200.0
+cells_D9,379.0
+cells_D11,249.0
+emt_score_mean,0.25640576666128345
+emt_score_std,0.19517853399990728
