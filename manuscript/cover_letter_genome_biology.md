@@ -2,13 +2,13 @@
 
 **To:** The Editors, *Genome Biology*
 **From:** Hsieh-Ting Lin, M.D. — Department of Oncology, Koo Foundation Sun Yat-Sen Cancer Center, Taipei, Taiwan (htlin222@kfsyscc.org)
-**Subject:** Manuscript submission — "A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq"
+**Subject:** Manuscript submission — "Drug tolerance takes shape: persistent homology reveals cyclic cell-state plasticity in EGFR-mutant lung cancer"
 
 ---
 
 Dear Editors,
 
-I am pleased to submit for your consideration the manuscript **"A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq"** as a Method article in *Genome Biology*.
+I am pleased to submit for your consideration the manuscript **"Drug tolerance takes shape: persistent homology reveals cyclic cell-state plasticity in EGFR-mutant lung cancer"** as a Method article in *Genome Biology*.
 
 ## Why this work fits *Genome Biology*
 

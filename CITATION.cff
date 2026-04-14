@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite both the manuscript and the software archive."
-title: "scTDA Cancer Plasticity: a reproducible topological framework for quantifying drug-induced cell-state plasticity"
+title: "scTDA Cancer Plasticity: a persistent-homology framework for cyclic cell-state plasticity in EGFR-mutant lung cancer"
 abstract: "An open-source pipeline that combines persistent homology (H_0, H_1) and the Mapper algorithm with permutation-based null-model testing, cell-cycle ablation, Wasserstein diagram comparison, and Mapper-based gene attribution for longitudinal scRNA-seq analysis. Validated on five EGFR-mutant NSCLC datasets across cell line, PDX, and patient tumor scales."
 type: software
 license: MIT
@@ -21,7 +21,7 @@ keywords:
   - "Mapper algorithm"
 preferred-citation:
   type: article
-  title: "A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq"
+  title: "Drug tolerance takes shape: persistent homology reveals cyclic cell-state plasticity in EGFR-mutant lung cancer"
   authors:
     - family-names: "Lin"
       given-names: "Hsieh-Ting"

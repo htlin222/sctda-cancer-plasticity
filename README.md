@@ -1,6 +1,7 @@
 # scTDA Cancer Plasticity
 
-> A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq, validated across EGFR-mutant lung cancer cell lines, patient-derived xenografts, and patient tumors.
+> **Drug tolerance takes shape: persistent homology reveals cyclic cell-state plasticity in EGFR-mutant lung cancer.**
+> An open-source topological framework validated across cell lines, patient-derived xenografts, and patient tumors.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
@@ -130,7 +131,7 @@ If you use this framework, please cite the preprint:
 
 ```bibtex
 @article{sctda_plasticity_2026,
-  title   = {A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq},
+  title   = {Drug tolerance takes shape: persistent homology reveals cyclic cell-state plasticity in EGFR-mutant lung cancer},
   author  = {...},
   journal = {bioRxiv},
   year    = {2026},
