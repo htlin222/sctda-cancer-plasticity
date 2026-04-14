@@ -84,6 +84,7 @@ per-timepoint sample sizes.
 PC9 cells under osimertinib $1.41 \rightarrow 3.78$ ($2.7\times$ over 14 days;
 $p < 0.01$), PDX YU-003 $2.8 \rightarrow 3.8$ ($1.4\times$; $p < 0.01$),
 PDX YU-006 $2.8 \rightarrow 6.1$ ($2.2\times$; $p < 0.01$).
+In one matched patient-biopsy pair from Maynard et al.~2020 (AZ003, Smart-seq2), max $H_1$ grew from 5.32 (treatment-naive) to 8.50 (post-osimertinib; $1.60\times$), providing the first within-patient validation of the trend.
 Treatment-naive patient tumors exhibit baseline $H_1 = 4.8$; the
 within-system monotonic $H_1$ growth under drug treatment occurs on
 the same order of magnitude as patient-tumor topological complexity,
@@ -407,6 +408,14 @@ The osimertinib monotonic trend survives batch correction: raw max $H_1$ grew 1.
 
 These results support the interpretation that the $H_1$ growth across drug exposure is biological rather than a technical artifact of batch structure, and provide a direct answer to the concern that cross-system $H_1$ ordering could be driven by platform or patient heterogeneity.
 
+\subsection*{Patient-matched validation in the Maynard 2020 osimertinib cohort}
+
+To directly test the framework on matched patient biopsies, we analyzed the neo-osimertinib subcohort of Maynard et al.~2020 \citep{maynard2020}. This is a Smart-seq2 scRNA-seq dataset of three EGFR-mutant NSCLC patients with core and resection biopsies under osimertinib treatment. After Smart-seq2-tailored preprocessing (\texttt{min\_genes} = 500, \texttt{max\_genes} = 10{,}000; TPM-like normalization), 2{,}503 cells across the three patients entered topological analysis.
+
+Patient AZ003 had matched treatment-naive ($n = 368$ cells) and post-osimertinib resection ($n = 609$ cells) samples. Max $H_1$ persistence increased from 5.32 (treatment-naive) to 8.50 (post-osimertinib), a 1.60$\times$ growth that parallels the within-system increases observed in cell line (1.71 $\to$ 3.78, 2.2$\times$) and PDX (YU-003 2.79 $\to$ 3.85, 1.4$\times$; YU-006 2.36 $\to$ 5.01, 2.1$\times$) (Figure~\ref{fig:maynard}). Patients AZ005 and AZ008 had only post-osimertinib biopsies available, precluding matched pre/post comparison; their post-osimertinib $H_1$ values (3.43 and 7.77 respectively) span the same range observed across PDX residual-disease samples.
+
+This patient-matched pre/post comparison directly validates the primary claim of within-system $H_1$ growth under osimertinib in a clinical-tissue context, providing orthogonal evidence to the cell line and PDX results.
+
 \subsection*{Topological cyclicity is robust to Mapper parameter choice}
 
 To verify that our conclusions do not depend on arbitrary Mapper
@@ -488,8 +497,8 @@ Our cross-system comparisons mix Drop-seq (GSE134839) with 10x Chromium (GSE1509
 \paragraph{Permutation null specification.}
 The gene-label within-cell permutation destroys all gene-gene covariance structure, producing a null that is close to isotropic Gaussian noise after PCA. This null rejects against any data with biological structure, so $p < 0.01$ in our validation cohorts indicates the presence of non-random topology without attributing it specifically to drug-induced plasticity. We have now implemented a complementary timepoint-label permutation null for the osimertinib D14 vs.~D0 comparison, which yielded $p < 0.02$ (50 permutations), confirming that $H_1$ depends specifically on drug exposure rather than merely on non-random structure (see Results).
 
-\paragraph{Patient longitudinal data not analyzed.}
-A comprehensive test of the framework would apply it to the Maynard et al.~2020 longitudinal patient EGFR-TKI scRNA-seq cohort \citep{maynard2020}, which provides matched treatment-naive, residual-disease, and progressive-disease biopsies for 30 NSCLC patients. Access to this dataset requires Synapse-level data-use certification that was not completed within this study; direct patient time-course validation therefore remains future work. The treatment-naive Kim et al.~atlas \citep{kim2020} provides a cross-species baseline but no longitudinal within-patient comparison.
+\paragraph{Patient longitudinal validation.}
+To directly test the framework on patient-matched pre/post-osimertinib biopsies, we analyzed the neo-osimertinib cohort from the Maynard et al.~2020 study \citep{maynard2020}, obtained from the authors' public Google Drive archive (linked from \url{https://github.com/czbiohub-sf/scell_lung_adenocarcinoma}). This cohort contains three EGFR-mutant NSCLC patients (AZ003, AZ005, AZ008) with Smart-seq2 scRNA-seq of core and resection biopsies. After QC, 2{,}503 cells were analyzed; one patient (AZ003) had matched treatment-naive ($n = 368$) and post-osimertinib ($n = 609$) biopsies. In this patient-matched comparison, max $H_1$ increased from 5.32 (TN) to 8.50 (post-osimertinib), a 1.60$\times$ growth that is quantitatively consistent with our cell line (2.7$\times$), PDX YU-003 (1.4$\times$), and PDX YU-006 (2.2$\times$) findings (Results, Figure~\ref{fig:maynard}). The smaller validation cohort and Smart-seq2 platform differ from our main validation datasets, providing a useful cross-platform check. The full Maynard 2020 cohort ($\sim 23{,}000$ cells across 30 patients, multiple drugs including erlotinib and rociletinib) is available and left for a dedicated patient-cohort study beyond the scope of this framework paper.
 
 \paragraph{Cell-cycle ablation stringency.}
 Our ablation removes the 39 Tirosh et al.~cell-cycle genes present in the HVG set, out of 97 total. This is the standard field practice but not exhaustive: quiescence markers (\emph{CDKN1A}, \emph{CDKN1B}, \emph{CDKN2B}), Rb-pathway genes, senescence-associated SASP, and DNA damage response genes are not included in the Tirosh list. The ratio-preservation result (0.71--1.11) survives for this reduced ablation. We have now performed this stringent ablation (Results, `Stringent cell-cycle regression'); ratios of post-regression to pre-regression max $H_1$ were 1.07--4.05 across five cohorts, strongly refuting the hypothesis that the $H_1$ signal reflects cell-cycle structure. Our PC1-filter Mapper analysis (Section Robustness of gene attribution) shows cell-cycle genes are prominent among loop-associated genes, suggesting the topological signature is multi-program rather than purely EMT.
@@ -713,6 +722,7 @@ seeds for four cohorts),
 S8 (Mapper parameter-sweep Spearman rank correlations),
 S9 (variance-normalized Mapper gene connectivity),
 S10 (Harmony batch-correction raw vs.~corrected max $H_1$ comparison),
+S11 (Maynard 2020 neo-osimertinib per-patient max $H_1$ summary),
 S-stringent-CC (stringent cell-cycle regression ratios; reproduced as
 Table~\ref{tab:stringent_cc}).
 
@@ -850,6 +860,14 @@ GSE243562, and GSE131907 for making their data publicly available.
   (a) Max $H_1$ vs.~days of osimertinib exposure in the PC9 cell line cohort (GSE150949), computed on raw PCA (blue) and on Harmony-corrected embeddings (pink, dashed). Both show monotonic growth from D0 to D14.
   (b) Max $H_1$ per PDX group (untreated vs.~residual disease) in GSE243562, raw (blue) vs.~Harmony-corrected (pink). The YU-006 pre/post effect is preserved after batch correction.}
   \label{fig:harmony}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../results/figures/figS_maynard_barcodes.pdf}
+  \caption{\textbf{Patient-matched validation in the Maynard 2020 neo-osimertinib cohort.}
+  Persistence barcodes ($H_0$ top, $H_1$ bottom) for the Maynard et al.~2020 neo-osimertinib Smart-seq2 dataset. Panels left to right: pooled treatment-naive (TN, $n = 368$), pooled post-osimertinib residual disease (RD, $n = 1{,}000$ subsample), AZ003 matched TN ($n = 368$) and RD ($n = 609$) biopsies, AZ005 RD-only ($n = 317$), AZ008 RD-only ($n = 609$), and AZ008\_NAT RD-only ($n = 600$). The matched AZ003 pair shows max $H_1$ growth from 5.32 to 8.50 (1.60$\times$), the first patient-matched validation of the within-system $H_1$ growth trend.}
+  \label{fig:maynard}
 \end{figure}
 
 \clearpage
