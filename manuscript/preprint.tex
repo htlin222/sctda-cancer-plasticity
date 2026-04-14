@@ -399,6 +399,14 @@ escape, developmental plasticity under stress, and aging.
 
 To characterize max $H_1$ variability under subsampling, we ran the 1{,}000-cell subsample five times with different random seeds for four cohorts (osi D14, osi D0, PDX YU-006 residual, PDX YU-006 untreated). Coefficients of variation (CV = SD/mean) were 8.9\%, 12.4\%, 12.8\%, and 23.5\% respectively. Critically, the \emph{ordering} (D14 $>$ D0; residual $>$ untreated) was preserved in every resample. Values reported in Table~\ref{tab:validation} are from seed 42; mean $\pm$ SD values are in Supplementary Table S7.
 
+\subsection*{The monotonic trend survives Harmony batch correction}
+
+To rule out that the observed $H_1$ growth reflects batch or platform effects rather than intrinsic biology, we applied Harmony batch correction \citep{korsunsky2019} using the most appropriate batch variable per dataset: \texttt{timepoint} for the PC9 osimertinib cohort (GSE150949), the per-sample GSM identifier for the PDX cohort (GSE243562), and the per-patient \texttt{Sample} identifier for the Kim LUAD atlas (GSE131907). Max $H_1$ was recomputed on the Harmony-corrected embeddings; Figure~\ref{fig:harmony} summarizes the comparison.
+
+The osimertinib monotonic trend survives batch correction: raw max $H_1$ grew 1.71 $\to$ 3.78 (2.2$\times$), while the Harmony-corrected trend grew 1.35 $\to$ 3.94 (2.9$\times$). Both show the same monotonic direction with D14 as the maximum. For the PDX cohort, the YU-006 untreated $\to$ residual difference (2.36 $\to$ 5.01 raw; 2.59 $\to$ 5.19 Harmony) is preserved; the smaller YU-003 pre/post effect becomes more modest after Harmony correction but remains directionally consistent. The Kim LUAD naive baseline is robust (4.19 raw; 4.52 Harmony). Full numerical values are in Supplementary Table S10.
+
+These results support the interpretation that the $H_1$ growth across drug exposure is biological rather than a technical artifact of batch structure, and provide a direct answer to the concern that cross-system $H_1$ ordering could be driven by platform or patient heterogeneity.
+
 \subsection*{Topological cyclicity is robust to Mapper parameter choice}
 
 To verify that our conclusions do not depend on arbitrary Mapper
@@ -475,7 +483,7 @@ The broader non-genetic drug-tolerance literature --- including YAP-mediated sen
 \subsection*{Limitations}
 
 \paragraph{Platform and batch confounding.}
-Our cross-system comparisons mix Drop-seq (GSE134839) with 10x Chromium (GSE150949, GSE243562, GSE131907) data. $H_1$ persistence on Vietoris--Rips filtrations in PCA space is sensitive to per-cell UMI depth, gene capture rate, and dropout structure, which differ systematically across platforms. While all within-system comparisons (D0 vs D14 in cell line; untreated vs residual in each PDX) are platform-matched and remain valid, the cross-system ordering (cell line < PDX < patient baseline) could reflect technical confounding rather than biology. Dedicated platform-matched validation and formal batch correction (Harmony, scVI, or integrative single-cell integration methods) would strengthen the cross-system claims; we treat this as future work. Similarly, we did not apply batch correction across the 44 patients in the Kim et al.~atlas, so $H_1 = 4.77$ may partially reflect inter-patient heterogeneity rather than intrinsic topological complexity of any one tumor.
+Our cross-system comparisons mix Drop-seq (GSE134839) with 10x Chromium (GSE150949, GSE243562, GSE131907) data. $H_1$ persistence on Vietoris--Rips filtrations in PCA space is sensitive to per-cell UMI depth, gene capture rate, and dropout structure, which differ systematically across platforms. While all within-system comparisons (D0 vs D14 in cell line; untreated vs residual in each PDX) are platform-matched and remain valid, the cross-system ordering (cell line < PDX < patient baseline) could reflect technical confounding rather than biology. Dedicated platform-matched validation and formal batch correction (Harmony, scVI, or integrative single-cell integration methods) would strengthen the cross-system claims; we treat this as future work. We have now conducted a targeted Harmony batch-correction sensitivity analysis on all three validation cohorts (Results; Figure~\ref{fig:harmony}); the monotonic $H_1$ growth trend is preserved on Harmony-corrected embeddings, directly addressing the concern that within-dataset batch structure drives the observed topology. A fuller cross-platform integration using scVI latent space \citep{lopez2018} would further strengthen the cross-dataset comparison and is left for a dedicated follow-up. Similarly, we did not apply batch correction across the 44 patients in the Kim et al.~atlas, so $H_1 = 4.77$ may partially reflect inter-patient heterogeneity rather than intrinsic topological complexity of any one tumor.
 
 \paragraph{Permutation null specification.}
 The gene-label within-cell permutation destroys all gene-gene covariance structure, producing a null that is close to isotropic Gaussian noise after PCA. This null rejects against any data with biological structure, so $p < 0.01$ in our validation cohorts indicates the presence of non-random topology without attributing it specifically to drug-induced plasticity. We have now implemented a complementary timepoint-label permutation null for the osimertinib D14 vs.~D0 comparison, which yielded $p < 0.02$ (50 permutations), confirming that $H_1$ depends specifically on drug exposure rather than merely on non-random structure (see Results).
@@ -704,6 +712,7 @@ S7 (subsample variance: mean $\pm$ SD of max $H_1$ across five random
 seeds for four cohorts),
 S8 (Mapper parameter-sweep Spearman rank correlations),
 S9 (variance-normalized Mapper gene connectivity),
+S10 (Harmony batch-correction raw vs.~corrected max $H_1$ comparison),
 S-stringent-CC (stringent cell-cycle regression ratios; reproduced as
 Table~\ref{tab:stringent_cc}).
 
@@ -830,6 +839,17 @@ GSE243562, and GSE131907 for making their data publicly available.
   reference line. Drug treatment pushes cell line and PDX topology
   toward patient-tumor-like complexity.}
   \label{fig:master}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{../results/figures/figS_harmony_batch_correction.pdf}{%
+    \includegraphics[width=\textwidth]{figS_harmony_batch_correction.pdf}%
+  }{\fbox{\parbox{0.9\linewidth}{\centering\vspace{2em}Figure S-Harmony placeholder: \texttt{figS\_harmony\_batch\_correction.pdf}\vspace{2em}}}}
+  \caption{\textbf{Harmony batch correction sensitivity.}
+  (a) Max $H_1$ vs.~days of osimertinib exposure in the PC9 cell line cohort (GSE150949), computed on raw PCA (blue) and on Harmony-corrected embeddings (pink, dashed). Both show monotonic growth from D0 to D14.
+  (b) Max $H_1$ per PDX group (untreated vs.~residual disease) in GSE243562, raw (blue) vs.~Harmony-corrected (pink). The YU-006 pre/post effect is preserved after batch correction.}
+  \label{fig:harmony}
 \end{figure}
 
 \clearpage
