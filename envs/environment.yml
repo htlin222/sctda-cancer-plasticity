@@ -53,3 +53,4 @@ dependencies:
     - giotto-tda>=0.6
     - plotly>=5.0
     - adjustText
+    - harmonypy
