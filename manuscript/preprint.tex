@@ -421,7 +421,7 @@ To characterize max $H_1$ variability under subsampling, we ran the 1{,}000-cell
 
 \subsection*{The monotonic trend survives Harmony batch correction}
 
-To rule out that the observed $H_1$ growth reflects batch or platform effects rather than intrinsic biology, we applied Harmony batch correction \citep{korsunsky2019} using the most appropriate batch variable per dataset: \texttt{timepoint} for the PC9 osimertinib cohort (GSE150949), the per-sample GSM identifier for the PDX cohort (GSE243562), and the per-patient \texttt{Sample} identifier for the Kim LUAD atlas (GSE131907). Max $H_1$ was recomputed on the Harmony-corrected embeddings; Figure~\ref{fig:harmony} summarizes the comparison.
+To rule out that the observed $H_1$ growth reflects batch or platform effects rather than intrinsic biology, we applied Harmony batch correction \citep{korsunsky2019} using the most appropriate batch variable per dataset: \texttt{timepoint} for the PC9 osimertinib cohort (GSE150949), the per-sample GSM identifier for the PDX cohort (GSE243562), and the per-patient \texttt{Sample} identifier for the Kim LUAD atlas (GSE131907). Harmony was applied to the top-50 PCA components with these batch keys and default parameters: \texttt{theta = 2}, \texttt{lambda = 1}, \texttt{nclust = 100}, \texttt{epsilon\_cluster = 1e-5}, \texttt{epsilon\_harmony = 1e-4}, \texttt{max\_iter\_harmony = 10}, \texttt{max\_iter\_kmeans = 20}; convergence was reached in 2 iterations for the osimertinib cohort. Max $H_1$ was recomputed on the Harmony-corrected embeddings; Figure~\ref{fig:harmony} summarizes the comparison.
 
 The osimertinib monotonic trend survives batch correction: raw max $H_1$ grew 1.71 $\to$ 3.78 (2.2$\times$), while the Harmony-corrected trend grew 1.35 $\to$ 3.94 (2.9$\times$). Both show the same monotonic direction with D14 as the maximum. For the PDX cohort, the YU-006 untreated $\to$ residual difference (2.36 $\to$ 5.01 raw; 2.59 $\to$ 5.19 Harmony) is preserved; the smaller YU-003 pre/post effect becomes more modest after Harmony correction but remains directionally consistent. The Kim LUAD naive baseline is robust (raw max $H_1 = 4.19$ on this 1{,}500-cell Harmony subsample vs.\ $4.77$ on the main analysis subsample; Harmony-corrected $4.52$; within-subsample variability). Full numerical values are in Supplementary Table S10.
 
@@ -582,7 +582,14 @@ YU-006) under osimertinib; 22{,}032 cells across four samples
 (untreated and residual disease for each model).
 GSE131907 \citep{kim2020}: treatment-naive patient LUAD atlas;
 208{,}506 cells across 44 patients; subsampled to 5{,}000 tLung
-epithelial cells.
+epithelial cells. Specifically, we filtered to cells with
+\texttt{Sample\_Origin == `tLung'} (primary lung tumor) AND
+\texttt{Cell\_type} containing `Epithelial' (using the cell-type
+annotations provided in the published
+GSE131907\_Lung\_Cancer\_cell\_annotation.txt.gz file). From the
+resulting 7{,}270 tumor epithelial cells, we drew a uniform random
+sample of 5{,}000 cells (\texttt{random\_state=42}), then subsampled
+an additional 1{,}500 cells for tractable Vietoris--Rips computation.
 
 \subsection*{Preprocessing}
 
@@ -651,6 +658,18 @@ $n_{\text{cubes}} = 15$ and $\text{perc\_overlap} = 0.3$. Parameter
 sensitivity was assessed across
 $n_{\text{cubes}} \in \{10, 15, 20, 25, 30\}$ and overlap $\in \{0.2,
 0.3, 0.4, 0.5\}$.
+
+EMT score (used as Mapper filter for the cell line analysis) was
+computed via \texttt{scanpy.tl.score\_genes} on a 33-gene MSigDB
+Hallmark EMT cassette: \emph{VIM}, \emph{CDH2}, \emph{FN1},
+\emph{SNAI1}, \emph{SNAI2}, \emph{ZEB1}, \emph{ZEB2}, \emph{TWIST1},
+\emph{MMP2}, \emph{MMP9}, \emph{CDH1}, \emph{OCLN}, \emph{TJP1},
+\emph{DSP}, \emph{KRT19}, \emph{KRT8}, \emph{SERPINE1}, \emph{TGFBI},
+\emph{SPARC}, \emph{COL1A1}, \emph{COL3A1}, \emph{COL5A2},
+\emph{ACTA2}, \emph{TAGLN}, \emph{MYL9}, \emph{CALD1}, \emph{LGALS1},
+\emph{TPM1}, \emph{TPM2}, \emph{FSTL1}, \emph{ITGB1}, \emph{LAMC2},
+\emph{LOXL2}. Of these, 28 of 33 genes were present in the GSE134839
+normalized expression matrix and used for scoring.
 
 \subsection*{Gene connectivity}
 
@@ -733,7 +752,7 @@ lint-clean under \texttt{ruff check} with 100-character line limit.
 
 \subsection*{Code availability}
 
-Code is available at \url{https://github.com/htlin222/sctda-cancer-plasticity} (MIT license). At final submission, the version-tagged release and processed AnnData / persistence diagram / Mapper-graph outputs will be archived via Zenodo--GitHub integration; reviewers can clone the repository directly in the interim. The complete pipeline is reproducible via \texttt{make pipeline} from raw GEO data to all figures and tables.
+Code is available at \url{https://github.com/htlin222/sctda-cancer-plasticity} (MIT license). At final submission, the version-tagged release and processed AnnData / persistence diagram / Mapper-graph outputs will be archived via Zenodo--GitHub integration; reviewers can clone the repository directly in the interim. The complete pipeline is reproducible via \texttt{make pipeline} from raw GEO data to all figures and tables. A unified \texttt{sctda} CLI is planned for v2.0; the current pipeline is invoked via the Makefile and individual \texttt{scripts/0X\_*.py} files. A \texttt{CITATION.cff} file at the repository root provides machine-readable citation metadata for software-citation tooling.
 
 \subsection*{Data availability}
 

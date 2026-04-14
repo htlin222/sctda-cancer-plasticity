@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the manuscript and the software archive."
+title: "scTDA Cancer Plasticity: a reproducible topological framework for quantifying drug-induced cell-state plasticity"
+abstract: "An open-source pipeline that combines persistent homology (H_0, H_1) and the Mapper algorithm with permutation-based null-model testing, cell-cycle ablation, Wasserstein diagram comparison, and Mapper-based gene attribution for longitudinal scRNA-seq analysis. Validated on five EGFR-mutant NSCLC datasets across cell line, PDX, and patient tumor scales."
+type: software
+license: MIT
+url: "https://github.com/htlin222/sctda-cancer-plasticity"
+repository-code: "https://github.com/htlin222/sctda-cancer-plasticity"
+authors:
+  - family-names: "Author"
+    given-names: "Name"
+    affiliation: "Affiliation"
+keywords:
+  - "topological data analysis"
+  - "persistent homology"
+  - "single-cell RNA-seq"
+  - "drug tolerance"
+  - "EGFR-mutant lung cancer"
+  - "Mapper algorithm"
+preferred-citation:
+  type: article
+  title: "A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq"
+  authors:
+    - family-names: "Author"
+      given-names: "Name"
+  year: 2026
+  journal: "bioRxiv"
+  doi: "pending"
