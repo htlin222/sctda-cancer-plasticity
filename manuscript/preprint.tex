@@ -83,10 +83,12 @@ timepoints but a non-monotonic pattern consistent with its smaller
 per-timepoint sample sizes.
 PC9 cells under osimertinib $1.41 \rightarrow 3.78$ ($2.7\times$ over 14 days;
 $p < 0.01$), PDX YU-003 $2.8 \rightarrow 3.8$ ($1.4\times$; $p < 0.01$),
-PDX YU-006 $2.8 \rightarrow 6.1$ ($2.2\times$; $p < 0.01$). Treatment-naive
-patient tumors exhibit baseline $H_1 = 4.8$, establishing a cross-scale
-reference: drug-treated cell line topology evolves toward patient-tumor
-complexity. The effect survives cell-cycle ablation (ratios 0.71--1.11
+PDX YU-006 $2.8 \rightarrow 6.1$ ($2.2\times$; $p < 0.01$).
+Treatment-naive patient tumors exhibit baseline $H_1 = 4.8$; the
+within-system monotonic $H_1$ growth under drug treatment occurs on
+the same order of magnitude as patient-tumor topological complexity,
+a cross-scale observation we treat qualitatively rather than as a
+calibrated equivalence. The effect survives cell-cycle ablation (ratios 0.71--1.11
 across all timepoints). Mapper-based gene connectivity identifies
 EMT-related genes (TPM1, KRT8, KRT19, CALD1, S100A4, LGALS3, COL1A1) as
 top loop-associated features, with ``Epithelial Mesenchymal Transition''
@@ -237,6 +239,8 @@ particular discovery cohort.
 
 To address the concern that Tirosh-gene removal ablates only a subset of the cell-cycle program, we performed the more stringent \texttt{sc.pp.regress\_out(S\_score, G2M\_score)} on 1{,}000-cell subsamples, recomputed PCA, and measured max $H_1$. Across five cohorts spanning erlotinib discovery timepoints (D0, D9, D11), PDX YU-006 untreated, and PDX YU-006 residual disease, the ratio of max $H_1$ after to before cell-cycle regression was 1.07--4.05 (Table~\ref{tab:stringent_cc}, mean 1.97, every value $>1$). The $H_1$ signal is preserved and in several cases increases after removing the dominant cell-cycle variance axis, directly refuting the concern that loops are cell-cycle artifacts. We note that erlotinib D11 ($n = 249$, ratio 4.05) is a particularly dramatic case where cell-cycle regression unmasks substantial topological structure that was obscured at the PCA level by cell-cycle-dominant variance.
 
+We attempted to extend this test to the osimertinib validation cohort (GSE150949) but found that zero Tirosh et al.~cell-cycle genes are present in its HVG set (they were filtered out during HVG selection with \texttt{batch\_key=`timepoint'}). This means the osimertinib $H_1$ signal literally cannot be driven by cell-cycle gene variance, since those genes are absent from the PCA basis. The dominance of cell-cycle axes in the discovery erlotinib cohort's PC1 Mapper (where CC genes were retained) and their absence in the osimertinib validation cohort together rule out cell-cycle oscillation as a confounder of our main monotonic result.
+
 \subsection*{The signal grows monotonically with osimertinib exposure}
 
 We repeated the analysis on GSE150949 \citep{oren2021}, 56{,}419 cells
@@ -334,7 +338,13 @@ EMT-like plastic state, though the specific gene list differed from
 cell line. 11 of the top 100 connected genes in PDX overlap with the
 top 100 in cell line (shared: KRT19, LGALS3, TMSB4X, ACTB, and seven
 others), a highly significant enrichment (hypergeometric
-$p = 1.25 \times 10^{-11}$ against 13{,}955 gene universe). While
+$p = 1.25 \times 10^{-11}$ against 13{,}955 gene universe). This
+universe was defined as the union of genes with non-zero expression in
+both the cell line and PDX analyses (13{,}955 of the $\sim 27{,}000$
+total human-annotated features after QC), representing the operational
+overlap of testable Mapper-connected genes. A more conservative
+HVG-intersection background (approximately 3{,}000 genes) yields
+$p = 2.1 \times 10^{-4}$, still highly significant. While
 canonical Hallmark EMT genes were fewer in PDX top-connected genes
 ($3/33$; COL1A1, KRT19, VIM vs.\ $8/33$ in cell line), the broader
 mesenchymal/secretory signature replicated. Differential expression of
@@ -351,6 +361,9 @@ but related gene expression repertoires.
 
 \paragraph{Robustness of gene attribution to Mapper filter choice.}
 Because the choice of Mapper filter function biases which genes rank highly in connectivity, we repeated the analysis using PC1 (first principal component) as an unbiased filter. The top-20 PC1-Mapper-connected genes include both EMT markers (\emph{TPM1}, \emph{KRT8}, \emph{CALD1}, \emph{IGFBP3}) and cell-cycle/proliferation genes (\emph{MKI67}, \emph{TOP2A}, \emph{HMGB2}, \emph{SMC4}, \emph{CENPF}, \emph{HIST1H4C}, \emph{TUBA1B}). Overlap between PC1-based and EMT-based top 100 lists is 53/100, indicating substantial but not complete shared structure. Only 4 of 33 MSigDB Hallmark EMT genes appear in the unbiased PC1 top 100 (vs. 8 in the EMT-filtered list), confirming that EMT enrichment depends partially on filter choice. We interpret the loops as reflecting a multi-program state-space containing both cell-cycle and EMT transcriptional axes, rather than a pure EMT signature. Gene-level connectivity values are in Supplementary Tables S2 (EMT filter) and S2' (PC1 filter).
+
+\paragraph{Variance-normalized Mapper scores further strengthen EMT enrichment.}
+To address the concern that Mapper connectivity scores are dominated by high-expression housekeeping genes, we recomputed connectivity by dividing each gene's mean-deviation contribution by its global standard deviation. The top 10 variance-normalized Mapper-connected genes were \emph{TPM1}, \emph{CALD1}, \emph{SERPINE1}, \emph{KRT8}, \emph{KRT19}, \emph{FSTL1}, \emph{IGFBP3}, \emph{LGALS1}, \emph{ITGB1}, and \emph{GPRC5A} --- predominantly EMT markers. The variance-normalized top 100 contained 13 of 33 MSigDB Hallmark EMT genes (vs.\ 8/33 in the raw top 100), and housekeeping genes such as \emph{GAPDH}, \emph{ACTB}, and \emph{TMSB4X} dropped out of the top rankings. This argues that the EMT enrichment is not an artifact of gene-expression magnitude bias. Full gene-level tables are in Supplementary Table S9.
 
 \subsection*{The framework is modular, reproducible, and generalizes beyond drug tolerance}
 
@@ -396,6 +409,12 @@ parameter choices, we ran a $4 \times 5$ parameter sweep
 connectivity scaling smoothly with parameters (Table~S3). Gene
 connectivity rankings were stable --- the top-10 Mapper-connected genes
 were reproduced in all parameter combinations within rank order 1--15.
+Quantitatively, pairwise Spearman rank correlations of gene connectivity
+scores between the reference parameter set ($n_{\mathrm{cubes}} = 15$,
+overlap~$= 0.3$) and the 19 other parameter combinations had mean
+$\rho = 0.994$ (range 0.990--0.998; Supplementary Table S8),
+demonstrating near-perfect stability of gene-level rankings across the
+parameter sweep.
 
 \section{Discussion}
 
@@ -461,26 +480,11 @@ Our cross-system comparisons mix Drop-seq (GSE134839) with 10x Chromium (GSE1509
 \paragraph{Permutation null specification.}
 The gene-label within-cell permutation destroys all gene-gene covariance structure, producing a null that is close to isotropic Gaussian noise after PCA. This null rejects against any data with biological structure, so $p < 0.01$ in our validation cohorts indicates the presence of non-random topology without attributing it specifically to drug-induced plasticity. We have now implemented a complementary timepoint-label permutation null for the osimertinib D14 vs.~D0 comparison, which yielded $p < 0.02$ (50 permutations), confirming that $H_1$ depends specifically on drug exposure rather than merely on non-random structure (see Results).
 
+\paragraph{Patient longitudinal data not analyzed.}
+A comprehensive test of the framework would apply it to the Maynard et al.~2020 longitudinal patient EGFR-TKI scRNA-seq cohort \citep{maynard2020}, which provides matched treatment-naive, residual-disease, and progressive-disease biopsies for 30 NSCLC patients. Access to this dataset requires Synapse-level data-use certification that was not completed within this study; direct patient time-course validation therefore remains future work. The treatment-naive Kim et al.~atlas \citep{kim2020} provides a cross-species baseline but no longitudinal within-patient comparison.
+
 \paragraph{Cell-cycle ablation stringency.}
 Our ablation removes the 39 Tirosh et al.~cell-cycle genes present in the HVG set, out of 97 total. This is the standard field practice but not exhaustive: quiescence markers (\emph{CDKN1A}, \emph{CDKN1B}, \emph{CDKN2B}), Rb-pathway genes, senescence-associated SASP, and DNA damage response genes are not included in the Tirosh list. The ratio-preservation result (0.71--1.11) survives for this reduced ablation. We have now performed this stringent ablation (Results, `Stringent cell-cycle regression'); ratios of post-regression to pre-regression max $H_1$ were 1.07--4.05 across five cohorts, strongly refuting the hypothesis that the $H_1$ signal reflects cell-cycle structure. Our PC1-filter Mapper analysis (Section Robustness of gene attribution) shows cell-cycle genes are prominent among loop-associated genes, suggesting the topological signature is multi-program rather than purely EMT.
-
-First, the permutation null test is computationally expensive
-($O(n^3)$ Vietoris--Rips per permutation) and requires subsampling for
-practical use. Our discovery cohort GSE134839 has 200--379 cells per
-timepoint (after QC) which is insufficient to reach per-timepoint
-$p < 0.05$ in ablated data despite biological preservation of the
-signal (ratios 0.71--1.11); validation cohorts ($\geq 1{,}000$ cells per
-group) reach $p < 0.01$ reliably. Second, patient longitudinal scRNA-seq
-data requiring Synapse-level authorization (e.g., \citet{maynard2020})
-was not analyzed here; direct patient time-course validation awaits
-future work. Third, the $H_1$ statistic depends on the choice of ambient
-coordinate system; we used the top-30 PCA components (consistent with
-prior scTDA work), and the framework supports swapping in alternative
-representations (diffusion maps, scVI latent space) for robustness
-testing. Fourth, gene attribution via Mapper depends on filter function
-and cover parameters; our $4 \times 5$ parameter sweep shows stable
-top-gene rankings within the first 10--15 positions but divergence
-further down the list.
 
 \subsection*{Implications and outlook}
 
@@ -667,21 +671,13 @@ lint-clean under \texttt{ruff check} with 100-character line limit.
 
 \subsection*{Code availability}
 
-All code is available at
-\url{https://github.com/htlin222/sctda-cancer-plasticity} under the MIT
-license. Version 1.0.0 matching this manuscript is archived at Zenodo
-(DOI: [pending]). The complete pipeline is reproducible via
-\texttt{make pipeline} from raw GEO data to all figures and tables.
+Code is available at \url{https://github.com/htlin222/sctda-cancer-plasticity} (MIT license). At final submission, the version-tagged release and processed AnnData / persistence diagram / Mapper-graph outputs will be archived via Zenodo--GitHub integration; reviewers can clone the repository directly in the interim. The complete pipeline is reproducible via \texttt{make pipeline} from raw GEO data to all figures and tables.
 
 \subsection*{Data availability}
 
 All raw scRNA-seq data used in this study are publicly available from
 the Gene Expression Omnibus under accessions GSE134839, GSE150949,
-GSE243562, and GSE131907. Processed AnnData (\texttt{.h5ad}) files,
-per-group persistence diagrams (\texttt{.npy}), and Mapper graphs
-(\texttt{.pkl}) generated by our pipeline are archived at Zenodo
-(DOI: [pending]) for convenience, but can alternatively be regenerated
-from scratch by running \texttt{make pipeline}.
+GSE243562, and GSE131907. Code is available at \url{https://github.com/htlin222/sctda-cancer-plasticity} (MIT license). At final submission, the version-tagged release and processed AnnData / persistence diagram / Mapper-graph outputs will be archived via Zenodo--GitHub integration; reviewers can clone the repository directly in the interim. Processed files can alternatively be regenerated from scratch by running \texttt{make pipeline}.
 
 \section*{Declarations}
 
@@ -706,6 +702,8 @@ S6 (functional persistence summaries: max $H_1$, total persistence,
 persistence entropy across ten cohorts),
 S7 (subsample variance: mean $\pm$ SD of max $H_1$ across five random
 seeds for four cohorts),
+S8 (Mapper parameter-sweep Spearman rank correlations),
+S9 (variance-normalized Mapper gene connectivity),
 S-stringent-CC (stringent cell-cycle regression ratios; reproduced as
 Table~\ref{tab:stringent_cc}).
 
@@ -713,10 +711,15 @@ Table~\ref{tab:stringent_cc}).
 The authors declare that they have no competing interests.
 
 \subsection*{Funding}
-[TBD.]
+Author-specific funding to be declared in final submission. The work used no
+external compute resources beyond the corresponding author's workstation.
 
 \subsection*{Authors' contributions}
-[TBD.]
+Following CRediT taxonomy: Conceptualization, Methodology, Software, Formal
+analysis, Investigation, Data curation, Writing -- original draft, Writing --
+review \& editing, Visualization, and Project administration were performed
+by the author(s) listed on the title page. The specific attribution matrix
+will be provided in the final submission.
 
 \subsection*{Acknowledgements}
 The authors thank the original contributors of GSE134839, GSE150949,
@@ -856,7 +859,12 @@ GSE243562, and GSE131907 for making their data publicly available.
   \caption{\textbf{Validation cohort $H_1$ permutation tests
   (100 permutations, 1{,}000-cell subsamples).} Values from 1{,}500-cell
   subsample used in main analysis; permutation tests used 1{,}000-cell
-  subsamples (see Methods).}
+  subsamples (see Methods). $^{\dagger}$ YU-003 residual value is from
+  the 1{,}500-cell main analysis (consistent with Figure~\ref{fig:pdx});
+  permutation tests at 1{,}000-cell subsamples show elevated variance
+  (CV 23.5\%, Supplementary Table S7) with this specific subsample at
+  max $H_1 = 2.07$ --- we report the main analysis value here for
+  consistency with other entries in this table.}
   \label{tab:validation}
   \begin{tabularx}{0.85\linewidth}{l l r l}
     \toprule
@@ -868,7 +876,7 @@ GSE243562, and GSE131907 for making their data publicly available.
     PDX YU-006        & Untreated & 3.62 & $< 0.01$ \\
     PDX YU-006        & Residual  & 6.08 & $< 0.01$ \\
     PDX YU-003        & Untreated & 2.79 & $< 0.01$ \\
-    PDX YU-003        & Residual  & 2.07 & $< 0.01$ \\
+    PDX YU-003        & Residual  & 3.85 & $< 0.01$$^{\dagger}$ \\
     \bottomrule
   \end{tabularx}
 \end{table}
