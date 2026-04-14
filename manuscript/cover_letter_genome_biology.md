@@ -1,15 +1,14 @@
 # Cover Letter — Genome Biology submission
 
 **To:** The Editors, *Genome Biology*
-**From:** [Corresponding author name and affiliation]
-**Date:** [Submission date]
+**From:** Hsieh-Ting Lin, M.D. — Department of Oncology, Koo Foundation Sun Yat-Sen Cancer Center, Taipei, Taiwan (htlin222@kfsyscc.org)
 **Subject:** Manuscript submission — "A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq"
 
 ---
 
 Dear Editors,
 
-We are pleased to submit our manuscript **"A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq, validated across EGFR-mutant lung cancer cell lines, patient-derived xenografts, and patient tumors"** for consideration as a Method article in *Genome Biology*.
+I am pleased to submit for your consideration the manuscript **"A reproducible topological framework for quantifying drug-induced cell-state plasticity in single-cell RNA-seq"** as a Method article in *Genome Biology*.
 
 ## Why this work fits *Genome Biology*
 
