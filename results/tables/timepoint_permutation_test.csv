@@ -1,0 +1,2 @@
+test,observed_diff,p_value,null_mean,null_95th,n_permutations
+D14_vs_D0_osi_timepoint_permutation,2.066659927368164,0.0,-0.05472558975219727,1.179931735992431,50

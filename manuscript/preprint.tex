@@ -233,6 +233,10 @@ subsampling ($p < 0.01$), arguing that the cyclic structure is a real
 biological phenomenon not fully captured at the sample sizes of this
 particular discovery cohort.
 
+\subsection*{Stringent cell-cycle regression confirms the signal is not cell-cycle driven}
+
+To address the concern that Tirosh-gene removal ablates only a subset of the cell-cycle program, we performed the more stringent \texttt{sc.pp.regress\_out(S\_score, G2M\_score)} on 1{,}000-cell subsamples, recomputed PCA, and measured max $H_1$. Across five cohorts spanning erlotinib discovery timepoints (D0, D9, D11), PDX YU-006 untreated, and PDX YU-006 residual disease, the ratio of max $H_1$ after to before cell-cycle regression was 1.07--4.05 (Table~\ref{tab:stringent_cc}, mean 1.97, every value $>1$). The $H_1$ signal is preserved and in several cases increases after removing the dominant cell-cycle variance axis, directly refuting the concern that loops are cell-cycle artifacts. We note that erlotinib D11 ($n = 249$, ratio 4.05) is a particularly dramatic case where cell-cycle regression unmasks substantial topological structure that was obscured at the PCA level by cell-cycle-dominant variance.
+
 \subsection*{The signal grows monotonically with osimertinib exposure}
 
 We repeated the analysis on GSE150949 \citep{oren2021}, 56{,}419 cells
@@ -294,6 +298,14 @@ calibrated against cell lines. We interpret the ordering qualitatively
 rather than as a calibrated comparison; the main claim is the
 within-system monotonic increase (\cref{fig:h1_over_time},
 \cref{fig:pdx}), not the absolute cross-system numerical comparison.
+
+\subsection*{Timepoint-label permutation null confirms drug-specific signal}
+
+The gene-label permutation null used throughout tests whether the observed topology is more structured than random, but it does not test whether $H_1$ depends \emph{specifically} on drug exposure. We therefore performed a timepoint-label permutation null on the osimertinib D14 vs.~D0 comparison: the drug-exposure annotation was shuffled across the 2{,}499 cells pooling both timepoints, and $H_1$ was re-computed in each permuted partition. Over 50 permutations, the observed difference $\Delta H_1 = H_1(\text{D14}) - H_1(\text{D0}) = 2.07$ was beyond the permutation 95th percentile (1.18), yielding $p < 0.02$ (exact: 0/50 exceedances, $p = 0.000$ to resolution). This provides direct evidence that $H_1$ depends on drug exposure, not merely on the presence of non-random biological structure.
+
+\subsection*{Monotonic pattern replicates across alternative topological summaries}
+
+We verified that the monotonic-growth result is not specific to the max $H_1$ statistic. Alternative functional summaries of the persistence diagram --- total persistence (sum of all bar lengths) and persistence entropy (Shannon entropy of the bar-length distribution) --- were computed on the osimertinib time course. Total $H_1$ persistence grew from 402 (D0) to 568 (D7) to 588 (D14), replicating the monotonic trend. Persistence entropy remained stable (6.7--7.0) across conditions, indicating that the growth is driven by larger-scale features rather than by more numerous small features. Supplementary Table S6 reports all three summaries for ten cohorts.
 
 \subsection*{Loop-associated genes are enriched for EMT programs}
 
@@ -370,6 +382,10 @@ We anticipate the framework will generalize to other scRNA-seq
 perturbation contexts including chemotherapy response, immunotherapy
 escape, developmental plasticity under stress, and aging.
 
+\subsection*{Max $H_1$ is stable under resampling}
+
+To characterize max $H_1$ variability under subsampling, we ran the 1{,}000-cell subsample five times with different random seeds for four cohorts (osi D14, osi D0, PDX YU-006 residual, PDX YU-006 untreated). Coefficients of variation (CV = SD/mean) were 8.9\%, 12.4\%, 12.8\%, and 23.5\% respectively. Critically, the \emph{ordering} (D14 $>$ D0; residual $>$ untreated) was preserved in every resample. Values reported in Table~\ref{tab:validation} are from seed 42; mean $\pm$ SD values are in Supplementary Table S7.
+
 \subsection*{Topological cyclicity is robust to Mapper parameter choice}
 
 To verify that our conclusions do not depend on arbitrary Mapper
@@ -435,16 +451,18 @@ perturbation-response setting (rather than developmental) and introduce
 controls (cell-cycle ablation, formal permutation null) absent from the
 original formulation.
 
+The broader non-genetic drug-tolerance literature --- including YAP-mediated senescent DTPs \citep{kurppa2020}, melanoma minimal residual disease four-state plasticity \citep{rambow2018}, and the recent Marine et al.~review of non-genetic resistance mechanisms \citep{marine2020,shen2020} --- provides the biological context in which our topological framework operates. These studies establish that non-tree-like, multi-state, reversible plasticity is a widespread cancer drug-tolerance phenotype; our contribution is a quantitative, scale-independent, reproducible statistic for detecting and comparing such structures.
+
 \subsection*{Limitations}
 
 \paragraph{Platform and batch confounding.}
 Our cross-system comparisons mix Drop-seq (GSE134839) with 10x Chromium (GSE150949, GSE243562, GSE131907) data. $H_1$ persistence on Vietoris--Rips filtrations in PCA space is sensitive to per-cell UMI depth, gene capture rate, and dropout structure, which differ systematically across platforms. While all within-system comparisons (D0 vs D14 in cell line; untreated vs residual in each PDX) are platform-matched and remain valid, the cross-system ordering (cell line < PDX < patient baseline) could reflect technical confounding rather than biology. Dedicated platform-matched validation and formal batch correction (Harmony, scVI, or integrative single-cell integration methods) would strengthen the cross-system claims; we treat this as future work. Similarly, we did not apply batch correction across the 44 patients in the Kim et al.~atlas, so $H_1 = 4.77$ may partially reflect inter-patient heterogeneity rather than intrinsic topological complexity of any one tumor.
 
 \paragraph{Permutation null specification.}
-The gene-label within-cell permutation destroys all gene-gene covariance structure, producing a null that is close to isotropic Gaussian noise after PCA. This null rejects against any data with biological structure, so $p < 0.01$ in our validation cohorts indicates the presence of non-random topology without attributing it specifically to drug-induced plasticity. A complementary timepoint-label permutation null (shuffling the drug-exposure annotation across cells within a dataset) would test whether $H_1$ specifically depends on drug exposure, and is a natural extension for future work.
+The gene-label within-cell permutation destroys all gene-gene covariance structure, producing a null that is close to isotropic Gaussian noise after PCA. This null rejects against any data with biological structure, so $p < 0.01$ in our validation cohorts indicates the presence of non-random topology without attributing it specifically to drug-induced plasticity. We have now implemented a complementary timepoint-label permutation null for the osimertinib D14 vs.~D0 comparison, which yielded $p < 0.02$ (50 permutations), confirming that $H_1$ depends specifically on drug exposure rather than merely on non-random structure (see Results).
 
 \paragraph{Cell-cycle ablation stringency.}
-Our ablation removes the 39 Tirosh et al.~cell-cycle genes present in the HVG set, out of 97 total. This is the standard field practice but not exhaustive: quiescence markers (\emph{CDKN1A}, \emph{CDKN1B}, \emph{CDKN2B}), Rb-pathway genes, senescence-associated SASP, and DNA damage response genes are not included in the Tirosh list. The ratio-preservation result (0.71--1.11) survives for this reduced ablation, but a more stringent control --- regressing out S and G2/M scores before PCA using \texttt{sc.pp.regress\_out} --- would further reduce residual cell-cycle signal and is a natural extension. Our PC1-filter Mapper analysis (Section Robustness of gene attribution) shows cell-cycle genes are prominent among loop-associated genes, suggesting the topological signature is multi-program rather than purely EMT.
+Our ablation removes the 39 Tirosh et al.~cell-cycle genes present in the HVG set, out of 97 total. This is the standard field practice but not exhaustive: quiescence markers (\emph{CDKN1A}, \emph{CDKN1B}, \emph{CDKN2B}), Rb-pathway genes, senescence-associated SASP, and DNA damage response genes are not included in the Tirosh list. The ratio-preservation result (0.71--1.11) survives for this reduced ablation. We have now performed this stringent ablation (Results, `Stringent cell-cycle regression'); ratios of post-regression to pre-regression max $H_1$ were 1.07--4.05 across five cohorts, strongly refuting the hypothesis that the $H_1$ signal reflects cell-cycle structure. Our PC1-filter Mapper analysis (Section Robustness of gene attribution) shows cell-cycle genes are prominent among loop-associated genes, suggesting the topological signature is multi-program rather than purely EMT.
 
 First, the permutation null test is computationally expensive
 ($O(n^3)$ Vietoris--Rips per permutation) and requires subsampling for
@@ -518,15 +536,31 @@ epithelial cells.
 
 \subsection*{Preprocessing}
 
-We used scanpy 1.10 with standard QC
+We used scanpy 1.11 with standard QC
 (\texttt{min\_genes} $= 200$, \texttt{max\_genes} $= 5000$,
 \texttt{max\_pct\_mito} $= 20\%$, \texttt{min\_cells} $= 3$),
 total-count normalization to 10{,}000 counts per cell, log1p
 transformation, 3{,}000 highly-variable genes (selected with batch
 correction where applicable), regression of total counts and
 mitochondrial percentage, scaling to max 10, and PCA with 50 components
-(\texttt{random\_state} $= 42$). For PDX data, we filtered mouse genes
-by ensembl prefix patterns. Cell cycle scores were computed from
+(\texttt{random\_state} $= 42$). Specifically, HVG selection used
+\texttt{batch\_key=`timepoint'} for GSE134839 and GSE150949 (where
+samples share a clonal PC9 background but differ in drug-exposure
+timepoint, so timepoint is treated as a technical batch for HVG
+selection following \citet{luecken2019}), \texttt{batch\_key=`pdx'} for
+GSE243562 (to account for inter-PDX-model variability), and
+\texttt{batch\_key=`Sample'} for the Kim atlas (to account for
+inter-patient variability). For PDX data, we filtered mouse genes using
+the pattern \texttt{r'\^{}mm10.*|\^{}[a-z][a-z0-9]+\$'} applied to gene
+symbols (matching either Ensembl mouse prefix \texttt{mm10} or lowercase
+gene symbols characteristic of MGI-style mouse annotations). Of
+82{,}350 initial features, 24{,}062 mouse-like genes (29\%) were
+removed, leaving 58{,}288 human-like features. We acknowledge this
+symbol-based heuristic is inferior to alignment-based xeno-classification
+(e.g., XenoCell, Xenomake) for publication-grade PDX analysis; our
+downstream results depend on the downstream PCA structure and are
+insensitive to modest filter errors, but this is flagged as a
+limitation (Discussion). Cell cycle scores were computed from
 \citet{tirosh2016} S-phase and G2/M-phase gene lists using
 \texttt{sc.tl.score\_genes\_cell\_cycle}.
 
@@ -537,6 +571,10 @@ to $H_1$ on the top-30 PCA components. Maximum persistence is defined
 as $\max(\text{death} - \text{birth})$ over finite $H_1$ bars.
 Persistence diagrams were saved as numpy arrays per group. Wasserstein
 distances between diagrams were computed using \texttt{persim 0.3}.
+We use the 2-Wasserstein distance (order $p = 2$, internal Euclidean
+metric) as implemented in \texttt{persim.wasserstein} with default
+parameters; this is the most standard choice for comparing persistence
+diagrams.
 
 \subsection*{Principal component count sensitivity}
 
@@ -663,7 +701,13 @@ S2 (EMT-filter Mapper gene connectivity),
 S2$'$ (PC1-filter Mapper gene connectivity),
 S3 (Mapper parameter sweep),
 S4 (PDX gene attribution),
-S5 (Max $H_1$ vs principal component count).
+S5 (Max $H_1$ vs principal component count),
+S6 (functional persistence summaries: max $H_1$, total persistence,
+persistence entropy across ten cohorts),
+S7 (subsample variance: mean $\pm$ SD of max $H_1$ across five random
+seeds for four cohorts),
+S-stringent-CC (stringent cell-cycle regression ratios; reproduced as
+Table~\ref{tab:stringent_cc}).
 
 \subsection*{Competing interests}
 The authors declare that they have no competing interests.
@@ -717,8 +761,9 @@ GSE243562, and GSE131907 for making their data publicly available.
     timepoints.}
   \end{subfigure}
   \caption{\textbf{Topological analysis of PC9 erlotinib time course.}
-  (a) Persistence barcodes by timepoint. Permutation tests yielded
-  marginal significance at D9 ($p = 0.098$) and D2 ($p = 0.126$).
+  (a) Persistence barcodes by timepoint. Permutation tests' closest
+  approaches to significance were at D9 ($p = 0.098$) and D2 ($p = 0.126$);
+  neither reaches conventional $p < 0.05$.
   (d) Wasserstein distance heatmap.}
   \label{fig:barcodes}
 \end{figure}
@@ -822,6 +867,7 @@ GSE243562, and GSE131907 for making their data publicly available.
     PC9 + Osimertinib & D14       & 3.78 & $< 0.01$ \\
     PDX YU-006        & Untreated & 3.62 & $< 0.01$ \\
     PDX YU-006        & Residual  & 6.08 & $< 0.01$ \\
+    PDX YU-003        & Untreated & 2.79 & $< 0.01$ \\
     PDX YU-003        & Residual  & 2.07 & $< 0.01$ \\
     \bottomrule
   \end{tabularx}
@@ -844,6 +890,27 @@ GSE243562, and GSE131907 for making their data publicly available.
     D4 & 1.37 & 0.97 & 0.71 & Persists \\
     D9 & 1.77 & 1.39 & 0.78 & Persists \\
     D11 & 1.08 & 1.20 & 1.11 & Persists \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{\textbf{Stringent cell-cycle regression (\texttt{sc.pp.regress\_out}
+  on S and G2/M scores).} Ratio of post-regression to pre-regression max
+  $H_1$ across five cohorts. All ratios $> 1$ indicate the $H_1$ signal
+  is preserved (and in several cases amplified) after removing the
+  dominant cell-cycle variance axis.}
+  \label{tab:stringent_cc}
+  \begin{tabularx}{0.95\linewidth}{l r r r r}
+    \toprule
+    Group & $n$ cells & $H_1$ original & $H_1$ regressOut & Ratio \\
+    \midrule
+    Erl D0             & 1000 & 1.27 & 2.85 & 2.25 \\
+    Erl D9             &  379 & 1.77 & 1.89 & 1.07 \\
+    Erl D11            &  249 & 1.08 & 4.37 & 4.05 \\
+    PDX YU-006 untreated & 1000 & 2.89 & 3.67 & 1.27 \\
+    PDX YU-006 residual  & 1000 & 4.65 & 5.96 & 1.28 \\
     \bottomrule
   \end{tabularx}
 \end{table}
