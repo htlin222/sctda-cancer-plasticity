@@ -174,28 +174,18 @@ graph representation of the data, where cells in the same node share
 transcriptional similarity and edges connect related nodes --- revealing
 the ``skeleton'' of the state-space structure.
 
-Topological data analysis (TDA) provides a rigorous mathematical
-framework for quantifying holes, voids, and connected components at all
-scales. Persistent homology outputs a multiset of birth--death pairs (the
-persistence diagram) summarizing the scales at which topological
-features ($H_0$ = connected components, $H_1$ = loops,
-$H_2$ = voids) appear and disappear in a filtration
-\citep{edelsbrunner2010}. Intuitively, an $H_1$ feature corresponds
-to a population of cells distributed around a closed ring in
-expression space --- for example, cells reversibly cycling through
-epithelial $\to$ intermediate $\to$ mesenchymal $\to$ epithelial
-states would form such a 1-cycle (one-dimensional hole) in their
-PCA-projected point cloud. The Mapper algorithm \citep{singh2007}
-provides a complementary, interpretable graph-based summary of
-high-dimensional data that preserves topological skeleton information:
-Mapper builds a graph by projecting cells onto a chosen lens function,
-binning the projection into overlapping intervals, clustering cells
-within each bin, and connecting bins that share cells.
-Both have been applied individually to bulk cancer transcriptomes
-\citep{nicolau2011} and developmental scRNA-seq \citep{rizvi2017}, but
-their integration into a reproducible, open-source framework for
-longitudinal scRNA-seq --- with formal null-model testing and standard
-controls --- has been lacking.
+Formally, persistent homology tracks elements of the homology groups
+$H_k$ (for $k = 0, 1, 2$ capturing connected components, 1-cycles,
+and 2-dimensional voids respectively) across a filtered sequence of
+simplicial complexes, outputting a multiset of birth-death pairs
+(the persistence diagram) \citep{edelsbrunner2010}. The Mapper
+algorithm \citep{singh2007} provides a complementary, interpretable
+graph-based summary of high-dimensional data. Both have been applied
+individually to bulk cancer transcriptomes \citep{nicolau2011} and
+developmental scRNA-seq \citep{rizvi2017}. Prior work has not
+integrated them into a reproducible, open-source framework for
+longitudinal scRNA-seq with formal null-model testing and standard
+controls --- the gap our contribution addresses.
 
 \subsection*{Drug-tolerant persisters as a testbed}
 
@@ -585,6 +575,29 @@ comparing drug responses across labs and platforms. We anticipate the
 framework will generalize to adjacent perturbation-response settings
 including chemotherapy, immunotherapy escape, and stress-induced
 dedifferentiation.
+
+\paragraph{Why might cyclic plasticity be adaptive?}
+The monotonic growth of max $H_1$ with drug exposure invites a
+mechanistic interpretation. In a Waddington-style quasi-potential
+landscape, a robust 1-cycle corresponds to a limit cycle enclosing a
+shallow basin --- cells can traverse several states without committing
+to any single attractor \citep{huang2012,pisco2015}. Such cyclic
+structure is predicted to be advantageous under fluctuating or
+targeted selection: it preserves phenotypic heterogeneity as a
+bet-hedging reservoir, enabling rapid repopulation of any state whose
+fitness rises \citep{brock2009,gupta2011}. Our observation that
+osimertinib increases $H_1$ persistence and that patient-tumor
+baselines are already high is consistent with drug exposure
+\emph{selecting for} pre-existing cycling subpopulations while also
+\emph{inducing} new cycles, both of which raise the cell's adaptive
+capacity against a fixed pharmacological constraint. From this
+perspective, the topological signature is a quantifiable readout of
+the evolutionary strategy cells employ when they cannot escape the
+drug genetically. Therapeutic implications include evolutionary
+steering approaches such as adaptive therapy \citep{gatenby2009,
+enriquez-navas2016} and state-trapping combinations designed to
+collapse the cycle rather than target a single state --- hypotheses
+our framework can now quantitatively test.
 
 \section{Conclusions}
 
