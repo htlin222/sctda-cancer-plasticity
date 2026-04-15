@@ -150,22 +150,25 @@ their points trace out an elongated cloud --- a ``trajectory''. But if
 cells reversibly cycle through several states (for example,
 epithelial $\to$ intermediate $\to$ mesenchymal $\to$ back to
 epithelial), their points arrange themselves into a closed \emph{ring}
-or \emph{loop} --- with an empty region in the middle. A tree-based
-trajectory method has no mathematical way to represent such a loop;
+(formally, a \emph{1-cycle} that encloses a one-dimensional hole in the
+point cloud) --- with an empty region in the middle. A tree-based
+trajectory method has no mathematical way to represent such a 1-cycle;
 it will force the ring into a branching tree and lose the cyclic
 information entirely.
 
-Topological data analysis (TDA) asks, directly: \emph{how many loops
+Topological data analysis (TDA) asks, directly: \emph{how many 1-cycles
 are there in this cloud, and how robust is each one?} The persistent
 homology algorithm formalizes this by gradually connecting points that
-are within a growing distance threshold, watching loops appear and
-disappear as the threshold grows. A loop that appears at a small
+are within a growing distance threshold (a \emph{filtration}), watching
+1-cycles (elements of the first homology group $H_1$) appear and
+disappear as the threshold grows. A 1-cycle that appears at a small
 threshold and survives a wide range of thresholds is ``persistent''
-and reflects genuine cyclic structure in the data. A loop that
+and reflects genuine cyclic structure in the data. A 1-cycle that
 appears and disappears quickly is noise. The $H_1$ persistence statistic
 captures this lifespan: a high max $H_1$ means at least one robust
-loop dominates the cell-state geometry --- exactly the signature one
-would expect from reversible, cycling drug-tolerant persister cells.
+nontrivial homology class dominates the cell-state geometry --- exactly
+the signature one would expect from reversible, cycling drug-tolerant
+persister cells.
 The Mapper algorithm complements this by producing an interpretable
 graph representation of the data, where cells in the same node share
 transcriptional similarity and edges connect related nodes --- revealing
@@ -181,7 +184,7 @@ $H_2$ = voids) appear and disappear in a filtration
 to a population of cells distributed around a closed ring in
 expression space --- for example, cells reversibly cycling through
 epithelial $\to$ intermediate $\to$ mesenchymal $\to$ epithelial
-states would form such a one-dimensional hole in their
+states would form such a 1-cycle (one-dimensional hole) in their
 PCA-projected point cloud. The Mapper algorithm \citep{singh2007}
 provides a complementary, interpretable graph-based summary of
 high-dimensional data that preserves topological skeleton information:
