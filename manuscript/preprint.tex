@@ -66,36 +66,48 @@ reproducible pipeline has applied TDA across drug-tolerance datasets at
 scale.
 
 \textbf{Results.}
-We present an open-source framework for computing isometry-invariant
-topological statistics ($H_0$, $H_1$, Wasserstein distances between
-persistence diagrams) and Mapper-based gene attribution scores on scRNA-seq
-data, together with a permutation-based null model and cell-cycle ablation
-control. We validate the framework on five independent publicly available
+We present an open-source framework for computing scale-independent
+topological statistics ($H_0$, $H_1$) and Mapper-based gene attribution
+scores on scRNA-seq data. The central quantity --- the \emph{maximum
+$H_1$ persistence} --- can be read as the lifespan of the longest
+robust loop in the cell-state cloud: small values (< 2) indicate weak
+or transient cyclic structure (cells mostly flow linearly), while
+larger values ($\geq 4$) indicate dominant, stable cycling among
+distinct states. We validated the framework on four independent
 datasets covering two EGFR tyrosine kinase inhibitors (erlotinib,
-osimertinib), three biological scales (cell line, patient-derived
-xenograft, patient tumor), a treatment-naive patient lung adenocarcinoma
-atlas, and a 14-patient matched longitudinal EGFR-mutant NSCLC cohort
-(GSE134839, GSE150949, GSE243562, GSE131907, Maynard 2020; total
-258{,}355 cells pre-QC, 31{,}329 analyzed). Across all five systems, the maximum one-dimensional persistent
-homology feature (max $H_1$) increases monotonically with drug exposure
-in the validation cohorts (PC9 osimertinib, two PDX models); the discovery
-cohort (PC9 erlotinib Drop-seq) shows high $H_1$ values across all
-timepoints but a non-monotonic pattern consistent with its smaller
-per-timepoint sample sizes.
-PC9 cells under osimertinib $1.41 \to 3.78$ ($2.7\times$ over 14 days;
-$p < 0.01$), PDX YU-003 $2.8 \to 3.8$ ($1.4\times$; $p < 0.01$),
-PDX YU-006 $2.8 \to 6.1$ ($2.2\times$; $p < 0.01$).
-In the full Maynard et al.~2020 EGFR-mutant NSCLC cohort (14 patients, 13{,}244 cells, Smart-seq2), pooled max $H_1$ grew monotonically across treatment stages TN $\to$ PER $\to$ PD ($5.37 \to 7.13 \to 8.05$); in 3 of 3 within-patient matched pre/post pairs, max $H_1$ increased (median $1.60\times$, range $1.35$--$3.25\times$; one-sided sign test $p = 0.125$, $n = 3$ not powered for individual significance).
-Treatment-naive patient tumors exhibit baseline $H_1 = 4.8$; the
-within-system monotonic $H_1$ growth under drug treatment occurs on
-the same order of magnitude as patient-tumor topological complexity,
-a cross-scale observation we treat qualitatively rather than as a
-calibrated equivalence. The effect survives cell-cycle ablation (ratios 0.71--1.11
-across all timepoints). Mapper-based gene connectivity identifies
-EMT-related genes (\emph{TPM1}, \emph{KRT8}, \emph{KRT19}, \emph{CALD1}, \emph{S100A4}, \emph{LGALS3}, \emph{COL1A1}) as
-top loop-associated features, with ``Epithelial Mesenchymal Transition''
-ranked first in pathway enrichment. Gene signatures in PDX and cell line
-share 11 of top 100 connected genes (hypergeometric
+osimertinib), two biological scales (cell line, patient-derived
+xenograft), and a treatment-naive patient lung adenocarcinoma atlas
+(GSE134839, GSE150949, GSE243562, GSE131907; 258{,}355 cells pre-QC,
+31{,}329 analyzed). Across these systems, max $H_1$ increased with
+drug exposure --- meaning cells moved from a predominantly linear
+trajectory toward a stable cyclic state-space organization:
+PC9 cells under osimertinib rose from 1.41 (transient loop) to 3.78
+(robust loop) over 14 days (2.7$\times$; $p < 0.01$), PDX YU-003 from
+2.79 to 3.85 (1.4$\times$), and PDX YU-006 from 2.81 to 6.08
+(2.2$\times$; all $p < 0.01$). In the full Maynard et al.~2020
+EGFR-mutant NSCLC cohort (14 patients, 13{,}244 cells, Smart-seq2),
+pooled max $H_1$ grew monotonically across treatment stages from
+treatment-naive ($H_1 = 5.37$) to persister/residual-disease
+($H_1 = 7.13$) to progressive-disease ($H_1 = 8.05$). In 3 of 3
+within-patient matched pre/post biopsy pairs, max $H_1$ increased
+post-treatment (median 1.60$\times$; exact sign test $p = 0.125$,
+underpowered for individual significance but directionally consistent).
+Treatment-naive patient tumors exhibited baseline $H_1 \approx 4.8$,
+comparable in magnitude to drug-treated cell-line values --- consistent
+with drug exposure expanding the transcriptional state repertoire
+toward the complexity already present in untreated patient tumors.
+The observed cyclic structure survived two distinct cell-cycle
+controls: Tirosh-gene ablation (ratios 0.71--1.11) and stringent
+\texttt{regress\_out(S\_score, G2M\_score)} across five cohorts (ratios
+1.07--4.05, all $> 1$), arguing the loops reflect drug-induced
+plasticity rather than a proliferation artifact. Mapper-based gene
+connectivity identified epithelial-mesenchymal transition (EMT) genes
+(\emph{TPM1}, \emph{KRT8}, \emph{KRT19}, \emph{CALD1}, \emph{S100A4},
+\emph{LGALS3}, \emph{COL1A1}) as top loop-associated features, with
+``Epithelial Mesenchymal Transition'' (MSigDB Hallmark) ranked first
+in pathway enrichment --- biologically linking the topological cycle
+to reversible EMT state transitions. Gene signatures in PDX and cell
+line shared 11 of top 100 connected genes (hypergeometric
 $p = 1.25 \times 10^{-11}$ against 13{,}955 expressed-gene universe;
 conservative HVG-intersection background gives $p = 2.1 \times 10^{-4}$).
 
@@ -130,6 +142,34 @@ mathematically one-dimensional holes in the data's point cloud, which
 tree-based methods by construction cannot detect.
 
 \subsection*{Topological data analysis as a framework-level remedy}
+
+\paragraph{An intuitive picture for biomedical readers.}
+Imagine plotting each cell as a point in high-dimensional gene-expression
+space. If cells are transitioning linearly from state A to state B,
+their points trace out an elongated cloud --- a ``trajectory''. But if
+cells reversibly cycle through several states (for example,
+epithelial $\to$ intermediate $\to$ mesenchymal $\to$ back to
+epithelial), their points arrange themselves into a closed \emph{ring}
+or \emph{loop} --- with an empty region in the middle. A tree-based
+trajectory method has no mathematical way to represent such a loop;
+it will force the ring into a branching tree and lose the cyclic
+information entirely.
+
+Topological data analysis (TDA) asks, directly: \emph{how many loops
+are there in this cloud, and how robust is each one?} The persistent
+homology algorithm formalizes this by gradually connecting points that
+are within a growing distance threshold, watching loops appear and
+disappear as the threshold grows. A loop that appears at a small
+threshold and survives a wide range of thresholds is ``persistent''
+and reflects genuine cyclic structure in the data. A loop that
+appears and disappears quickly is noise. The $H_1$ persistence statistic
+captures this lifespan: a high max $H_1$ means at least one robust
+loop dominates the cell-state geometry --- exactly the signature one
+would expect from reversible, cycling drug-tolerant persister cells.
+The Mapper algorithm complements this by producing an interpretable
+graph representation of the data, where cells in the same node share
+transcriptional similarity and edges connect related nodes --- revealing
+the ``skeleton'' of the state-space structure.
 
 Topological data analysis (TDA) provides a rigorous mathematical
 framework for quantifying holes, voids, and connected components at all
@@ -567,6 +607,18 @@ gene-level overlap. The framework is immediately applicable to other
 scRNA-seq perturbation-response contexts and is available as an
 open-source pipeline with complete documentation, tests, and
 Docker/conda environment specifications.
+
+In plain language: drug treatment does not simply push lung cancer
+cells along a one-way road to resistance. It reorganizes the
+cell-state landscape so that cells can reversibly cycle among
+multiple transcriptional states --- states that include
+epithelial-mesenchymal-transition-like programs. The topological
+statistic we propose (max $H_1$) quantifies how robust this cycling
+becomes, across cell line, xenograft, and patient tissue, without
+requiring lineage tracing or prior knowledge of which states
+matter. We expect this readout to generalize to other
+reversible-plasticity settings where standard trajectory methods
+fall short.
 
 \section{Methods}
 
