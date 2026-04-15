@@ -49,7 +49,9 @@ def fig1_study_overview():
     # Panel A: UMAP colored by timepoint
     ax = fig.add_subplot(gs[0, 0])
     if "timepoint" in adata.obs.columns:
-        for tp in sorted(adata.obs["timepoint"].unique()):
+        tps = list(adata.obs["timepoint"].unique())
+        tps = sorted(tps, key=lambda s: int(str(s).lstrip("D")) if str(s).lstrip("D").isdigit() else 999)
+        for tp in tps:
             mask = adata.obs["timepoint"] == tp
             ax.scatter(
                 adata.obsm["X_umap"][mask, 0], adata.obsm["X_umap"][mask, 1],

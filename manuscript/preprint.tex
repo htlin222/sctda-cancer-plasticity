@@ -916,19 +916,19 @@ of scanpy, ripser, persim, kmapper, harmonypy, and giotto-tda.
     \IfFileExists{../results/figures/fig2_d_wasserstein_heatmap.pdf}{%
       \includegraphics[width=\linewidth]{fig2_d_wasserstein_heatmap.pdf}%
     }{\fbox{\parbox{0.9\linewidth}{\centering\vspace{2em}Figure 2d placeholder\vspace{2em}}}}
-    \caption{Pairwise Wasserstein distance heatmap between persistence
-    diagrams. D0 is topologically isolated from drug-treated
-    timepoints.}
+    \caption{Pairwise Wasserstein distance heatmap between per-timepoint
+    $H_1$ persistence diagrams. D0 is separated from drug-treated
+    timepoints in persistence-diagram space.}
+    \label{fig:wasserstein}
   \end{subfigure}
   \caption{\textbf{Topological analysis of PC9 erlotinib time course.}
   (a) Persistence barcodes by timepoint. Permutation tests' closest
   approaches to significance were at D9 ($p = 0.098$) and D2 ($p = 0.126$);
   neither reaches conventional $p < 0.05$.
-  (d) Wasserstein distance heatmap.}
+  (b) Wasserstein distance heatmap between per-timepoint $H_1$
+  persistence diagrams.}
   \label{fig:barcodes}
 \end{figure}
-\addtocounter{figure}{-1}
-\refstepcounter{figure}\label{fig:wasserstein}
 
 \begin{figure}[htbp]
   \centering
