@@ -110,42 +110,22 @@ testable, comparable statistic.
 
 \paragraph{An intuitive picture for biomedical readers.}
 Topology studies the properties of shapes that survive continuous
-deformation --- the classical example is that a coffee mug and a donut
-are the same shape, because each has exactly one hole and one can be
-smoothly deformed into the other (\cref{fig:concept}a).
-Imagine plotting each cell as a point in high-dimensional gene-expression
-space. If cells are transitioning linearly from state A to state B,
-their points trace out an elongated cloud --- a ``trajectory''. But if
-cells reversibly cycle through several states (for example,
-epithelial $\to$ intermediate $\to$ mesenchymal $\to$ back to
-epithelial), their points arrange themselves into a closed \emph{ring}
-(formally, a \emph{1-cycle} --- a closed loop that is not the
-boundary of any filled-in disc within the data) --- with an empty
-region in the middle
-(\cref{fig:concept}b). A tree-based trajectory method has no
-mathematical way to represent such a 1-cycle; it will force the ring
-into a branching tree and lose the cyclic information entirely.
-Persistent homology summarises the loop structure in a single
-\emph{barcode} whose longest bar measures how robust the loop is
-across spatial scales (\cref{fig:concept}c).
-
-Topological data analysis (TDA) asks, directly: \emph{how many 1-cycles
-are there in this cloud, and how robust is each one?} The persistent
-homology algorithm formalizes this by gradually connecting points that
-are within a growing distance threshold (a \emph{filtration}), watching
-1-cycles (elements of the first homology group $H_1$) appear and
-disappear as the threshold grows. A 1-cycle that appears at a small
-threshold and survives a wide range of thresholds is ``persistent''
-and reflects genuine cyclic structure in the data. A 1-cycle that
-appears and disappears quickly is noise. The $H_1$ persistence statistic
-captures this lifespan: a high max $H_1$ means at least one robust
-nontrivial homology class dominates the cell-state topology --- exactly
-the signature one would expect from reversible, cycling drug-tolerant
-persister cells.
-The Mapper algorithm complements this by producing an interpretable
-graph representation of the data, where cells in the same node share
-transcriptional similarity and edges connect related nodes --- revealing
-the ``skeleton'' of the state-space structure.
+deformation --- a coffee mug and a donut are the same shape because
+each has exactly one hole, and one can be smoothly deformed into the
+other (\cref{fig:concept}a). Plot each cell as a point in
+gene-expression space: cells transitioning linearly between states
+trace an elongated cloud, while cells that reversibly cycle (e.g.\
+epithelial $\to$ intermediate $\to$ mesenchymal $\to$ epithelial)
+arrange into a closed \emph{1-cycle} --- a loop that is not the
+boundary of any filled-in disc within the data (\cref{fig:concept}b).
+Tree-based trajectory methods force such a loop into a branching tree
+and discard the cyclic information. Persistent homology measures how
+robustly a 1-cycle survives as the connecting distance scale grows:
+the lifespan of the longest bar in the resulting \emph{barcode}
+(\cref{fig:concept}c) is the \emph{maximum $H_1$ persistence} used
+throughout this work. Mapper complements this with an interpretable
+graph in which nodes group transcriptionally similar cells and edges
+connect related nodes \citep{singh2007}.
 
 Formally, persistent homology returns a multiset of birth--death
 pairs (the persistence diagram) over a filtered sequence of simplicial
@@ -337,16 +317,6 @@ observed $\Delta H_1 = 2.07$ exceeded the 95th percentile (1.18) in
 0/50 trials, giving $p < 0.02$ (Phipson--Smyth $+1$ correction) ---
 direct evidence that $H_1$ depends on drug exposure.
 
-\subsection*{Monotonic pattern replicates across alternative topological summaries}
-
-Two alternative summaries of the persistence diagram on the
-osimertinib time course replicate the monotonic trend: total $H_1$
-persistence (sum of finite bar lengths) grew $402 \to 568 \to 588$
-(D0/D7/D14), while persistence entropy stayed at 6.7--7.0 --- the
-growth is driven by larger-scale features, not more numerous small
-ones. All three summaries across ten cohorts: Supplementary
-Table~S6.
-
 \subsection*{EMT genes dominate loop-associated transcripts in both PC9 and PDX systems}
 
 What do the $H_1$ loops represent biologically? To identify the
@@ -422,11 +392,11 @@ shipped as defaults), and (iii) a permutation-test subsampling budget
 (1{,}000 cells per group is sufficient at $p < 0.05$). We anticipate
 the framework will generalise to other scRNA-seq perturbation contexts
 including chemotherapy, immunotherapy escape, and stress-induced
-dedifferentiation.
-
-\subsection*{Max $H_1$ is stable under resampling}
-
-To characterize max $H_1$ variability under subsampling, we ran the 1{,}000-cell subsample five times with different random seeds for four cohorts (osi D14, osi D0, PDX YU-006 residual, PDX YU-006 untreated). Coefficients of variation (CV = SD/mean) were 8.9\%, 12.4\%, 12.8\%, and 23.5\% respectively. Critically, the \emph{ordering} (D14 $>$ D0; residual $>$ untreated) was preserved in every resample. Values reported in Table~\ref{tab:validation} are from seed 42; mean $\pm$ SD values are in Supplementary Table S7.
+dedifferentiation. Resampling stability (CV 8.9--23.5\% with ordering
+preserved), replication under alternative persistence-diagram summaries
+(total persistence and persistence entropy), and Mapper-parameter
+robustness (mean Spearman $\rho = 0.994$ across a $4 \times 5$
+parameter sweep) are reported in Supplementary Methods~S10--S12.
 
 \subsection*{The monotonic trend survives Harmony batch correction}
 
@@ -474,15 +444,6 @@ This patient-cohort result is the most clinically proximal evidence
 we provide: the same topological signature that rises under drug in
 PC9 and PDX also rises in real EGFR-mutant NSCLC patient biopsies, in
 a hypothesis-generating three-of-three matched design.
-
-\subsection*{Topological cyclicity is robust to Mapper parameter choice}
-
-A $4 \times 5$ sweep ($n_{\text{cubes}} \in \{10, 15, 20, 25, 30\}$;
-overlap $\in \{0.2, 0.3, 0.4, 0.5\}$) on the cell-line dataset with
-the EMT filter produced 12--36 Mapper nodes (Table~S3). Gene-
-connectivity rankings were near-identical across all 20 combinations
-(mean Spearman $\rho = 0.994$ vs.~the reference, range 0.990--0.998;
-top-10 genes reproduced within rank 1--15; Supplementary Table~S8).
 
 \section{Discussion}
 
