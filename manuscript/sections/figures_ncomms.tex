@@ -1,0 +1,194 @@
+% =========================================================================
+% Nature Communications display-item block.
+%
+% nature.cls (community fallback) redefines \begin{figure} so that it is
+% NOT a float, ignores \includegraphics, and only collects captions to be
+% printed at the end of the document. subcaption / subfigure therefore
+% cannot be used here (they require a real float). The bioRxiv build uses
+% sections/figures.tex with subfigure scaffolding; this NC variant lists
+% only the captions + labels with the same identifiers so cross-refs in
+% sections/results.tex etc. resolve.
+% =========================================================================
+
+\section*{Figures}
+
+\begin{figure}
+  \caption{\textbf{Drug-induced cell-state cycling, detected as a
+  topological loop and measured by persistent homology.}
+  (a) Untreated cancer cells occupy a uniform transcriptional state;
+  under EGFR-TKI pressure they diversify into multiple states with
+  reversible transitions between them.
+  (b) In scRNA-seq this reversible cycling appears as a closed loop
+  in cell-state space (one dot = one cell).
+  (c) Persistent homology measures the loop: as the filtration scale
+  $\varepsilon$ increases, the loop is born when balls touch their
+  neighbours and dies when balls fill the loop's interior. The
+  lifespan of this loop is the \emph{maximum $H_1$ persistence}
+  statistic used throughout. Cross-cohort fold-changes are in
+  \cref{fig:master}.}
+  \label{fig:concept}
+\end{figure}
+
+\begin{figure}
+  \caption{\textbf{Study design and cell-line baseline analysis.}
+  (a) UMAP of PC9 erlotinib time course coloured by timepoint.
+  (b) Leiden clusters. (c) EMT score. (d) Cell-cycle phase.
+  (e) Diffusion pseudotime. (f) PAGA graph. $n = 2{,}942$ cells
+  across six timepoints.}
+  \label{fig:study_overview}
+\end{figure}
+
+\begin{figure}
+  \caption{\textbf{Persistent homology of the PC9 erlotinib discovery
+  cohort and Tirosh cell-cycle control.}
+  (a) Per-timepoint $H_0$ and $H_1$ persistence barcodes for the
+  GSE134839 discovery cohort; permutation tests' closest approaches
+  to significance are D9 ($p = 0.098$) and D2 ($p = 0.126$).
+  (b) Pairwise Wasserstein distance heatmap between per-timepoint
+  $H_1$ persistence diagrams: D0 is separated from all drug-treated
+  timepoints in persistence-diagram space.
+  (c, d) $H_1$ barcodes recomputed with and without 39 Tirosh
+  cell-cycle genes ablated from the HVG set; the persistence-ratio
+  $\geq 0.71$ at every timepoint indicates loops are not cell-cycle
+  artifacts.}
+  \label{fig:discovery_ph}
+\end{figure}
+
+\begin{figure}
+  \caption{\textbf{Drug-validation cohorts: osimertinib in PC9 and in
+  EGFR-mutant patient-derived xenografts.}
+  (a) Max $H_1$ vs.\ days for the PC9 erlotinib and osimertinib time
+  courses (GSE150949); osimertinib shows a $2.7\times$ monotonic
+  increase from D0 to D14.
+  (b) Persistence barcodes for YU-003 and YU-006 PDX models under
+  untreated and osimertinib-residual conditions (GSE243562); both
+  PDX models increase $H_1$ persistence under residual disease.
+  Together these are the within-system monotonic-increase
+  replications behind the cross-cohort summary in \cref{fig:master}.}
+  \label{fig:validation}
+\end{figure}
+
+\begin{figure}
+  \caption{\textbf{Master comparison across all biological systems.}
+  (a) Max $H_1$ bar chart across all conditions.
+  (b) Max $H_1$ vs.\ days for all drug-treated systems, with the
+  patient-naive baseline as a reference line. Drug treatment moves
+  cell line and PDX topology toward patient-tumor-like complexity.}
+  \label{fig:master}
+\end{figure}
+
+\begin{figure}
+  \caption{\textbf{Harmony batch correction sensitivity.}
+  (a) Max $H_1$ vs.\ days of osimertinib exposure in the PC9 cell-line
+  cohort (GSE150949), computed on raw PCA (blue) and on
+  Harmony-corrected embeddings (pink, dashed); both show monotonic
+  growth from D0 to D14.
+  (b) Max $H_1$ per PDX group (untreated vs.\ residual disease) in
+  GSE243562, raw (blue) vs.\ Harmony-corrected (pink). The YU-006
+  pre/post effect is preserved after batch correction.}
+  \label{fig:harmony}
+\end{figure}
+
+\begin{figure}
+  \caption{\textbf{Patient-cohort validation across two independent
+  scRNA-seq studies.}
+  (a) Maynard 2020 14-patient EGFR-mutant longitudinal cohort:
+  persistence barcodes ($H_0$ top, $H_1$ bottom) across
+  treatment-naive (TN), persister (PER), and progressive disease
+  (PD). Pooled max $H_1$ rises $5.37 \to 7.13 \to 8.05$; three of
+  three matched pre/post biopsies increase post-treatment (median
+  $1.60\times$).
+  (b) Kim 2020 LUAD atlas (GSE131907, $n = 1{,}500$ epithelial cells
+  subsampled from 5{,}000 tLung cells): persistence barcodes for the
+  treatment-naive primary-tumor epithelium reference establishing the
+  patient-tumor max $H_1 = 4.77$ used in \cref{fig:master}. See
+  Supplementary Table~S11 for full per-patient Maynard
+  trajectories.}
+  \label{fig:patient}
+\end{figure}
+
+\clearpage
+\section*{Tables}
+
+\begin{table}
+  \caption{\textbf{Per-timepoint $H_1$ summary (GSE134839, erlotinib).}
+  Permutation $p$-values from 500 within-cell gene-label shuffles.}
+  \label{tab:per_timepoint}
+  \centering
+  \begin{tabular}{l r r r r}
+    \toprule
+    Timepoint & $n$ cells & Max $H_1$ & \#\,$H_1$ features & Perm.\ $p$ (500) \\
+    \midrule
+    D0  & 1560 & 1.47 & 1393 & 0.394 \\
+    D1  &  324 & 1.32 &  255 & 0.552 \\
+    D2  &  230 & 1.77 &  124 & 0.126 \\
+    D4  &  200 & 1.37 &   54 & 0.144 \\
+    D9  &  379 & 1.77 &  204 & 0.098 \\
+    D11 &  249 & 1.08 &  124 & 0.266 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \caption{\textbf{Validation cohort $H_1$ permutation tests
+  (100 permutations, 1{,}000-cell subsamples).} Values from 1{,}500-cell
+  subsample used in main analysis; permutation tests used 1{,}000-cell
+  subsamples (see Methods). Per-cohort max $H_1$ values vary across
+  subsample sizes (1{,}000 vs.\ 1{,}500 cells) due to the strong
+  subsample dependence of persistent homology on cell count
+  (Supplementary Table~S7, CV 8.9--23.5\%). PC9 osimertinib D0 max
+  $H_1$ is reported as 1.41 in the main analysis (5{,}000-cell
+  subsample) and 1.74 here (1{,}000-cell permutation subsample);
+  these are different subsamples of the same underlying data.}
+  \label{tab:validation}
+  \centering
+  \begin{tabular}{l l r l}
+    \toprule
+    Dataset & Group & Observed $H_1$ & $p$-value \\
+    \midrule
+    PC9 + Osimertinib & D0        & 1.74 & 0.030 \\
+    PC9 + Osimertinib & D7        & 3.08 & $< 0.01$ \\
+    PC9 + Osimertinib & D14       & 3.78 & $< 0.01$ \\
+    PDX YU-006        & Untreated & 3.62 & $< 0.01$ \\
+    PDX YU-006        & Residual  & 6.08 & $< 0.01$ \\
+    PDX YU-003        & Residual  & 3.85 & $< 0.01$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \caption{\textbf{Cell-cycle ablation controls.}
+  Top: Tirosh cell-cycle gene removal from HVG set (39 of 97 Tirosh
+  genes present; full discovery-cohort timepoints from GSE134839).
+  Ratio is max $H_1$ after / before ablation; ratios $\geq 0.71$
+  indicate loops are not cell-cycle artifacts.
+  Bottom: stringent \texttt{sc.pp.regress\_out} of S-score and
+  G2M-score on 1{,}000-cell subsamples across five cohorts. Ratio is
+  max $H_1$ after regression / original; every ratio $> 1$ indicates
+  the $H_1$ signal is preserved after removing the dominant
+  cell-cycle variance axis.}
+  \label{tab:cc_controls}
+  \centering
+  \begin{tabular}{l r r r l}
+    \toprule
+    Group & $n$ cells & $H_1$ before & $H_1$ after & Ratio \\
+    \midrule
+    \multicolumn{5}{l}{\emph{Tirosh cell-cycle gene ablation (GSE134839 erlotinib)}} \\
+    \midrule
+    D0  & 1560 & 1.47 & 1.35 & 0.92 \\
+    D1  &  324 & 1.32 & 1.28 & 0.97 \\
+    D2  &  230 & 1.77 & 1.57 & 0.89 \\
+    D4  &  200 & 1.37 & 0.97 & 0.71 \\
+    D9  &  379 & 1.77 & 1.39 & 0.78 \\
+    D11 &  249 & 1.08 & 1.20 & 1.11 \\
+    \midrule
+    \multicolumn{5}{l}{\emph{Stringent S/G2M regression (1{,}000-cell subsamples)}} \\
+    \midrule
+    Erl D0               & 1000 & 1.27 & 2.85 & 2.25 \\
+    Erl D9               &  379 & 1.77 & 1.89 & 1.07 \\
+    Erl D11              &  249 & 1.08 & 4.37 & 4.05 \\
+    PDX YU-006 untreated & 1000 & 2.89 & 3.67 & 1.27 \\
+    PDX YU-006 residual  & 1000 & 4.65 & 5.96 & 1.28 \\
+    \bottomrule
+  \end{tabular}
+\end{table}

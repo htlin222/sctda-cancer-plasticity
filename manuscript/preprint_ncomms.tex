@@ -37,9 +37,14 @@
 \graphicspath{{./figures/}{../results/figures/}}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{siunitx}
 \DeclareSIUnit{\molar}{M}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+% Shared section files use \citep / \citet (natbib) and \cref (cleveref);
+% load both so the same \input{sections/*.tex} prose compiles here as well.
+\usepackage[numbers,square,sort&compress]{natbib}
+\usepackage{cleveref}
 
 % =========================================================================
 % Title block
@@ -61,23 +66,41 @@
 % Background/Results/Conclusions form used in the bioRxiv build)
 % =========================================================================
 \begin{abstract}
-  % TODO: paste the un-structured abstract here (max ~150 words, no
-  % citations). Current bioRxiv abstract is structured and too long;
-  % needs a separate editorial pass.
+  Drug-tolerant persister cells drive relapse after EGFR-targeted
+  therapy in lung cancer, yet how the underlying cell-state landscape
+  is reshaped by treatment remains quantitatively undefined. We apply
+  persistent homology and Mapper to longitudinal single-cell RNA-seq,
+  with permutation-null testing, cell-cycle controls, and gene
+  attribution, to score the robustness of closed loops in transcriptome
+  space. Across five EGFR-mutant systems ($\sim$31{,}000 cells), the
+  maximum $H_1$ persistence rises monotonically with osimertinib
+  exposure in three independent cohorts (PC9 cell line and two PDX
+  models), survives Tirosh ablation, S/G2M-score regression, and
+  Harmony batch correction, and is reproducible across resampling and
+  batch correction. Loop-associated transcripts are enriched for
+  epithelial--mesenchymal transition programs in cell line and PDX
+  under an EMT-aware Mapper filter. The results indicate that drug
+  treatment reorganises the cell-state landscape into reproducibly
+  detectable cyclic transcriptional programs, consistent with cells
+  reversibly cycling as established by lineage tracing in PC9.
 \end{abstract}
 
 % =========================================================================
-% Main text — for the first submission round, the simplest path is to
-% \input{} from manuscript/sections/*.tex (split out from preprint.tex)
-% so the two builds share prose. Until that split is done, copy the body
-% inline here, or compile preprint.pdf and extract section text manually.
+% Main text — shared prose lives in manuscript/sections/*.tex and is
+% \input{}-ed by both this NC build and the bioRxiv build (preprint.tex).
+% NOTE: the bioRxiv structured abstract (sections/abstract.tex) is NOT
+% included here; NC requires an unstructured ~150-word abstract, handled
+% in the \begin{abstract}...\end{abstract} block above (a separate task
+% will rewrite it). The bioRxiv-only Declarations / Acknowledgements /
+% Figures+Tables blocks are likewise omitted; NC has its own end-matter
+% sections below.
 % =========================================================================
 
-% TODO: \input{sections/background.tex}
-% TODO: \input{sections/results.tex}
-% TODO: \input{sections/discussion.tex}
-% TODO: \input{sections/methods.tex}    % Nature Comms: Methods in main text, not separate
-% TODO: \input{sections/conclusions.tex}
+\input{sections/background.tex}
+\input{sections/results.tex}
+\input{sections/discussion.tex}
+\input{sections/methods.tex}    % Nature Comms: Methods in main text, not separate
+\input{sections/conclusions.tex}
 
 % =========================================================================
 % References
@@ -104,5 +127,15 @@ The authors declare no competing financial or non-financial interests.
 \section*{Data and code availability}
 % TODO: paste from manuscript/submission/declarations.md, with the
 % Zenodo software DOI and Zenodo data DOI inserted at submission time.
+
+% =========================================================================
+% Figures and tables (NC convention: after end-matter, before SI).
+% nature.cls (community fallback) defers captions and ignores graphics, so
+% the bioRxiv subfigure-based sections/figures.tex cannot be reused here.
+% sections/figures_ncomms.tex carries the same \label{} identifiers so
+% cross-references in the shared prose continue to resolve.
+% =========================================================================
+\clearpage
+\input{sections/figures_ncomms.tex}
 
 \end{document}

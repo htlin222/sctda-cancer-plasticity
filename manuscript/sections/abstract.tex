@@ -1,0 +1,27 @@
+\begin{abstract}
+\noindent
+Drug-tolerant persister cells drive relapse after EGFR-targeted
+therapy, yet no scRNA-seq method quantifies the reversibly cyclic
+state transitions that produce them: standard trajectory tools
+expose no scalar measure of how robustly cells trace a closed loop
+in state-space. We present an open-source pipeline that applies
+persistent homology and Mapper to longitudinal scRNA-seq with
+permutation-null testing, cell-cycle controls, and gene attribution.
+Across five EGFR-mutant lung-cancer datasets ($\sim$31{,}000 analysed
+cells), maximum $H_1$ persistence rose monotonically with osimertinib
+exposure: PC9 $1.41 \to 3.78$ ($2.7\times$, $p < 0.01$), PDX YU-006
+$2.81 \to 6.08$ ($2.2\times$), YU-003 $2.79 \to 3.85$ ($1.4\times$);
+in a 14-patient EGFR-mutant cohort (Maynard 2020) pooled $H_1$ grew
+$5.37 \to 7.13 \to 8.05$ across treatment-naive, persister, and
+progressive disease, with 3/3 matched pre/post biopsies increasing.
+The signal survives Tirosh ablation, stringent S/G2M regression, and
+Harmony batch correction. Loop-associated transcripts include EMT
+programs in cell line and PDX, with significant system-specific
+overlap. Max $H_1$ is a reproducible cross-system phenotype for
+cell-state plasticity; code is MIT-licensed.
+
+\vspace{0.5em}
+\noindent\textbf{Keywords:} topological data analysis; persistent homology;
+Mapper; single-cell RNA-seq; drug tolerance; EGFR-mutant lung cancer;
+cell-state plasticity; computational framework.
+\end{abstract}
