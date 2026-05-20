@@ -1,0 +1,50 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% Fig 3 (NC): 2x2 composite — discovery_ph
+%   (a) fig2_a_persistence_barcodes.pdf   — top-left  (wide barcode, ~2.91:1)
+%   (b) fig2_d_wasserstein_heatmap.pdf    — top-right (~1.17:1)
+%   (c) fig4_a_barcodes_with_cc.pdf       — bottom-left  (wide barcode)
+%   (d) fig4_b_barcodes_without_cc.pdf    — bottom-right (wide barcode)
+% Target ~18 cm x ~15 cm.
+
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % Top row: (a) wider (11cm) + (b) heatmap (6.5cm). Heights matched ~5cm.
+  % Bottom row: (c) and (d) split equally (8.75 cm each), height ~4 cm (aspect 2.91).
+  \def\Atop{11.0}     % width of (a)
+  \def\Btop{6.5}      % width of (b)
+  \def\rowTopH{5.0}
+  \def\Cw{8.75}       % width of (c), (d)
+  \def\rowBotH{4.0}
+  \def\gapX{0.5}
+  \def\gapY{1.0}
+  \def\labFont{\sffamily\bfseries\fontsize{14}{16}\selectfont}
+
+  % Coordinates: y=0 bottom of (c)/(d); top row starts at y=\rowBotH+\gapY
+  \def\yBot{0}
+  \def\yTop{\rowBotH + \gapY}
+
+  % --- Top row ---
+  \node[anchor=south west,inner sep=0] (a) at (0, \yTop)
+    {\includegraphics[width=\Atop cm,height=\rowTopH cm,keepaspectratio]{/Users/htlin/sctda-cancer-plasticity/manuscript/figures/fig2_a_persistence_barcodes.pdf}};
+  \node[anchor=south west,inner sep=0] (b) at (\Atop + \gapX, \yTop)
+    {\includegraphics[width=\Btop cm,height=\rowTopH cm,keepaspectratio]{/Users/htlin/sctda-cancer-plasticity/manuscript/figures/fig2_d_wasserstein_heatmap.pdf}};
+
+  % --- Bottom row ---
+  \node[anchor=south west,inner sep=0] (c) at (0, \yBot)
+    {\includegraphics[width=\Cw cm,height=\rowBotH cm,keepaspectratio]{/Users/htlin/sctda-cancer-plasticity/manuscript/figures/fig4_a_barcodes_with_cc.pdf}};
+  \node[anchor=south west,inner sep=0] (d) at (\Cw + \gapX, \yBot)
+    {\includegraphics[width=\Cw cm,height=\rowBotH cm,keepaspectratio]{/Users/htlin/sctda-cancer-plasticity/manuscript/figures/fig4_b_barcodes_without_cc.pdf}};
+
+  % --- Panel labels (top-left of each panel) ---
+  \node[anchor=north west,inner sep=2pt,font=\labFont] at ([xshift=-0.1cm,yshift=0.45cm]a.north west) {a};
+  \node[anchor=north west,inner sep=2pt,font=\labFont] at ([xshift=-0.1cm,yshift=0.45cm]b.north west) {b};
+  \node[anchor=north west,inner sep=2pt,font=\labFont] at ([xshift=-0.1cm,yshift=0.45cm]c.north west) {c};
+  \node[anchor=north west,inner sep=2pt,font=\labFont] at ([xshift=-0.1cm,yshift=0.45cm]d.north west) {d};
+\end{tikzpicture}
+\end{document}

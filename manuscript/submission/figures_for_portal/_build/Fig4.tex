@@ -1,0 +1,37 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% Fig 4 (NC): vertical 2-panel — validation
+%   (a) fig6_d_h1_over_time.pdf   — top   (299x208 pts, ~1.44:1)
+%   (b) fig7_a_pdx_barcodes.pdf   — bot   (501x173 pts, ~2.91:1)
+% Target ~18 cm x ~12 cm.
+
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \def\Wfull{17.0}
+  \def\Ha{6.5}        % top panel height
+  \def\Hb{5.85}       % bottom panel height — matches \Wfull at aspect 2.908
+  \def\Wa{9.5}        % top panel width — centered (narrower for plot)
+  \def\gapY{0.8}
+  \def\labFont{\sffamily\bfseries\fontsize{14}{16}\selectfont}
+
+  \def\yBot{0}
+  \def\yTop{\Hb + \gapY}
+
+  % Top panel (a): center horizontally on \Wfull canvas
+  \node[anchor=south,inner sep=0] (a) at ({\Wfull/2}, \yTop)
+    {\includegraphics[width=\Wa cm,height=\Ha cm,keepaspectratio]{/Users/htlin/sctda-cancer-plasticity/results/figures/fig6_d_h1_over_time.pdf}};
+
+  % Bottom panel (b): full width
+  \node[anchor=south west,inner sep=0] (b) at (0, \yBot)
+    {\includegraphics[width=\Wfull cm,height=\Hb cm,keepaspectratio]{/Users/htlin/sctda-cancer-plasticity/results/figures/fig7_a_pdx_barcodes.pdf}};
+
+  % Panel labels
+  \node[anchor=north west,inner sep=2pt,font=\labFont] at ([xshift=-0.05cm,yshift=0.45cm]a.north west) {a};
+  \node[anchor=north west,inner sep=2pt,font=\labFont] at ([xshift=-0.1cm,yshift=0.45cm]b.north west) {b};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,31 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% Fig 7 (NC): vertical 2-panel — patient
+%   (a) figS_maynard_barcodes.pdf       — top   (501x173 pts, ~2.91:1)
+%   (b) fig7_d_kim_atlas_barcodes.pdf   — bot   (501x173 pts, ~2.91:1)
+% Target ~18 cm x ~12 cm.
+
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \def\Wfull{17.0}
+  \def\Hpanel{5.85}   % each barcode height — matches \Wfull at aspect 2.908
+  \def\gapY{0.8}
+  \def\labFont{\sffamily\bfseries\fontsize{14}{16}\selectfont}
+
+  \def\yBot{0}
+  \def\yTop{\Hpanel + \gapY}
+
+  \node[anchor=south west,inner sep=0] (a) at (0, \yTop)
+    {\includegraphics[width=\Wfull cm,height=\Hpanel cm,keepaspectratio]{/Users/htlin/sctda-cancer-plasticity/results/figures/figS_maynard_barcodes.pdf}};
+  \node[anchor=south west,inner sep=0] (b) at (0, \yBot)
+    {\includegraphics[width=\Wfull cm,height=\Hpanel cm,keepaspectratio]{/Users/htlin/sctda-cancer-plasticity/results/figures/fig7_d_kim_atlas_barcodes.pdf}};
+
+  \node[anchor=north west,inner sep=2pt,font=\labFont] at ([xshift=-0.1cm,yshift=0.45cm]a.north west) {a};
+  \node[anchor=north west,inner sep=2pt,font=\labFont] at ([xshift=-0.1cm,yshift=0.45cm]b.north west) {b};
+\end{tikzpicture}
+\end{document}
