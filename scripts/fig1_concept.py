@@ -176,7 +176,7 @@ def panel_barcode(ax, rng):
     )
     ax.text(
         1.50, eps_axis_y - 0.16,
-        r"(filtration scale $\varepsilon$ in TDA)",
+        r"(filtration scale $\varepsilon$)",
         fontsize=6, color=GREY, style="italic", ha="center", va="top",
     )
 
@@ -206,7 +206,7 @@ def panel_barcode(ax, rng):
     )
     ax.text(
         (bar_x0 + bar_x1) / 2, bar_y + 0.13,
-        r"$=$ this paper's max $H_1$ persistence",
+        r"(max $H_1$ persistence)",
         fontsize=7, color=ORANGE, style="italic",
         ha="center", va="bottom",
     )
