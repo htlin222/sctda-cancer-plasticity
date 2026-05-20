@@ -140,58 +140,67 @@ def panel_barcode(ax, rng):
     birth-to-death = max H_1 persistence.
     """
     del rng
-    # Three snapshot centres (data units in [0, 1] x [0, 1])
-    s_y = 0.40
-    s_x = [0.16, 0.50, 0.84]
-    loop_r = 0.10
-    ball_radii = [0.025, 0.065, 0.135]  # small / just-touching / interior-filling
+    # Wide layout: data range 0..3.0 in x to match the wide bottom-row
+    # cell. Snapshots spaced across the full width.
+    s_y = 0.45
+    s_x = [0.55, 1.50, 2.45]
+    loop_r = 0.18
+    ball_radii = [0.045, 0.115, 0.245]  # small / just-touching / interior-filling
 
     # Three filtration snapshots
     for cx, br in zip(s_x, ball_radii):
-        _draw_filtration_step(ax, cx, s_y, loop_r, br, n_cells=10)
-    # Stage labels under each snapshot (2 lines each to keep them compact)
+        _draw_filtration_step(ax, cx, s_y, loop_r, br, n_cells=12)
+    # Stage labels under each snapshot
     stage_labels = [
         "small $\\varepsilon$:\ncells isolated",
-        "$\\varepsilon = \\varepsilon_\\mathrm{birth}$:\nloop just closes",
-        "$\\varepsilon = \\varepsilon_\\mathrm{death}$:\nloop fills in",
+        "$\\varepsilon = \\varepsilon_\\mathrm{birth}$:\nballs touch, loop closes",
+        "$\\varepsilon = \\varepsilon_\\mathrm{death}$:\nballs fill the loop",
     ]
     for cx, label in zip(s_x, stage_labels):
         ax.text(
-            cx, s_y - loop_r - 0.04, label,
-            fontsize=6.5, color=NAVY, ha="center", va="top",
+            cx, s_y - loop_r - ball_radii[-1] - 0.05, label,
+            fontsize=7, color=NAVY, ha="center", va="top",
         )
 
     # Filtration ε arrow underneath the stage labels
+    eps_axis_y = -0.42
     ax.annotate(
-        "", xy=(0.96, -0.20), xytext=(0.04, -0.20),
-        arrowprops=dict(arrowstyle="->", lw=0.6, color=GREY),
+        "", xy=(2.90, eps_axis_y), xytext=(0.10, eps_axis_y),
+        arrowprops=dict(arrowstyle="->", lw=0.7, color=GREY),
     )
     ax.text(
-        0.5, -0.25, r"filtration scale $\varepsilon$ $\rightarrow$",
-        fontsize=7, color=GREY, ha="center", va="top",
+        1.50, eps_axis_y - 0.06,
+        r"filtration scale $\varepsilon$ $\rightarrow$",
+        fontsize=7.5, color=GREY, ha="center", va="top",
     )
 
     # The orange "max H_1 persistence" bar: spans from snapshot 2 (birth)
-    # to snapshot 3 (death) — visually equal to the loop's lifespan.
-    bar_y = s_y + loop_r + 0.20
+    # to snapshot 3 (death) — its length = the loop's lifespan on ε.
+    bar_y = s_y + loop_r + ball_radii[-1] + 0.10
     bar_x0, bar_x1 = s_x[1], s_x[2]
     ax.plot([bar_x0, bar_x1], [bar_y, bar_y],
-            color=ORANGE, lw=5.5, solid_capstyle="round", zorder=8)
+            color=ORANGE, lw=8, solid_capstyle="round", zorder=8)
     # Vertical drop-lines connecting bar endpoints down to the ε axis
-    # (visualises that bar length = death - birth on the ε axis)
+    # (visualises that bar length = ε_death - ε_birth on the ε axis)
     for x in (bar_x0, bar_x1):
-        ax.plot([x, x], [bar_y - 0.03, -0.20],
-                color=GREY, lw=0.5, linestyle=":", alpha=0.7, zorder=1)
+        ax.plot([x, x], [bar_y - 0.04, eps_axis_y],
+                color=GREY, lw=0.6, linestyle=":", alpha=0.7, zorder=1)
+    # Birth/death tick markers on the ε axis
+    for x, txt in zip([bar_x0, bar_x1], [r"$\varepsilon_\mathrm{birth}$", r"$\varepsilon_\mathrm{death}$"]):
+        ax.plot([x, x], [eps_axis_y - 0.04, eps_axis_y + 0.04],
+                color=GREY, lw=0.8, zorder=2)
+        ax.text(x, eps_axis_y + 0.07, txt,
+                fontsize=6.5, color=GREY, ha="center", va="bottom")
     # Label the bar
     ax.text(
-        (bar_x0 + bar_x1) / 2, bar_y + 0.05,
+        (bar_x0 + bar_x1) / 2, bar_y + 0.07,
         "max $H_1$ persistence = lifespan of the loop",
-        fontsize=7.5, color=ORANGE, fontweight="bold",
+        fontsize=8, color=ORANGE, fontweight="bold",
         ha="center", va="bottom",
     )
 
-    ax.set_xlim(0, 1)
-    ax.set_ylim(-0.35, bar_y + 0.18)
+    ax.set_xlim(0, 3.0)
+    ax.set_ylim(eps_axis_y - 0.18, bar_y + 0.22)
     ax.set_aspect("equal")
     ax.set_xticks([])
     ax.set_yticks([])
@@ -203,14 +212,15 @@ def main():
     set_publication_style()
     rng = np.random.default_rng(SEED)
 
-    # Layout: panel (a) is 3:1 (wide), (b) is 1:1 (square), (c) is 3:2.
-    # Aspect-matched widths so each panel reads at similar visual height.
-    # Total target: 180mm × 75mm.
-    fig = plt.figure(figsize=(180 / 25.4, 75 / 25.4))
+    # Layout: 2 rows. Top — A on left, B on right. Bottom — C full width
+    # so the filtration-process pedagogy has horizontal room to breathe.
+    # Figure: 180mm × 115mm.
+    fig = plt.figure(figsize=(180 / 25.4, 115 / 25.4))
     gs = gridspec.GridSpec(
-        1, 3, figure=fig,
-        width_ratios=[3.0, 1.8, 2.5],
-        wspace=0.05,
+        2, 2, figure=fig,
+        height_ratios=[1.0, 1.6],
+        width_ratios=[1.7, 1.0],
+        hspace=0.30, wspace=0.05,
     )
 
     ax_a = fig.add_subplot(gs[0, 0])
@@ -223,9 +233,9 @@ def main():
     ax_b.text(-0.02, 1.02, "b", transform=ax_b.transAxes,
               fontsize=10, fontweight="bold", va="top")
 
-    ax_c = fig.add_subplot(gs[0, 2])
+    ax_c = fig.add_subplot(gs[1, :])
     panel_barcode(ax_c, rng)
-    ax_c.text(-0.02, 1.02, "c", transform=ax_c.transAxes,
+    ax_c.text(-0.005, 1.02, "c", transform=ax_c.transAxes,
               fontsize=10, fontweight="bold", va="top")
 
     save_figure(fig, "fig1_concept_topology", output_dir=str(FIGURES_DIR))
