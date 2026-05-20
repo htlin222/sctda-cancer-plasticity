@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 """
-Fig 1 concept: Topology distinguishes shapes that geometry cannot.
+Fig 1 — Graphical abstract: drug-tolerant cancer cells cycle between
+states, measurable as a rising max H_1 persistence across cohorts.
 
-Three panels:
-  (a) Photorealistic 3D render of a coffee mug, a donut-with-handle
-      intermediate, and a donut connected by congruence symbols ---
-      illustrating that homeomorphism preserves the single hole even as
-      geometry changes. The image is AI-generated (OpenAI gpt-image-1)
-      with chroma-key background removal; provenance and disclosure are
-      in manuscript/submission/declarations.md.
-  (b) Single-cell transcriptomes lying on a noisy closed loop in
-      cell-state coordinates (matplotlib scatter).
-  (c) A persistence barcode: short H_0 bars (noise) and one long
-      H_1 bar (the robust loop) (matplotlib).
+Three panels tell the biology-first story:
+  (a) AI render: untreated cancer cells (uniform cluster) → drug arrow
+      → cells cycling between states (loop of differently-coloured
+      cells). The biological finding.
+  (b) AI render: same cycling visible in scRNA-seq as a closed loop in
+      state-space (kept from previous version).
+  (c) Bar chart: paired untreated-vs-treated max H_1 across 4 cohorts
+      (PC9, PDX YU-006, PDX YU-003, Maynard patient cohort), with
+      fold-change labels. The headline result.
+
+The mug-donut topological-equivalence pedagogy now lives in one
+sentence in the Background prose, not Figure 1.
 
 Output: results/figures/fig1_concept_topology.{pdf,png}
 Also mirrored to manuscript/figures/.
@@ -36,8 +38,16 @@ import numpy as np
 from sctda_plasticity.config import FIGURES_DIR, PROJECT_ROOT, SEED
 from sctda_plasticity.visualize import save_figure, set_publication_style
 
-PANEL_A_PNG = FIGURES_DIR / "fig1_panel_a_3d.png"
+PANEL_A_PNG = FIGURES_DIR / "fig1_panel_a_biology.png"
 PANEL_B_PNG = FIGURES_DIR / "fig1_panel_b_3d.png"
+
+# Headline paired (untreated, treated) max H_1 values across cohorts.
+COHORT_DATA = [
+    ("PC9\nosi D0→D14", 1.41, 3.78, r"2.7$\times$"),
+    ("PDX\nYU-006", 2.81, 6.08, r"2.2$\times$"),
+    ("PDX\nYU-003", 2.79, 3.85, r"1.4$\times$"),
+    ("Maynard\nTN→PD", 5.37, 8.05, r"1.5$\times$"),
+]
 
 
 def _imshow_alpha_panel(ax, png_path, subtitle, overlay_fn=None):
@@ -115,109 +125,81 @@ LIGHT_GREY = "#b9b9b9"
 
 
 def panel_mug_to_donut(ax):
-    """(a) AI 3D render: mug ≅ pinched torus ≅ donut. All genus = 1."""
-    _imshow_alpha_panel(ax, PANEL_A_PNG, "Same hole, different geometry")
+    """(a) AI biology schematic: drug pressure → cells cycle between states.
+
+    Replaces the previous topology pedagogy (mug ≅ torus ≅ donut). The
+    new image shows a cluster of identical untreated cancer cells on the
+    left, an EGFR-TKI drug arrow, and a loop of differently-coloured
+    cells on the right showing reversible state cycling.
+    """
+    _imshow_alpha_panel(
+        ax, PANEL_A_PNG,
+        "Drug pressure makes cancer cells cycle between states",
+    )
 
 
 def panel_loop_cells(ax, rng):
-    """(b) AI 3D render of cells on a loop + explanatory overlay labels."""
+    """(b) AI 3D render: cells on a loop in scRNA-seq + overlay labels."""
     del rng
     _imshow_alpha_panel(
         ax, PANEL_B_PNG,
-        "Cells trace a state-space loop",
+        "scRNA-seq sees the cycle as a closed loop",
         overlay_fn=_overlay_panel_b,
     )
 
 
 def panel_barcode(ax, rng):
-    """(c) Filtration process → max H_1 persistence bar.
+    """(c) Bar chart: max H_1 rises with drug across 4 cohorts.
 
-    Three snapshots show the same cell loop with growing filtration
-    balls. Stage 1: small balls, cells are isolated components (H_0).
-    Stage 2: balls touch their neighbours' balls and the loop closes
-    --- the H_1 feature is *born*. Stage 3: balls fill the loop's
-    interior --- the H_1 feature *dies*. The orange bar above spans
-    birth-to-death = max H_1 persistence.
+    Paired (untreated, drug-treated) bars for PC9, PDX YU-006/YU-003,
+    and the Maynard 14-patient cohort. Fold-change labels above each
+    pair make the headline finding immediately readable.
     """
     del rng
-    # Wide layout: data range 0..3.0 in x to match the wide bottom-row
-    # cell. Snapshots spaced across the full width.
-    s_y = 0.45
-    s_x = [0.55, 1.50, 2.45]
-    loop_r = 0.18
-    ball_radii = [0.045, 0.115, 0.245]  # small / just-touching / interior-filling
+    cohorts = [c[0] for c in COHORT_DATA]
+    pre = np.array([c[1] for c in COHORT_DATA])
+    post = np.array([c[2] for c in COHORT_DATA])
+    folds = [c[3] for c in COHORT_DATA]
 
-    # Three filtration snapshots
-    for cx, br in zip(s_x, ball_radii):
-        _draw_filtration_step(ax, cx, s_y, loop_r, br, n_cells=12)
-    # Stage labels under each snapshot — plain language first, technical
-    # ε-notation in small parens for the specialist reader only.
-    stage_labels = [
-        "small circles:\neach cell alone",
-        "circles touch:\nloop appears",
-        "circles fill in:\nloop disappears",
-    ]
-    for cx, label in zip(s_x, stage_labels):
-        ax.text(
-            cx, s_y - loop_r - ball_radii[-1] - 0.05, label,
-            fontsize=7.5, color=NAVY, ha="center", va="top",
-        )
+    n = len(cohorts)
+    x = np.arange(n)
+    w = 0.36
 
-    # Plain-language axis at the bottom (technical name kept in tiny grey)
-    eps_axis_y = -0.42
-    ax.annotate(
-        "", xy=(2.90, eps_axis_y), xytext=(0.10, eps_axis_y),
-        arrowprops=dict(arrowstyle="->", lw=0.7, color=GREY),
-    )
-    ax.text(
-        1.50, eps_axis_y - 0.05,
-        "circle size grows $\\rightarrow$",
-        fontsize=8, color=GREY, ha="center", va="top",
-    )
-    ax.text(
-        1.50, eps_axis_y - 0.16,
-        r"(filtration scale $\varepsilon$)",
-        fontsize=6, color=GREY, style="italic", ha="center", va="top",
-    )
+    ax.bar(x - w / 2, pre, w,
+           label="untreated", color=NAVY,
+           edgecolor="white", linewidth=0.5, zorder=3)
+    ax.bar(x + w / 2, post, w,
+           label="drug-treated", color=ORANGE,
+           edgecolor="white", linewidth=0.5, zorder=3)
 
-    # The orange bar: spans from snapshot 2 (loop appears) to snapshot 3
-    # (loop disappears) — its length is the loop's lifespan.
-    bar_y = s_y + loop_r + ball_radii[-1] + 0.10
-    bar_x0, bar_x1 = s_x[1], s_x[2]
-    ax.plot([bar_x0, bar_x1], [bar_y, bar_y],
-            color=ORANGE, lw=8, solid_capstyle="round", zorder=8)
-    # Vertical drop-lines tying the bar to the axis below
-    for x in (bar_x0, bar_x1):
-        ax.plot([x, x], [bar_y - 0.04, eps_axis_y],
-                color=GREY, lw=0.6, linestyle=":", alpha=0.7, zorder=1)
-    # Endpoint markers labelled in plain language
-    endpoint_labels = ["loop appears", "loop disappears"]
-    for x, txt in zip([bar_x0, bar_x1], endpoint_labels):
-        ax.plot([x, x], [eps_axis_y - 0.04, eps_axis_y + 0.04],
-                color=GREY, lw=0.8, zorder=2)
-        ax.text(x, eps_axis_y + 0.06, txt,
-                fontsize=6.5, color=GREY, ha="center", va="bottom")
-    # Plain-language bar label, with technical name parenthesised
-    ax.text(
-        (bar_x0 + bar_x1) / 2, bar_y + 0.22,
-        "How long the loop survives",
-        fontsize=9, color=ORANGE, fontweight="bold",
-        ha="center", va="bottom",
-    )
-    ax.text(
-        (bar_x0 + bar_x1) / 2, bar_y + 0.13,
-        r"(max $H_1$ persistence)",
-        fontsize=7, color=ORANGE, style="italic",
-        ha="center", va="bottom",
-    )
+    # Fold-change labels above each cohort pair
+    ymax = float(post.max())
+    for i, (p, q, fold) in enumerate(zip(pre, post, folds)):
+        top = max(p, q)
+        ax.text(i, top + 0.30, fold,
+                ha="center", va="bottom",
+                fontsize=9, color=ORANGE, fontweight="bold")
 
-    ax.set_xlim(0, 3.0)
-    ax.set_ylim(eps_axis_y - 0.25, bar_y + 0.40)
-    ax.set_aspect("equal")
-    ax.set_xticks([])
-    ax.set_yticks([])
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    ax.set_xticks(x)
+    ax.set_xticklabels(cohorts, fontsize=7.5)
+    ax.set_ylabel("max $H_1$ persistence", fontsize=9, color=NAVY)
+    ax.set_ylim(0, ymax * 1.20)
+    ax.tick_params(axis="y", labelsize=7)
+    ax.legend(frameon=False, loc="upper left", fontsize=8, handlelength=1.2)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color(GREY)
+    ax.spines["bottom"].set_color(GREY)
+    ax.yaxis.set_tick_params(color=GREY)
+    ax.grid(axis="y", color=GREY, linestyle=":", linewidth=0.4, alpha=0.5, zorder=0)
+
+    # Subtitle (in italic) below the axis
+    ax.text(
+        0.5, -0.28,
+        "Drug treatment raises max $H_1$ across cell line, PDX, and patient cohorts",
+        transform=ax.transAxes, ha="center", va="top",
+        fontsize=8, color=NAVY, style="italic",
+    )
 
 
 def _draw_story_arrow(fig, x0, y0, x1, y1, text, text_offset=(0, 0)):
@@ -245,17 +227,18 @@ def main():
     fig = plt.figure(figsize=(180 / 25.4, 145 / 25.4))
 
     # Story banner: bold headline + italic three-step subtitle.
-    # Tells the reader at-a-glance that A, B, C are three steps of one story.
+    # Communicates the paper's finding at-a-glance.
     fig.text(
         0.5, 0.975,
-        "From topological principle to a measurable cell-state statistic",
+        "Drug-tolerant cancer cells cycle between states, quantifiable "
+        "as a rising max $H_1$",
         fontsize=10.5, fontweight="bold", ha="center", va="top", color=NAVY,
     )
     fig.text(
         0.5, 0.945,
-        "(a) topology counts holes  $\\rightarrow$  (b) scRNA-seq cells "
-        "form one such loop  $\\rightarrow$  (c) persistent homology "
-        "measures its lifespan",
+        "(a) drug pressure induces cycling  $\\rightarrow$  "
+        "(b) scRNA-seq sees it as a loop  $\\rightarrow$  "
+        "(c) max $H_1$ rises across 4 cohorts",
         fontsize=7.5, style="italic", ha="center", va="top", color=GREY,
     )
 
@@ -267,32 +250,30 @@ def main():
         hspace=0.32, wspace=0.10,
     )
 
-    # Step-tagged panel labels: short action-tags announce each panel's role
+    # Step-tagged panel labels announce each panel's role
     ax_a = fig.add_subplot(gs[0, 0])
     panel_mug_to_donut(ax_a)
-    ax_a.text(-0.02, 1.02, r"a $\cdot$ principle",
+    ax_a.text(-0.02, 1.02, r"a $\cdot$ biology",
               transform=ax_a.transAxes,
               fontsize=9.5, fontweight="bold", va="top", color=NAVY)
 
     ax_b = fig.add_subplot(gs[0, 1])
     panel_loop_cells(ax_b, rng)
-    ax_b.text(-0.02, 1.02, r"b $\cdot$ data",
+    ax_b.text(-0.02, 1.02, r"b $\cdot$ scRNA-seq",
               transform=ax_b.transAxes,
               fontsize=9.5, fontweight="bold", va="top", color=NAVY)
 
     ax_c = fig.add_subplot(gs[1, :])
     panel_barcode(ax_c, rng)
-    ax_c.text(-0.005, 1.02, r"c $\cdot$ measurement",
+    ax_c.text(-0.005, 1.02, r"c $\cdot$ result across cohorts",
               transform=ax_c.transAxes,
               fontsize=9.5, fontweight="bold", va="top", color=NAVY)
 
-    # Narrative connector: a single vertical arrow from the top row down
-    # to panel (c). The A → B direction is already conveyed by left-to-
-    # right reading and the headline; only the row-break needs an arrow.
+    # Narrative connector: vertical arrow from the top row down to panel (c).
     _draw_story_arrow(
-        fig, x0=0.5, y0=0.615, x1=0.5, y1=0.555,
-        text="measure with persistent homology",
-        text_offset=(0.18, 0),
+        fig, x0=0.5, y0=0.605, x1=0.5, y1=0.555,
+        text="quantify with persistent homology",
+        text_offset=(0.19, 0),
     )
 
     save_figure(fig, "fig1_concept_topology", output_dir=str(FIGURES_DIR))

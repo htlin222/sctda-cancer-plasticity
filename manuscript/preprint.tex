@@ -104,21 +104,20 @@ data's point cloud.
 \subsection*{Topological data analysis as a framework-level remedy}
 
 \paragraph{An intuitive picture for biomedical readers.}
-Topology studies the properties of shapes that survive continuous
-deformation --- a coffee mug and a donut are the same shape because
-each has exactly one hole, and one can be smoothly deformed into the
-other (\cref{fig:concept}a). Plot each cell as a point in
-gene-expression space: cells transitioning linearly between states
-trace an elongated cloud, while cells that reversibly cycle (e.g.\
-epithelial $\to$ intermediate $\to$ mesenchymal $\to$ epithelial)
-arrange into a closed \emph{1-cycle} --- a loop that is not the
-boundary of any filled-in disc within the data (\cref{fig:concept}b).
-Tree-based trajectory methods force such a loop into a branching tree
-and discard the cyclic information. Persistent homology measures how
-robustly a 1-cycle survives as the connecting distance scale grows:
-the lifespan of the longest bar in the resulting \emph{barcode}
-(\cref{fig:concept}c) is the \emph{maximum $H_1$ persistence} used
-throughout this work. Mapper complements this with an interpretable
+Drug-tolerant cancer cells appear not to die or jump to one resistant
+state but to reversibly cycle between several transcriptional states
+(\cref{fig:concept}a). When each cell is plotted as a point in
+gene-expression space, this reversible cycling traces a closed loop
+--- the same kind of one-dimensional ``hole'' that distinguishes a
+donut from a sphere in topology, and which tree-based trajectory
+methods discard by force-fitting branching graphs
+(\cref{fig:concept}b). Persistent homology quantifies the loop's
+robustness across spatial scales: the lifespan of the longest such
+loop is the \emph{maximum $H_1$ persistence} statistic used
+throughout this paper. The headline finding is that this statistic
+rises monotonically with EGFR-TKI exposure across PC9 cell line,
+two PDX models, and a 14-patient longitudinal cohort
+(\cref{fig:concept}c). Mapper complements this with an interpretable
 graph in which nodes group transcriptionally similar cells and edges
 connect related nodes \citep{singh2007}.
 
@@ -714,15 +713,23 @@ of scanpy, ripser, persim, kmapper, harmonypy, and giotto-tda.
   \IfFileExists{../results/figures/fig1_concept_topology.pdf}{%
     \includegraphics[width=0.95\linewidth]{fig1_concept_topology.pdf}%
   }{\fbox{\parbox{0.9\linewidth}{\centering\vspace{2em}Figure 1 placeholder: \texttt{fig1\_concept\_topology.pdf}\vspace{2em}}}}
-  \caption{\textbf{Topology distinguishes shapes that geometry cannot.}
-  (a) Mug and donut share one hole and are continuously deformable
-  into one another --- topologically equivalent despite different
-  geometry. (b) Cells reversibly cycling among states lie on a closed
-  loop in state-space; the loop itself is the invariant.
-  (c) Persistent homology summarises this as a barcode: short bars
-  reflect noise ($H_0$ components); one long $H_1$ bar (orange) marks
-  a robust loop. Its lifetime is the \emph{maximum $H_1$ persistence}
-  used throughout this work.}
+  \caption{\textbf{Drug-tolerant cancer cells cycle between states,
+  quantifiable as a rising maximum $H_1$ persistence.}
+  (a) Untreated cancer cells occupy a uniform transcriptional state;
+  under EGFR-TKI pressure they diversify into multiple states with
+  reversible transitions between them (cells coloured by state).
+  (b) In scRNA-seq, this reversible cycling appears as a closed loop
+  in cell-state space (one dot = one cell). Persistent homology
+  measures the loop's robustness across spatial scales; the lifespan
+  of the longest such loop defines the \emph{maximum $H_1$
+  persistence} statistic used throughout this work.
+  (c) Across four EGFR-mutant lung-cancer cohorts --- PC9 osimertinib
+  (D0$\to$D14, 2.7$\times$), PDX YU-006 (2.2$\times$), PDX YU-003
+  (1.4$\times$), and the Maynard 14-patient cohort (TN$\to$PD,
+  1.5$\times$) --- maximum $H_1$ persistence rises with drug treatment
+  in every comparison. The mug-and-donut topological-equivalence
+  analogy that motivates this statistic is described in the
+  Background.}
   \label{fig:concept}
 \end{figure}
 
