@@ -24,7 +24,7 @@ before clicking "Submit" at <https://submission.springernature.com/>.
 
 - [ ] First author: **Hsieh-Ting Lin, M.D.** (KFSYSCC) ✓
 - [ ] Corresponding author: **Yueh-Hua Tu, Ph.D.** (CCSB NTU) ✓
-- [ ] Corresponding email entered in author block — **`<email TBD>` — fill in before submit**
+- [x] Corresponding email entered in author block — `yuehhuatu@ntu.edu.tw`
 - [ ] ORCID iDs for both authors entered in submission form
 - [ ] Author contribution statement (CRediT) attached — see `credit_taxonomy.md` ✓
 

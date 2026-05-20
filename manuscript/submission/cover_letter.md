@@ -49,7 +49,7 @@ Sincerely,
 **Yueh-Hua Tu, Ph.D.** (corresponding author)
 Center for Computational and Systems Biology
 National Taiwan University, Taipei, Taiwan
-*Email:* `<to be added>`
+*Email:* yuehhuatu@ntu.edu.tw
 
 on behalf of:
 
