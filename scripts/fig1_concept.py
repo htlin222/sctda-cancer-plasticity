@@ -212,15 +212,16 @@ def main():
     set_publication_style()
     rng = np.random.default_rng(SEED)
 
-    # Layout: 2 rows. Top — A on left, B on right. Bottom — C full width
-    # so the filtration-process pedagogy has horizontal room to breathe.
-    # Figure: 180mm × 115mm.
-    fig = plt.figure(figsize=(180 / 25.4, 115 / 25.4))
+    # Layout: 2 rows. Top — A (16:9 aspect, ~1.78:1) on left, B (1:1
+    # aspect) on right. Bottom — C (filtration process) full width.
+    # Width ratios match the image aspects so both A and B fill their
+    # cells with minimal whitespace. Figure: 180mm × 135mm.
+    fig = plt.figure(figsize=(180 / 25.4, 135 / 25.4))
     gs = gridspec.GridSpec(
         2, 2, figure=fig,
-        height_ratios=[1.0, 1.6],
-        width_ratios=[1.7, 1.0],
-        hspace=0.30, wspace=0.05,
+        height_ratios=[1.0, 1.5],
+        width_ratios=[1.78, 1.0],
+        hspace=0.18, wspace=0.05,
     )
 
     ax_a = fig.add_subplot(gs[0, 0])
