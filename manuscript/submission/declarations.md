@@ -30,11 +30,11 @@ Re-analysis of these public datasets is consistent with the data-use terms of ea
 - **Repository:** <https://github.com/htlin222/sctda-cancer-plasticity> (MIT license).
 - **Reproducibility:** the complete pipeline runs from raw GEO data to all figures and tables via `make pipeline`. A `CITATION.cff` provides machine-readable software-citation metadata.
 - **Environment:** conda environment in `envs/environment.yml`; tested on macOS arm64 and Linux x86_64.
-- **Versioned release:** a `v1.0.0` GitHub release tag and Zenodo software DOI will be created at submission (`<DOI to be assigned>`).
+- **Versioned release:** a release tag following the existing `vX.Y.Z-submission` convention (current: `v2.7.0-submission` plus the NC-prep delta — final tag TBD) and a Zenodo software DOI will be created at submission (`<DOI to be assigned>`).
 
 ## Funding
 
-`<to be filled in by Y-H Tu — list NTU CCSB grants / NSTC project codes that supported this work; if none, state "This work received no specific grant funding."`>
+This work received no specific external grant funding and was carried out using the authors' institutional computing resources at Koo Foundation Sun Yat-Sen Cancer Center (H.-T.L.) and the Center for Computational and Systems Biology, National Taiwan University (Y.-H.T.).
 
 ## AI-tool usage statement
 
