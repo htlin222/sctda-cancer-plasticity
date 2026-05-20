@@ -71,5 +71,5 @@ before clicking "Submit" at <https://submission.springernature.com/>.
 - [ ] LaTeX source migrated to Springer Nature `sn-jnl.cls` (option `nature`)
   - working: `manuscript/preprint.tex` (article class, bioRxiv build)
   - target: `manuscript/preprint_ncomms.tex` (sn-jnl class) — see `template_setup.md`
-- [ ] Line numbering ON for review version (Nature convention)
+- [x] Line numbering ON for review version (Nature convention) — `\usepackage{lineno}` + `\linenumbers` added to preprint_ncomms.tex preamble; remove for camera-ready
 - [ ] Reference style: numbered, Nature style (`unsrtnat` or sn-nature.bst)
