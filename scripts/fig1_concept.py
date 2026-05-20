@@ -220,36 +220,80 @@ def panel_barcode(ax, rng):
         spine.set_visible(False)
 
 
+def _draw_story_arrow(fig, x0, y0, x1, y1, text, text_offset=(0, 0)):
+    """Draw a narrative connector arrow at figure level + text label."""
+    arrow = mpatches.FancyArrowPatch(
+        (x0, y0), (x1, y1),
+        transform=fig.transFigure, figure=fig,
+        arrowstyle="->", mutation_scale=12, lw=0.9, color=GREY,
+        zorder=20,
+    )
+    fig.patches.append(arrow)
+    tx, ty = (x0 + x1) / 2 + text_offset[0], (y0 + y1) / 2 + text_offset[1]
+    fig.text(tx, ty, text, fontsize=7, color=GREY, style="italic",
+             ha="center", va="center", zorder=21)
+
+
 def main():
     set_publication_style()
     rng = np.random.default_rng(SEED)
 
-    # Layout: 2 rows. Top — A (16:9 aspect, ~1.78:1) on left, B (1:1
-    # aspect) on right. Bottom — C (filtration process) full width.
-    # Width ratios match the image aspects so both A and B fill their
-    # cells with minimal whitespace. Figure: 180mm × 135mm.
-    fig = plt.figure(figsize=(180 / 25.4, 135 / 25.4))
-    gs = gridspec.GridSpec(
-        2, 2, figure=fig,
-        height_ratios=[1.0, 1.5],
-        width_ratios=[1.78, 1.0],
-        hspace=0.18, wspace=0.05,
+    # Layout: 2 rows + a header strip at the top of the figure.
+    # Top — A (16:9 aspect, ~1.78:1) on left, B (1:1 aspect) on right.
+    # Bottom — C (filtration process) full width.
+    # Figure: 180mm × 145mm (extra 10mm reserved for the story banner).
+    fig = plt.figure(figsize=(180 / 25.4, 145 / 25.4))
+
+    # Story banner: bold headline + italic three-step subtitle.
+    # Tells the reader at-a-glance that A, B, C are three steps of one story.
+    fig.text(
+        0.5, 0.975,
+        "From topological principle to a measurable cell-state statistic",
+        fontsize=10.5, fontweight="bold", ha="center", va="top", color=NAVY,
+    )
+    fig.text(
+        0.5, 0.945,
+        "(a) topology counts holes  $\\rightarrow$  (b) scRNA-seq cells "
+        "form one such loop  $\\rightarrow$  (c) persistent homology "
+        "measures its lifespan",
+        fontsize=7.5, style="italic", ha="center", va="top", color=GREY,
     )
 
+    gs = gridspec.GridSpec(
+        2, 2, figure=fig,
+        top=0.90,  # leave room above for the story banner
+        height_ratios=[1.0, 1.5],
+        width_ratios=[1.78, 1.0],
+        hspace=0.32, wspace=0.10,
+    )
+
+    # Step-tagged panel labels: short action-tags announce each panel's role
     ax_a = fig.add_subplot(gs[0, 0])
     panel_mug_to_donut(ax_a)
-    ax_a.text(-0.02, 1.02, "a", transform=ax_a.transAxes,
-              fontsize=10, fontweight="bold", va="top")
+    ax_a.text(-0.02, 1.02, r"a $\cdot$ principle",
+              transform=ax_a.transAxes,
+              fontsize=9.5, fontweight="bold", va="top", color=NAVY)
 
     ax_b = fig.add_subplot(gs[0, 1])
     panel_loop_cells(ax_b, rng)
-    ax_b.text(-0.02, 1.02, "b", transform=ax_b.transAxes,
-              fontsize=10, fontweight="bold", va="top")
+    ax_b.text(-0.02, 1.02, r"b $\cdot$ data",
+              transform=ax_b.transAxes,
+              fontsize=9.5, fontweight="bold", va="top", color=NAVY)
 
     ax_c = fig.add_subplot(gs[1, :])
     panel_barcode(ax_c, rng)
-    ax_c.text(-0.005, 1.02, "c", transform=ax_c.transAxes,
-              fontsize=10, fontweight="bold", va="top")
+    ax_c.text(-0.005, 1.02, r"c $\cdot$ measurement",
+              transform=ax_c.transAxes,
+              fontsize=9.5, fontweight="bold", va="top", color=NAVY)
+
+    # Narrative connector: a single vertical arrow from the top row down
+    # to panel (c). The A → B direction is already conveyed by left-to-
+    # right reading and the headline; only the row-break needs an arrow.
+    _draw_story_arrow(
+        fig, x0=0.5, y0=0.615, x1=0.5, y1=0.555,
+        text="measure with persistent homology",
+        text_offset=(0.18, 0),
+    )
 
     save_figure(fig, "fig1_concept_topology", output_dir=str(FIGURES_DIR))
 
