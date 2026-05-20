@@ -150,57 +150,69 @@ def panel_barcode(ax, rng):
     # Three filtration snapshots
     for cx, br in zip(s_x, ball_radii):
         _draw_filtration_step(ax, cx, s_y, loop_r, br, n_cells=12)
-    # Stage labels under each snapshot
+    # Stage labels under each snapshot — plain language first, technical
+    # ε-notation in small parens for the specialist reader only.
     stage_labels = [
-        "small $\\varepsilon$:\ncells isolated",
-        "$\\varepsilon = \\varepsilon_\\mathrm{birth}$:\nballs touch, loop closes",
-        "$\\varepsilon = \\varepsilon_\\mathrm{death}$:\nballs fill the loop",
+        "small circles:\neach cell alone",
+        "circles touch:\nloop appears",
+        "circles fill in:\nloop disappears",
     ]
     for cx, label in zip(s_x, stage_labels):
         ax.text(
             cx, s_y - loop_r - ball_radii[-1] - 0.05, label,
-            fontsize=7, color=NAVY, ha="center", va="top",
+            fontsize=7.5, color=NAVY, ha="center", va="top",
         )
 
-    # Filtration ε arrow underneath the stage labels
+    # Plain-language axis at the bottom (technical name kept in tiny grey)
     eps_axis_y = -0.42
     ax.annotate(
         "", xy=(2.90, eps_axis_y), xytext=(0.10, eps_axis_y),
         arrowprops=dict(arrowstyle="->", lw=0.7, color=GREY),
     )
     ax.text(
-        1.50, eps_axis_y - 0.06,
-        r"filtration scale $\varepsilon$ $\rightarrow$",
-        fontsize=7.5, color=GREY, ha="center", va="top",
+        1.50, eps_axis_y - 0.05,
+        "circle size grows $\\rightarrow$",
+        fontsize=8, color=GREY, ha="center", va="top",
+    )
+    ax.text(
+        1.50, eps_axis_y - 0.16,
+        r"(``filtration scale $\varepsilon$'' in TDA)",
+        fontsize=6, color=GREY, style="italic", ha="center", va="top",
     )
 
-    # The orange "max H_1 persistence" bar: spans from snapshot 2 (birth)
-    # to snapshot 3 (death) — its length = the loop's lifespan on ε.
+    # The orange bar: spans from snapshot 2 (loop appears) to snapshot 3
+    # (loop disappears) — its length is the loop's lifespan.
     bar_y = s_y + loop_r + ball_radii[-1] + 0.10
     bar_x0, bar_x1 = s_x[1], s_x[2]
     ax.plot([bar_x0, bar_x1], [bar_y, bar_y],
             color=ORANGE, lw=8, solid_capstyle="round", zorder=8)
-    # Vertical drop-lines connecting bar endpoints down to the ε axis
-    # (visualises that bar length = ε_death - ε_birth on the ε axis)
+    # Vertical drop-lines tying the bar to the axis below
     for x in (bar_x0, bar_x1):
         ax.plot([x, x], [bar_y - 0.04, eps_axis_y],
                 color=GREY, lw=0.6, linestyle=":", alpha=0.7, zorder=1)
-    # Birth/death tick markers on the ε axis
-    for x, txt in zip([bar_x0, bar_x1], [r"$\varepsilon_\mathrm{birth}$", r"$\varepsilon_\mathrm{death}$"]):
+    # Endpoint markers labelled in plain language
+    endpoint_labels = ["loop appears", "loop disappears"]
+    for x, txt in zip([bar_x0, bar_x1], endpoint_labels):
         ax.plot([x, x], [eps_axis_y - 0.04, eps_axis_y + 0.04],
                 color=GREY, lw=0.8, zorder=2)
-        ax.text(x, eps_axis_y + 0.07, txt,
+        ax.text(x, eps_axis_y + 0.06, txt,
                 fontsize=6.5, color=GREY, ha="center", va="bottom")
-    # Label the bar
+    # Plain-language bar label, with technical name parenthesised
     ax.text(
-        (bar_x0 + bar_x1) / 2, bar_y + 0.07,
-        "max $H_1$ persistence = lifespan of the loop",
-        fontsize=8, color=ORANGE, fontweight="bold",
+        (bar_x0 + bar_x1) / 2, bar_y + 0.22,
+        "How long the loop survives",
+        fontsize=9, color=ORANGE, fontweight="bold",
+        ha="center", va="bottom",
+    )
+    ax.text(
+        (bar_x0 + bar_x1) / 2, bar_y + 0.13,
+        r"$=$ this paper's ``max $H_1$ persistence''",
+        fontsize=7, color=ORANGE, style="italic",
         ha="center", va="bottom",
     )
 
     ax.set_xlim(0, 3.0)
-    ax.set_ylim(eps_axis_y - 0.18, bar_y + 0.22)
+    ax.set_ylim(eps_axis_y - 0.25, bar_y + 0.40)
     ax.set_aspect("equal")
     ax.set_xticks([])
     ax.set_yticks([])
