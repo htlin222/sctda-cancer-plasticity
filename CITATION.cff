@@ -16,6 +16,7 @@ authors:
     given-names: "Yueh-Hua"
     email: "yuehhuatu@ntu.edu.tw"
     affiliation: "Center for Computational and Systems Biology, National Taiwan University, Taipei, Taiwan"
+    orcid: "https://orcid.org/0000-0002-1554-1753"
 keywords:
   - "topological data analysis"
   - "persistent homology"
@@ -34,6 +35,7 @@ preferred-citation:
     - family-names: "Tu"
       given-names: "Yueh-Hua"
       affiliation: "Center for Computational and Systems Biology, National Taiwan University, Taipei, Taiwan"
+      orcid: "https://orcid.org/0000-0002-1554-1753"
   year: 2026
   journal: "bioRxiv"
   doi: "pending"
