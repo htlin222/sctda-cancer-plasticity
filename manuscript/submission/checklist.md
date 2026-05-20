@@ -7,7 +7,7 @@ before clicking "Submit" at <https://submission.springernature.com/>.
 
 - [ ] **Title** ≤ 15 words, no abbreviations
   - current: "Drug tolerance takes shape: persistent homology reveals cyclic cell-state plasticity in EGFR-mutant lung cancer" — **14 words ✓**
-- [ ] **Running title** ≤ 50 characters
+- [x] **Running title** ≤ 50 characters — *"Topology of drug-tolerant lung cancer plasticity"* (47 chars) — enter in portal metadata; nature.cls does not render it
 - [ ] **Abstract** ~ 150 words, unstructured, no citations — *currently structured (Background/Results/Conclusions); de-structure for NC*
 - [ ] **Main text + Methods ≤ 5,000 words**
   - current `texcount`: **7,835 words** — `WORK REMAINING`: ~2,800 words to trim
