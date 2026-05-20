@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 """
-Fig 1 — Graphical abstract: drug-tolerant cancer cells cycle between
-states, measurable as a rising max H_1 persistence across cohorts.
+Fig 1 — Concept figure: drug-induced cell-state cycling, detected as a
+topological loop, measured by persistent homology.
 
-Three panels tell the biology-first story:
-  (a) AI render: untreated cancer cells (uniform cluster) → drug arrow
-      → cells cycling between states (loop of differently-coloured
-      cells). The biological finding.
-  (b) AI render: same cycling visible in scRNA-seq as a closed loop in
-      state-space (kept from previous version).
-  (c) Bar chart: paired untreated-vs-treated max H_1 across 4 cohorts
-      (PC9, PDX YU-006, PDX YU-003, Maynard patient cohort), with
-      fold-change labels. The headline result.
+Three panels (concept only — no headline numbers; the cross-cohort
+result lives in Fig 7 `fig:master`):
+  (a) AI render: untreated cancer cells (uniform cluster) → drug
+      arrow → cells cycling between distinct states. The biological
+      motivation.
+  (b) AI render: the same cycling appears as a closed loop in
+      scRNA-seq state-space.
+  (c) Matplotlib: persistent-homology filtration process. Three
+      snapshots show cells with growing balls; one orange bar above
+      gives the loop's lifespan = max H_1 persistence.
 
-The mug-donut topological-equivalence pedagogy now lives in one
-sentence in the Background prose, not Figure 1.
+The mug-donut topological-equivalence analogy is a single line in the
+Background prose, not Figure 1.
 
 Output: results/figures/fig1_concept_topology.{pdf,png}
 Also mirrored to manuscript/figures/.
@@ -40,14 +41,6 @@ from sctda_plasticity.visualize import save_figure, set_publication_style
 
 PANEL_A_PNG = FIGURES_DIR / "fig1_panel_a_biology.png"
 PANEL_B_PNG = FIGURES_DIR / "fig1_panel_b_3d.png"
-
-# Headline paired (untreated, treated) max H_1 values across cohorts.
-COHORT_DATA = [
-    ("PC9\nosi D0→D14", 1.41, 3.78, r"2.7$\times$"),
-    ("PDX\nYU-006", 2.81, 6.08, r"2.2$\times$"),
-    ("PDX\nYU-003", 2.79, 3.85, r"1.4$\times$"),
-    ("Maynard\nTN→PD", 5.37, 8.05, r"1.5$\times$"),
-]
 
 
 def _imshow_alpha_panel(ax, png_path, subtitle, overlay_fn=None):
@@ -149,57 +142,83 @@ def panel_loop_cells(ax, rng):
 
 
 def panel_barcode(ax, rng):
-    """(c) Bar chart: max H_1 rises with drug across 4 cohorts.
+    """(c) Filtration process: cells + growing balls → max H_1 bar.
 
-    Paired (untreated, drug-treated) bars for PC9, PDX YU-006/YU-003,
-    and the Maynard 14-patient cohort. Fold-change labels above each
-    pair make the headline finding immediately readable.
+    Three matplotlib snapshots show the same cell loop with growing
+    filtration balls. Stage 1: small balls, cells isolated. Stage 2:
+    balls touch → loop appears. Stage 3: balls fill the interior →
+    loop disappears. Orange bar above spans birth→death = max H_1
+    persistence. Plain-language labels throughout; the technical
+    ε / H_1 names sit in tiny grey parentheticals.
     """
     del rng
-    cohorts = [c[0] for c in COHORT_DATA]
-    pre = np.array([c[1] for c in COHORT_DATA])
-    post = np.array([c[2] for c in COHORT_DATA])
-    folds = [c[3] for c in COHORT_DATA]
+    s_y = 0.45
+    s_x = [0.55, 1.50, 2.45]
+    loop_r = 0.18
+    ball_radii = [0.045, 0.115, 0.245]
 
-    n = len(cohorts)
-    x = np.arange(n)
-    w = 0.36
+    for cx, br in zip(s_x, ball_radii):
+        _draw_filtration_step(ax, cx, s_y, loop_r, br, n_cells=12)
+    stage_labels = [
+        "small circles:\neach cell alone",
+        "circles touch:\nloop appears",
+        "circles fill in:\nloop disappears",
+    ]
+    for cx, label in zip(s_x, stage_labels):
+        ax.text(
+            cx, s_y - loop_r - ball_radii[-1] - 0.05, label,
+            fontsize=7.5, color=NAVY, ha="center", va="top",
+        )
 
-    ax.bar(x - w / 2, pre, w,
-           label="untreated", color=NAVY,
-           edgecolor="white", linewidth=0.5, zorder=3)
-    ax.bar(x + w / 2, post, w,
-           label="drug-treated", color=ORANGE,
-           edgecolor="white", linewidth=0.5, zorder=3)
-
-    # Fold-change labels above each cohort pair
-    ymax = float(post.max())
-    for i, (p, q, fold) in enumerate(zip(pre, post, folds)):
-        top = max(p, q)
-        ax.text(i, top + 0.30, fold,
-                ha="center", va="bottom",
-                fontsize=9, color=ORANGE, fontweight="bold")
-
-    ax.set_xticks(x)
-    ax.set_xticklabels(cohorts, fontsize=7.5)
-    ax.set_ylabel("max $H_1$ persistence", fontsize=9, color=NAVY)
-    ax.set_ylim(0, ymax * 1.20)
-    ax.tick_params(axis="y", labelsize=7)
-    ax.legend(frameon=False, loc="upper left", fontsize=8, handlelength=1.2)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.spines["left"].set_color(GREY)
-    ax.spines["bottom"].set_color(GREY)
-    ax.yaxis.set_tick_params(color=GREY)
-    ax.grid(axis="y", color=GREY, linestyle=":", linewidth=0.4, alpha=0.5, zorder=0)
-
-    # Subtitle (in italic) below the axis
-    ax.text(
-        0.5, -0.28,
-        "Drug treatment raises max $H_1$ across cell line, PDX, and patient cohorts",
-        transform=ax.transAxes, ha="center", va="top",
-        fontsize=8, color=NAVY, style="italic",
+    eps_axis_y = -0.42
+    ax.annotate(
+        "", xy=(2.90, eps_axis_y), xytext=(0.10, eps_axis_y),
+        arrowprops=dict(arrowstyle="->", lw=0.7, color=GREY),
     )
+    ax.text(
+        1.50, eps_axis_y - 0.05,
+        "circle size grows $\\rightarrow$",
+        fontsize=8, color=GREY, ha="center", va="top",
+    )
+    ax.text(
+        1.50, eps_axis_y - 0.16,
+        r"(filtration scale $\varepsilon$)",
+        fontsize=6, color=GREY, style="italic", ha="center", va="top",
+    )
+
+    bar_y = s_y + loop_r + ball_radii[-1] + 0.10
+    bar_x0, bar_x1 = s_x[1], s_x[2]
+    ax.plot([bar_x0, bar_x1], [bar_y, bar_y],
+            color=ORANGE, lw=8, solid_capstyle="round", zorder=8)
+    for x in (bar_x0, bar_x1):
+        ax.plot([x, x], [bar_y - 0.04, eps_axis_y],
+                color=GREY, lw=0.6, linestyle=":", alpha=0.7, zorder=1)
+    endpoint_labels = ["loop appears", "loop disappears"]
+    for x, txt in zip([bar_x0, bar_x1], endpoint_labels):
+        ax.plot([x, x], [eps_axis_y - 0.04, eps_axis_y + 0.04],
+                color=GREY, lw=0.8, zorder=2)
+        ax.text(x, eps_axis_y + 0.06, txt,
+                fontsize=6.5, color=GREY, ha="center", va="bottom")
+    ax.text(
+        (bar_x0 + bar_x1) / 2, bar_y + 0.22,
+        "How long the loop survives",
+        fontsize=9, color=ORANGE, fontweight="bold",
+        ha="center", va="bottom",
+    )
+    ax.text(
+        (bar_x0 + bar_x1) / 2, bar_y + 0.13,
+        r"(max $H_1$ persistence)",
+        fontsize=7, color=ORANGE, style="italic",
+        ha="center", va="bottom",
+    )
+
+    ax.set_xlim(0, 3.0)
+    ax.set_ylim(eps_axis_y - 0.25, bar_y + 0.40)
+    ax.set_aspect("equal")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
 
 
 def _draw_story_arrow(fig, x0, y0, x1, y1, text, text_offset=(0, 0)):
@@ -227,18 +246,19 @@ def main():
     fig = plt.figure(figsize=(180 / 25.4, 145 / 25.4))
 
     # Story banner: bold headline + italic three-step subtitle.
-    # Communicates the paper's finding at-a-glance.
+    # Frames the figure as a concept introduction (the cross-cohort
+    # result itself is in Fig 7, fig:master).
     fig.text(
         0.5, 0.975,
-        "Drug-tolerant cancer cells cycle between states, quantifiable "
-        "as a rising max $H_1$",
+        "Drug-induced cell-state cycling, detected as a topological "
+        "loop and measured by persistent homology",
         fontsize=10.5, fontweight="bold", ha="center", va="top", color=NAVY,
     )
     fig.text(
         0.5, 0.945,
         "(a) drug pressure induces cycling  $\\rightarrow$  "
         "(b) scRNA-seq sees it as a loop  $\\rightarrow$  "
-        "(c) max $H_1$ rises across 4 cohorts",
+        "(c) persistent homology measures the loop's lifespan",
         fontsize=7.5, style="italic", ha="center", va="top", color=GREY,
     )
 
@@ -265,7 +285,7 @@ def main():
 
     ax_c = fig.add_subplot(gs[1, :])
     panel_barcode(ax_c, rng)
-    ax_c.text(-0.005, 1.02, r"c $\cdot$ result across cohorts",
+    ax_c.text(-0.005, 1.02, r"c $\cdot$ how we measure the loop",
               transform=ax_c.transAxes,
               fontsize=9.5, fontweight="bold", va="top", color=NAVY)
 

@@ -713,23 +713,22 @@ of scanpy, ripser, persim, kmapper, harmonypy, and giotto-tda.
   \IfFileExists{../results/figures/fig1_concept_topology.pdf}{%
     \includegraphics[width=0.95\linewidth]{fig1_concept_topology.pdf}%
   }{\fbox{\parbox{0.9\linewidth}{\centering\vspace{2em}Figure 1 placeholder: \texttt{fig1\_concept\_topology.pdf}\vspace{2em}}}}
-  \caption{\textbf{Drug-tolerant cancer cells cycle between states,
-  quantifiable as a rising maximum $H_1$ persistence.}
+  \caption{\textbf{Drug-induced cell-state cycling, detected as a
+  topological loop and measured by persistent homology.}
   (a) Untreated cancer cells occupy a uniform transcriptional state;
   under EGFR-TKI pressure they diversify into multiple states with
   reversible transitions between them (cells coloured by state).
   (b) In scRNA-seq, this reversible cycling appears as a closed loop
-  in cell-state space (one dot = one cell). Persistent homology
-  measures the loop's robustness across spatial scales; the lifespan
-  of the longest such loop defines the \emph{maximum $H_1$
-  persistence} statistic used throughout this work.
-  (c) Across four EGFR-mutant lung-cancer cohorts --- PC9 osimertinib
-  (D0$\to$D14, 2.7$\times$), PDX YU-006 (2.2$\times$), PDX YU-003
-  (1.4$\times$), and the Maynard 14-patient cohort (TN$\to$PD,
-  1.5$\times$) --- maximum $H_1$ persistence rises with drug treatment
-  in every comparison. The mug-and-donut topological-equivalence
-  analogy that motivates this statistic is described in the
-  Background.}
+  in cell-state space (one dot = one cell).
+  (c) Persistent homology measures the loop. Around each cell we grow
+  a ball; as the ball radius (the filtration scale $\varepsilon$)
+  increases, the loop is born when balls touch their neighbours and
+  dies when balls fill the loop's interior. The lifespan of this
+  loop --- the lifetime of the longest $H_1$ bar --- is the
+  \emph{maximum $H_1$ persistence} statistic used throughout this
+  work. The mug-and-donut topological-equivalence analogy that
+  motivates the use of homology is described in the Background.
+  Cross-cohort fold-changes are in \cref{fig:master}.}
   \label{fig:concept}
 \end{figure}
 
