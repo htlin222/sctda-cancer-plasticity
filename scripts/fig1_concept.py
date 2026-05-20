@@ -285,6 +285,9 @@ def main():
 
     ax_c = fig.add_subplot(gs[1, :])
     panel_barcode(ax_c, rng)
+    # Anchor C's aspect-equal content to the left edge of the row so
+    # the panel reads as left-aligned rather than centred.
+    ax_c.set_anchor("W")
     ax_c.text(-0.005, 1.02, r"c $\cdot$ how we measure the loop",
               transform=ax_c.transAxes,
               fontsize=9.5, fontweight="bold", va="top", color=NAVY)
