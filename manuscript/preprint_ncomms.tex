@@ -112,21 +112,43 @@
 % Acknowledgements (Nature places these between References and Author info)
 % =========================================================================
 \section*{Acknowledgements}
-% TODO: paste acknowledgements block from preprint.tex.
+The authors thank the contributors of GSE134839 \citep{aissa2021},
+GSE150949 \citep{oren2021}, GSE243562 \citep{wurtz2024}, GSE131907
+\citep{kim2020}, and the Maynard et al.~2020 cohort \citep{maynard2020}
+for making their data publicly available, and the open-source developers
+of scanpy, ripser, persim, kmapper, harmonypy, and giotto-tda. This work
+received no specific external grant funding and was carried out using
+the authors' institutional computing resources at Koo Foundation Sun
+Yat-Sen Cancer Center (H.-T.L.) and the Center for Computational and
+Systems Biology, National Taiwan University (Y.-H.T.).
 
 \section*{Author contributions}
-% See manuscript/submission/credit_taxonomy.md. Brief here:
-H.-T.L. conceived the study, designed and implemented the pipeline,
-performed all analyses, and wrote the manuscript. Y.-H.T. supervised
-the project, contributed to methodology and validation strategy, and
-edited the manuscript. Both authors approved the final version.
+H.-T.L. and Y.-H.T. jointly conceived the study and designed the
+analytical strategy. H.-T.L. implemented the pipeline, performed all
+analyses, produced all figures, and wrote the original draft (CRediT:
+Conceptualisation, Methodology, Software, Formal analysis, Investigation,
+Data curation, Writing -- original draft, Visualisation). Y.-H.T.
+supervised the project, contributed methodological and validation-strategy
+review, and revised the manuscript (CRediT: Conceptualisation,
+Methodology, Supervision, Writing -- review \& editing, Project
+administration). Both authors read and approved the final manuscript.
 
 \section*{Competing interests}
 The authors declare no competing financial or non-financial interests.
 
 \section*{Data and code availability}
-% TODO: paste from manuscript/submission/declarations.md, with the
-% Zenodo software DOI and Zenodo data DOI inserted at submission time.
+All raw scRNA-seq data used in this study are publicly available from
+the Gene Expression Omnibus under accessions GSE134839, GSE150949,
+GSE243562, and GSE131907; the Maynard et al.~2020 EGFR-mutant cohort was
+obtained from the authors' public archive cited in \citet{maynard2020}.
+Processed AnnData objects, persistence diagrams, and Mapper graphs are
+regenerable end-to-end via \texttt{make pipeline}, and the versioned
+intermediate outputs are archived at Zenodo
+(\texttt{ZENODODATADOI}). The complete analysis pipeline is publicly
+available at \url{https://github.com/htlin222/sctda-cancer-plasticity}
+under the MIT license; the version-tagged software release accompanying
+this submission (\texttt{v2.7.1-submission}) is archived at Zenodo
+(\texttt{ZENODOSOFTWAREDOI}).
 
 % =========================================================================
 % Figures and tables (NC convention: after end-matter, before SI).
