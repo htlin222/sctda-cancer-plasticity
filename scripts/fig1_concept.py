@@ -36,6 +36,35 @@ from sctda_plasticity.config import FIGURES_DIR, PROJECT_ROOT, SEED
 from sctda_plasticity.visualize import save_figure, set_publication_style
 
 PANEL_A_PNG = FIGURES_DIR / "fig1_panel_a_3d.png"
+PANEL_B_PNG = FIGURES_DIR / "fig1_panel_b_3d.png"
+PANEL_C_PNG = FIGURES_DIR / "fig1_panel_c_3d.png"
+
+
+def _imshow_alpha_panel(ax, png_path, subtitle):
+    """Inset an alpha PNG and add an italic subtitle below it."""
+    if not png_path.exists():
+        ax.text(0.5, 0.5, f"Missing: {png_path}",
+                ha="center", va="center", color="red",
+                transform=ax.transAxes)
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        return
+    img = mpimg.imread(str(png_path))
+    ax.imshow(img, interpolation="bilinear", aspect="equal")
+    h, w = img.shape[0], img.shape[1]
+    ax.text(
+        w / 2, h * 1.06, subtitle,
+        fontsize=7, color=NAVY, style="italic",
+        ha="center", va="top",
+    )
+    ax.set_xlim(0, w)
+    ax.set_ylim(h * 1.18, -h * 0.04)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -48,133 +77,41 @@ LIGHT_GREY = "#b9b9b9"
 
 
 def panel_mug_to_donut(ax):
-    """(a) Inset the AI 3D render: mug ≅ donut-with-handle ≅ donut.
-
-    The image was generated via codex-imagegen (OpenAI gpt-image-1) on a
-    chroma-key background and matted to alpha. See declarations.md for
-    AI-tool disclosure. All three shapes carry exactly one topological
-    hole; the congruence symbols (≅) between them indicate homeomorphism.
-    """
-    if not PANEL_A_PNG.exists():
-        ax.text(
-            0.5, 0.5,
-            f"Missing AI panel-a PNG:\n{PANEL_A_PNG}\n"
-            "(generate via scripts/imagegen.sh)",
-            ha="center", va="center", color="red",
-            transform=ax.transAxes,
-        )
-    else:
-        img = mpimg.imread(str(PANEL_A_PNG))
-        ax.imshow(img, interpolation="bilinear", aspect="equal")
-        # subtitle below the rendered shapes
-        h = img.shape[0]
-        w = img.shape[1]
-        ax.text(
-            w / 2, h * 1.06, "Same hole, different geometry",
-            fontsize=7, color=NAVY, style="italic",
-            ha="center", va="top",
-        )
-        ax.set_xlim(0, w)
-        # extra y headroom for the subtitle
-        ax.set_ylim(h * 1.18, -h * 0.04)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    """(a) AI 3D render: mug ≅ pinched torus ≅ donut. All genus = 1."""
+    _imshow_alpha_panel(ax, PANEL_A_PNG, "Same hole, different geometry")
 
 
 def panel_loop_cells(ax, rng):
-    """(b) 60 cells arranged on a noisy unit circle in state-space."""
-    n = 60
-    theta = np.linspace(0, 2 * np.pi, n, endpoint=False)
-    r = 1.0 + rng.normal(0, 0.07, n)
-    t = theta + rng.normal(0, 0.07, n)
-    x = r * np.cos(t)
-    y = r * np.sin(t)
-    cmap = plt.get_cmap("twilight_shifted")
-    colors = cmap(theta / (2 * np.pi))
-    ax.scatter(x, y, c=colors, s=22, edgecolors="white", linewidths=0.4, zorder=3)
-    # axes with arrowheads (visual hint that these are coordinate axes)
-    ax.annotate("", xy=(1.55, 0), xytext=(-1.55, 0),
-                arrowprops=dict(arrowstyle="->", lw=0.5, color=LIGHT_GREY),
-                zorder=1)
-    ax.annotate("", xy=(0, 1.55), xytext=(0, -1.55),
-                arrowprops=dict(arrowstyle="->", lw=0.5, color=LIGHT_GREY),
-                zorder=1)
-    # axis labels (data-coord)
-    ax.text(1.55, -0.18, "cell-state\ncoord. 1", fontsize=6, color=GREY,
-            ha="right", va="top")
-    ax.text(-0.05, 1.55, "cell-state\ncoord. 2", fontsize=6, color=GREY,
-            ha="right", va="top", rotation=0)
-    # subtitle
-    ax.text(0, -1.95, "A topological loop in data",
-            fontsize=7, color=NAVY, style="italic",
-            ha="center", va="top")
-    ax.set_xlim(-1.7, 1.7)
-    ax.set_ylim(-2.1, 1.9)
-    ax.set_aspect("equal")
-    ax.set_xticks([])
-    ax.set_yticks([])
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    """(b) AI 3D render: spheres on a noisy loop in state-space.
+
+    `rng` retained for backward compatibility — not used now that the
+    panel is an AI image, but kept so callers don't break.
+    """
+    del rng
+    _imshow_alpha_panel(ax, PANEL_B_PNG, "Cells on a closed loop")
 
 
 def panel_barcode(ax, rng):
-    """(c) Persistence barcode: short H_0 bars + one long H_1 bar."""
-    n_short = 8
-    starts = rng.uniform(0.04, 0.18, n_short)
-    lengths = rng.uniform(0.10, 0.30, n_short)
-    order = np.argsort(lengths)[::-1]
-    bar_dy = 0.075
-    for i, idx in enumerate(order):
-        y = 0.18 + i * bar_dy
-        ax.plot(
-            [starts[idx], starts[idx] + lengths[idx]], [y, y],
-            color=NAVY, lw=2.4, solid_capstyle="round",
-        )
-    y_long = 0.18 + n_short * bar_dy + 0.06
-    ax.plot([0.06, 0.96], [y_long, y_long],
-            color=ORANGE, lw=3.6, solid_capstyle="round")
-    # inline labels pointing at the two bar populations
-    ax.annotate(
-        "robust loop\n($H_1$)",
-        xy=(0.55, y_long), xytext=(1.05, y_long - 0.02),
-        fontsize=6.5, color=ORANGE, ha="left", va="center",
-        arrowprops=dict(arrowstyle="-", lw=0.5, color=ORANGE),
-    )
-    ax.annotate(
-        "noise / components\n($H_0$)",
-        xy=(0.30, 0.18 + 3 * bar_dy), xytext=(1.05, 0.18 + 3 * bar_dy),
-        fontsize=6.5, color=NAVY, ha="left", va="center",
-        arrowprops=dict(arrowstyle="-", lw=0.5, color=NAVY),
-    )
-    # x-axis arrow + label (filtration scale)
-    ax.annotate("", xy=(1.0, 0.08), xytext=(0.0, 0.08),
-                arrowprops=dict(arrowstyle="->", lw=0.5, color=GREY))
-    ax.text(0.5, 0.03, r"filtration scale $\varepsilon$",
-            fontsize=7, color=GREY, ha="center", va="top")
-    # subtitle below
-    ax.text(0.5, -0.07, "Persistence barcode",
-            fontsize=7, color=NAVY, style="italic",
-            ha="center", va="top")
-    ax.set_xlim(0, 2.0)  # extra room on right for the inline labels
-    ax.set_ylim(-0.12, y_long + 0.12)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    """(c) AI 3D render: persistence barcode (orange H_1 + navy H_0 stack).
+
+    `rng` retained for backward compatibility.
+    """
+    del rng
+    _imshow_alpha_panel(ax, PANEL_C_PNG, "Long $H_1$ bar = robust loop")
 
 
 def main():
     set_publication_style()
     rng = np.random.default_rng(SEED)
 
-    # Taller layout (180 × 75 mm) gives room for axis labels and subtitles
+    # Layout: panel (a) is 3:1 (wide), (b) is 1:1 (square), (c) is 3:2.
+    # Aspect-matched widths so each panel reads at similar visual height.
+    # Total target: 180mm × 75mm.
     fig = plt.figure(figsize=(180 / 25.4, 75 / 25.4))
     gs = gridspec.GridSpec(
         1, 3, figure=fig,
-        width_ratios=[1.7, 1.0, 1.4],
-        wspace=0.12,
+        width_ratios=[3.0, 1.0, 1.5],
+        wspace=0.22,
     )
 
     ax_a = fig.add_subplot(gs[0, 0])
