@@ -29,6 +29,7 @@ sys.path.insert(0, "src")
 
 import matplotlib.gridspec as gridspec
 import matplotlib.image as mpimg
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -37,7 +38,6 @@ from sctda_plasticity.visualize import save_figure, set_publication_style
 
 PANEL_A_PNG = FIGURES_DIR / "fig1_panel_a_3d.png"
 PANEL_B_PNG = FIGURES_DIR / "fig1_panel_b_3d.png"
-PANEL_C_PNG = FIGURES_DIR / "fig1_panel_c_3d.png"
 
 
 def _imshow_alpha_panel(ax, png_path, subtitle, overlay_fn=None):
@@ -83,33 +83,26 @@ def _overlay_panel_b(ax, w, h):
     )
 
 
-def _overlay_panel_c(ax, w, h):
-    """Add explanatory callouts on top of the persistence-barcode image."""
-    # Long orange bar — call it out as max H_1
-    ax.annotate(
-        "max $H_1$ persistence\n(this paper's statistic)",
-        xy=(w * 0.50, h * 0.18), xytext=(w * 1.04, h * 0.08),
-        fontsize=6.5, color=ORANGE, ha="left", va="center",
-        arrowprops=dict(arrowstyle="->", lw=0.6, color=ORANGE,
-                        shrinkA=0, shrinkB=2),
-    )
-    # Short navy stack — call out as noise
-    ax.annotate(
-        "noise\n($H_0$ components)",
-        xy=(w * 0.55, h * 0.65), xytext=(w * 1.04, h * 0.70),
-        fontsize=6.5, color=NAVY, ha="left", va="center",
-        arrowprops=dict(arrowstyle="->", lw=0.6, color=NAVY,
-                        shrinkA=0, shrinkB=2),
-    )
-    # Filtration-scale axis hint below the bars
-    ax.annotate(
-        "", xy=(w * 0.95, h * 0.96), xytext=(w * 0.05, h * 0.96),
-        arrowprops=dict(arrowstyle="->", lw=0.5, color=GREY),
-    )
-    ax.text(
-        w * 0.5, h * 1.01, r"filtration scale $\varepsilon$",
-        fontsize=6.5, color=GREY, ha="center", va="top",
-    )
+def _draw_filtration_step(ax, cx, cy, loop_r, ball_r, n_cells=10):
+    """Draw n_cells on a loop centred at (cx, cy) with filtration balls
+    of radius ball_r drawn around each cell."""
+    theta = np.linspace(0, 2 * np.pi, n_cells, endpoint=False)
+    cell_x = cx + loop_r * np.cos(theta)
+    cell_y = cy + loop_r * np.sin(theta)
+    for x, y in zip(cell_x, cell_y):
+        # filled ball (subtle)
+        ax.add_patch(mpatches.Circle(
+            (x, y), ball_r,
+            facecolor=NAVY, edgecolor="none", alpha=0.18, zorder=2,
+        ))
+        # ball outline
+        ax.add_patch(mpatches.Circle(
+            (x, y), ball_r,
+            facecolor="none", edgecolor=NAVY, lw=0.5, alpha=0.55, zorder=3,
+        ))
+    # cell dots on top
+    ax.scatter(cell_x, cell_y, c=[NAVY], s=14, zorder=10,
+               edgecolors="white", linewidths=0.4)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -137,13 +130,73 @@ def panel_loop_cells(ax, rng):
 
 
 def panel_barcode(ax, rng):
-    """(c) AI 3D barcode + explanatory overlay labels (max H_1, noise, ε)."""
+    """(c) Filtration process → max H_1 persistence bar.
+
+    Three snapshots show the same cell loop with growing filtration
+    balls. Stage 1: small balls, cells are isolated components (H_0).
+    Stage 2: balls touch their neighbours' balls and the loop closes
+    --- the H_1 feature is *born*. Stage 3: balls fill the loop's
+    interior --- the H_1 feature *dies*. The orange bar above spans
+    birth-to-death = max H_1 persistence.
+    """
     del rng
-    _imshow_alpha_panel(
-        ax, PANEL_C_PNG,
-        "Loop $\\Rightarrow$ long $H_1$ bar",
-        overlay_fn=_overlay_panel_c,
+    # Three snapshot centres (data units in [0, 1] x [0, 1])
+    s_y = 0.40
+    s_x = [0.16, 0.50, 0.84]
+    loop_r = 0.10
+    ball_radii = [0.025, 0.065, 0.135]  # small / just-touching / interior-filling
+
+    # Three filtration snapshots
+    for cx, br in zip(s_x, ball_radii):
+        _draw_filtration_step(ax, cx, s_y, loop_r, br, n_cells=10)
+    # Stage labels under each snapshot (2 lines each to keep them compact)
+    stage_labels = [
+        "small $\\varepsilon$:\ncells isolated",
+        "$\\varepsilon = \\varepsilon_\\mathrm{birth}$:\nloop just closes",
+        "$\\varepsilon = \\varepsilon_\\mathrm{death}$:\nloop fills in",
+    ]
+    for cx, label in zip(s_x, stage_labels):
+        ax.text(
+            cx, s_y - loop_r - 0.04, label,
+            fontsize=6.5, color=NAVY, ha="center", va="top",
+        )
+
+    # Filtration ε arrow underneath the stage labels
+    ax.annotate(
+        "", xy=(0.96, -0.20), xytext=(0.04, -0.20),
+        arrowprops=dict(arrowstyle="->", lw=0.6, color=GREY),
     )
+    ax.text(
+        0.5, -0.25, r"filtration scale $\varepsilon$ $\rightarrow$",
+        fontsize=7, color=GREY, ha="center", va="top",
+    )
+
+    # The orange "max H_1 persistence" bar: spans from snapshot 2 (birth)
+    # to snapshot 3 (death) — visually equal to the loop's lifespan.
+    bar_y = s_y + loop_r + 0.20
+    bar_x0, bar_x1 = s_x[1], s_x[2]
+    ax.plot([bar_x0, bar_x1], [bar_y, bar_y],
+            color=ORANGE, lw=5.5, solid_capstyle="round", zorder=8)
+    # Vertical drop-lines connecting bar endpoints down to the ε axis
+    # (visualises that bar length = death - birth on the ε axis)
+    for x in (bar_x0, bar_x1):
+        ax.plot([x, x], [bar_y - 0.03, -0.20],
+                color=GREY, lw=0.5, linestyle=":", alpha=0.7, zorder=1)
+    # Label the bar
+    ax.text(
+        (bar_x0 + bar_x1) / 2, bar_y + 0.05,
+        "max $H_1$ persistence = lifespan of the loop",
+        fontsize=7.5, color=ORANGE, fontweight="bold",
+        ha="center", va="bottom",
+    )
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(-0.35, bar_y + 0.18)
+    ax.set_aspect("equal")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
 
 
 def main():
