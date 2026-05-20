@@ -1,0 +1,172 @@
+% =========================================================================
+% Extended Methods (Supplementary Information)
+%
+% Standalone document containing the technical detail offloaded from the
+% main preprint.tex Methods section. The main text retains a one-line
+% pointer at each offload site (``See Supplementary Methods'').
+% =========================================================================
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\DeclareSIUnit{\molar}{M}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{enumitem}
+\usepackage[numbers,square,sort&compress]{natbib}
+
+\title{Supplementary Methods\\
+       \large Drug tolerance takes shape: persistent homology reveals
+              cyclic cell-state plasticity in EGFR-mutant lung cancer}
+\author{Hsieh-Ting Lin and Yueh-Hua Tu}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{S1. Patient-atlas filtering details}
+
+For GSE131907 \citep{kim2020} we filtered to cells with
+\texttt{Sample\_Origin == `tLung'} (primary lung tumor) AND
+\texttt{Cell\_type} containing `Epithelial', using the cell-type
+annotations from \texttt{GSE131907\_Lung\_Cancer\_cell\_annotation.txt.gz}.
+From the resulting 7{,}270 tumor epithelial cells, a uniform random
+sample of 5{,}000 cells was drawn (\texttt{random\_state=42}), then
+1{,}500 cells were subsampled further for tractable Vietoris--Rips
+computation.
+
+\section*{S2. Highly-variable gene (HVG) batch keys}
+
+HVG selection used \texttt{batch\_key=`timepoint'} for GSE134839 and
+GSE150949 (samples share a clonal PC9 background but differ in
+drug-exposure timepoint, treated as a technical batch following
+\citet{luecken2019}), \texttt{batch\_key=`pdx'} for GSE243562 (to
+account for inter-PDX-model variability), and
+\texttt{batch\_key=`Sample'} for the Kim atlas (per-patient
+variability).
+
+\section*{S3. PDX mouse-gene filter}
+
+For PDX data, we filtered mouse genes using the pattern
+\texttt{r'\^{}mm10.*|\^{}[a-z][a-z0-9]+\$'} applied to gene symbols
+(matching either the Ensembl mouse prefix \texttt{mm10} or lowercase
+gene symbols characteristic of MGI-style mouse annotations). Of
+82{,}350 initial features, 24{,}062 mouse-like genes (29\%) were
+removed, leaving 58{,}288 human-like features. We acknowledge this
+symbol-based heuristic is inferior to alignment-based xeno-classification
+(e.g.\ XenoCell, Xenomake) for publication-grade PDX analysis; our
+downstream results depend on PCA structure and are insensitive to
+modest filter errors, but this is flagged as a limitation in the main
+text Discussion.
+
+\section*{S4. Max $H_1$ as a hybrid statistic}
+
+Max $H_1$ is a hybrid statistic: the existence of a nonzero $H_1$ bar
+is a topological invariant (a nontrivial 1-cycle exists), but the
+numerical value of its lifespan is measured in filtration-parameter
+units (here, Euclidean distance in PCA space) and is therefore
+metric-dependent. We refer to the statistic as ``topological'' because
+it reports on the presence and robustness of a topological feature,
+while acknowledging that the numerical scale depends on the metric
+used. The PC-count sensitivity sweep (S5) quantifies the metric
+dependence.
+
+\section*{S5. PC-count sensitivity}
+
+Max $H_1$ was computed on the D9 erlotinib timepoint ($n = 379$) and
+D14 osimertinib timepoint ($n = 1{,}000$) at $n_{\text{PCs}} \in
+\{10, 20, 30, 50\}$. Values were 1.96/2.08/1.77/1.03 for D9 and
+3.12/5.56/3.78/4.40 for D14. The ordering drug-treated $>$ untreated
+is preserved at every PC count, but absolute values vary within a
+factor of 2. The $n_{\text{PCs}} = 30$ choice used throughout was
+selected for consistency with prior scTDA work \citep{rizvi2017}.
+See also Supplementary Table S5.
+
+\section*{S6. EMT-cassette gene list (Mapper filter)}
+
+EMT score (used as Mapper filter for the cell-line analysis) was
+computed via \texttt{scanpy.tl.score\_genes} on a 33-gene MSigDB
+Hallmark EMT cassette: \emph{VIM}, \emph{CDH2}, \emph{FN1},
+\emph{SNAI1}, \emph{SNAI2}, \emph{ZEB1}, \emph{ZEB2}, \emph{TWIST1},
+\emph{MMP2}, \emph{MMP9}, \emph{CDH1}, \emph{OCLN}, \emph{TJP1},
+\emph{DSP}, \emph{KRT19}, \emph{KRT8}, \emph{SERPINE1}, \emph{TGFBI},
+\emph{SPARC}, \emph{COL1A1}, \emph{COL3A1}, \emph{COL5A2},
+\emph{ACTA2}, \emph{TAGLN}, \emph{MYL9}, \emph{CALD1}, \emph{LGALS1},
+\emph{TPM1}, \emph{TPM2}, \emph{FSTL1}, \emph{ITGB1}, \emph{LAMC2},
+\emph{LOXL2}. Of these, 28 of 33 genes were present in the GSE134839
+normalized expression matrix and used for scoring.
+
+\section*{S7. Harmony batch-correction parameters}
+
+Harmony \citep{korsunsky2019} was applied to the top-50 PCA components
+with default parameters: \texttt{theta = 2}, \texttt{lambda = 1},
+\texttt{nclust = 100}, \texttt{epsilon\_cluster = 1e-5},
+\texttt{epsilon\_harmony = 1e-4}, \texttt{max\_iter\_harmony = 10},
+\texttt{max\_iter\_kmeans = 20}. Convergence was reached in 2
+iterations for the osimertinib cohort. Batch keys: \texttt{timepoint}
+for GSE150949, per-sample GSM identifier for GSE243562, per-patient
+\texttt{Sample} identifier for GSE131907.
+
+\section*{S8. Pipeline architecture}
+
+The framework is organised as numbered modules, each accepting a
+standard \texttt{AnnData} object and producing typed intermediate
+outputs (persistence diagrams as \texttt{.npy}, Mapper graphs as
+pickled dicts, enrichment results as \texttt{.csv}):
+
+\begin{itemize}[leftmargin=1.25em]
+  \item \texttt{01\_preprocess.py}: load GEO data, QC, normalise, HVG,
+        regress, PCA, cell-cycle score.
+  \item \texttt{02\_standard\_analysis.py}: UMAP, Leiden clustering
+        \citep{traag2019} (multi-resolution), marker genes, EMT score,
+        diffusion map, PAGA.
+  \item \texttt{03\_topology.py}: per-group persistent homology, Mapper
+        (3 filters), pairwise Wasserstein, permutation tests.
+  \item \texttt{04\_cell\_cycle\_ablation.py}: remove cell-cycle genes,
+        re-do PCA and PH, compute preservation ratio + permutation null.
+  \item \texttt{05\_gene\_attribution.py}: Mapper gene connectivity,
+        differential expression, pathway enrichment.
+  \item \texttt{06\_validation.py}: apply the full pipeline to a
+        validation dataset, compute cross-dataset Wasserstein.
+  \item \texttt{07\_figures.py}: assemble publication figures from
+        saved intermediate outputs.
+  \item \texttt{08\_validation\_pdx.py}: PDX-specific loader and
+        persistent homology for the ASCL1 PDX cohort.
+  \item \texttt{09\_validation\_kim\_atlas.py}: Kim 2020 patient atlas
+        baseline loading and $H_1$ computation.
+  \item \texttt{10\_ablation\_permtest.py}: extended permutation tests
+        on cell-cycle-ablated data.
+  \item \texttt{11\_pdx\_gene\_attribution.py}: cross-system
+        gene-overlap analysis between cell line and PDX.
+  \item \texttt{12\_convert\_tables\_to\_parquet.py}: CSV $\to$ Parquet
+        for large tables.
+  \item \texttt{13\_harmony\_batch\_correction.py}: Harmony
+        batch-correction sensitivity analysis.
+  \item \texttt{14\_validation\_maynard.py}: Maynard 2020 neo-osi
+        cohort loader.
+  \item \texttt{15\_maynard\_full\_cohort.py}: full Maynard 14-patient
+        EGFR-mutant cohort analysis.
+\end{itemize}
+Users can substitute their own datasets by providing an
+\texttt{AnnData} file with a \texttt{timepoint} (or equivalent)
+observation column.
+
+\section*{S9. Unit tests}
+
+The \texttt{sctda\_plasticity} package includes pytest-based unit tests
+covering persistent homology on synthetic circle and cluster data,
+Mapper graph construction with known topology, gene connectivity
+ranking, and permutation test structure. All 8 tests pass on the
+submitted version; see \texttt{tests/test\_topology.py}. Code is
+lint-clean under \texttt{ruff check} with a 100-character line limit.
+
+\bibliographystyle{unsrtnat}
+\bibliography{../references}
+
+\end{document}
