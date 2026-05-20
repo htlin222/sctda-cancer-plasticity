@@ -25,5 +25,7 @@ CRediT roles per <https://credit.niso.org/>. Verbs listed in the order of involv
 ## Notes
 
 - Both authors have read and approved the final manuscript.
-- No professional or AI-generated text was used in the main manuscript prose without author review and editing. The conceptual Figure 1 was sketched via an AI tool (OpenAI `gpt-image-1`) for compositional reference only and was then re-implemented from scratch as a vector matplotlib figure — the submitted Figure 1 is wholly author-authored vector art.
+- No professional or AI-generated text was used in the main manuscript prose without author review and editing.
+- **Figure 1 panel (a)** is a photorealistic 3D-render composite generated via OpenAI `gpt-image-1` and matted to alpha. The asset is illustrative-only (no data content). Disclosure and contingency in `declarations.md`.
+- **Figure 1 panels (b) and (c)** and all other figures (Figs 2–9) are programmatically generated via matplotlib from non-AI data.
 - Software development assistance (Claude Code by Anthropic) was used for code-pipeline scaffolding, refactoring, and figure-script implementation; all scientific decisions, statistical analyses, and prose are the authors' own.

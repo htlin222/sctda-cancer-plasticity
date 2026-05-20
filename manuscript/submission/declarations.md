@@ -39,7 +39,7 @@ Re-analysis of these public datasets is consistent with the data-use terms of ea
 ## AI-tool usage statement
 
 - Software-development assistance: **Claude Code** (Anthropic) was used for code-pipeline scaffolding, refactoring, and figure-script implementation. All scientific decisions, statistical analyses, and prose are the authors' own.
-- Figure 1 conceptual sketch: an initial composition was drafted via **OpenAI `gpt-image-1`** as a compositional reference. The submitted Figure 1 is a wholly author-authored vector matplotlib figure (see `scripts/fig1_concept.py`), conforming to the *Nature* AI-image policy.
+- **Figure 1 panel (a)** is a photorealistic 3D-render-style composite illustrating topological equivalence (coffee mug ≅ donut-with-handle ≅ donut). The image was generated with **OpenAI `gpt-image-1`** on a chroma-key background, matted to alpha, and embedded into the figure via matplotlib (`scripts/fig1_concept.py`). The image carries no data and is illustrative only. We acknowledge that *Nature Communications* generally restricts AI-generated imagery; we use this asset to communicate a purely conceptual topological-equivalence relationship for the broad non-specialist audience and will replace it with a hand-illustrated or vector schematic on editorial request. Panels (b) and (c) are programmatically generated via matplotlib from non-AI data (`scripts/fig1_concept.py`).
 
 ## Inclusion & ethics statement
 

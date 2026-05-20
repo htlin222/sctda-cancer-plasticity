@@ -77,18 +77,25 @@ Thumbs.db
 
 # ──────────────────────────────────────────────
 # LaTeX build artifacts (keep the source .tex, .bib, and final .pdf)
+# Use ** so the rules cover manuscript/supplements/ and manuscript/audit/
+# as well as the top-level manuscript/ directory.
 # ──────────────────────────────────────────────
-manuscript/*.aux
-manuscript/*.log
-manuscript/*.bbl
-manuscript/*.blg
-manuscript/*.out
-manuscript/*.toc
-manuscript/*.lof
-manuscript/*.lot
-manuscript/*.synctex.gz
-manuscript/*.fdb_latexmk
-manuscript/*.fls
+manuscript/**/*.aux
+manuscript/**/*.log
+manuscript/**/*.bbl
+manuscript/**/*.blg
+manuscript/**/*.out
+manuscript/**/*.toc
+manuscript/**/*.lof
+manuscript/**/*.lot
+manuscript/**/*.synctex.gz
+manuscript/**/*.fdb_latexmk
+manuscript/**/*.fls
+manuscript/**/*.bcf
+manuscript/**/*.run.xml
+manuscript/**/*.auxlock
+# Figure-script artifacts (only the staged AI panel-a PNG is committed)
+results/figures/_drafts/
 
 # ──────────────────────────────────────────────
 # Claude / LLM tooling
