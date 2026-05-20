@@ -58,21 +58,25 @@ cell-state plasticity in EGFR-mutant lung cancer}
 \begin{abstract}
 \noindent
 \textbf{Background.}
-Drug-tolerant persister (DTP) cells drive relapse after targeted therapy,
-but quantifying the topology of the cell-state transitions that produce them
-has been hampered by the bias of standard trajectory inference methods
-toward tree-like or directed structures. Topological data analysis (TDA)
---- specifically persistent homology and the Mapper algorithm --- can detect
-cyclic and multi-connected structure that these methods miss, yet no
-reproducible pipeline has applied TDA across drug-tolerance datasets at
-scale.
+Drug-tolerant persister (DTP) cells drive relapse after EGFR-targeted
+therapy, yet no scRNA-seq method quantifies the reversibly cyclic
+cell-state transitions that produce them. Standard trajectory tools
+fit trees, graphs, or vector fields but expose no scalar measure of
+how robustly cells trace a closed loop in state-space. Topological
+data analysis (TDA) --- persistent homology and Mapper --- detects
+exactly that, but no reproducible pipeline has applied it across
+drug-tolerance datasets at scale.
 
 \textbf{Results.}
-We present an open-source framework for computing scale-independent
-topological statistics ($H_0$, $H_1$) and Mapper-based gene attribution
-scores on scRNA-seq data. The central quantity --- the \emph{maximum
-$H_1$ persistence} --- can be read as the lifespan of the longest
-robust loop in the cell-state cloud: small values (< 2) indicate weak
+We present an open-source framework for computing persistent-homology
+statistics ($H_0$, $H_1$) and Mapper-based gene-attribution scores on
+scRNA-seq data. The central quantity --- the \emph{maximum $H_1$
+persistence} --- is a hybrid topological statistic: the existence of a
+nonzero $H_1$ bar is a topological invariant, while its numerical
+lifespan is measured in metric (filtration-parameter) units and
+therefore depends on the chosen PCA embedding (full caveat in
+Supplementary Methods~S4). It can be read intuitively as the lifespan
+of the longest robust loop in the cell-state cloud: small values (< 2) indicate weak
 or transient cyclic structure (cells mostly flow linearly), while
 larger values ($\geq 4$) indicate dominant, stable cycling among
 distinct states. We validated the framework on four independent
@@ -114,9 +118,9 @@ $p = 1.25 \times 10^{-11}$ against 13{,}955 expressed-gene universe;
 conservative HVG-intersection background gives $p = 2.1 \times 10^{-4}$).
 
 \textbf{Conclusions.}
-The framework provides a principled, coordinate-invariant statistic for
-DTP biology that is broadly applicable to any longitudinal scRNA-seq
-dataset. Cyclic topological structure grows with drug exposure across
+The framework provides a principled, reproducible-across-resampling
+statistic for DTP biology that is broadly applicable to any
+longitudinal scRNA-seq dataset. Cyclic topological structure grows with drug exposure across
 cell line, xenograft, and patient scales, linking to EMT programs in a
 convergent but system-specific manner. All code, scripts, and processed
 data are available under MIT license.
@@ -132,16 +136,20 @@ cell-state plasticity; computational framework.
 \subsection*{Trajectory methods systematically miss cyclic cell-state structure}
 
 Single-cell RNA sequencing has transformed our view of cellular
-heterogeneity, but its analytical toolkit --- principal component
-analysis, UMAP, clustering, and trajectory inference methods (Monocle,
-Slingshot, PAGA, RNA velocity) --- is built on an implicit assumption
-that cell states are organized along tree-like or directed manifolds
-\citep{saelens2019}. This assumption breaks when cell populations
-reversibly transition between states, as happens in the
-epithelial-to-mesenchymal transition (EMT), cell cycle, or adaptive drug
-tolerance \citep{shaffer2017,oren2021}. Cyclic state structures are
-mathematically one-dimensional holes in the data's point cloud, which
-tree-based methods by construction cannot detect.
+heterogeneity, but the dominant analytical toolkit for ordering cells
+in time --- Monocle and Slingshot (which fit explicit tree backbones),
+PAGA (which abstracts cells into a connectivity graph), and RNA
+velocity (which estimates a directional vector field) --- was designed
+to summarise progression rather than to quantify reversible cycling
+\citep{saelens2019}. PAGA admits non-tree graphs and velocity defines
+a field rather than a tree, but neither yields a scalar that scores
+how robustly cells trace a closed loop across analysis scales. That
+gap matters when cell populations reversibly transition between states,
+as in the epithelial-to-mesenchymal transition (EMT), cell cycle, or
+adaptive drug tolerance \citep{shaffer2017,oren2021}: a reversible
+cycle is mathematically a one-dimensional hole in the data's point
+cloud, and no widely-used trajectory method exposes its lifespan as a
+testable, comparable statistic.
 
 \subsection*{Topological data analysis as a framework-level remedy}
 
@@ -156,8 +164,9 @@ their points trace out an elongated cloud --- a ``trajectory''. But if
 cells reversibly cycle through several states (for example,
 epithelial $\to$ intermediate $\to$ mesenchymal $\to$ back to
 epithelial), their points arrange themselves into a closed \emph{ring}
-(formally, a \emph{1-cycle} that encloses a one-dimensional hole in the
-point cloud) --- with an empty region in the middle
+(formally, a \emph{1-cycle} --- a closed loop that is not the
+boundary of any filled-in disc within the data) --- with an empty
+region in the middle
 (\cref{fig:concept}b). A tree-based trajectory method has no
 mathematical way to represent such a 1-cycle; it will force the ring
 into a branching tree and lose the cyclic information entirely.
@@ -183,15 +192,12 @@ graph representation of the data, where cells in the same node share
 transcriptional similarity and edges connect related nodes --- revealing
 the ``skeleton'' of the state-space structure.
 
-Formally, persistent homology tracks elements of the homology groups
-$H_k$ (for $k = 0, 1, 2$ capturing connected components, 1-cycles,
-and 2-dimensional voids respectively) across a filtered sequence of
-simplicial complexes, outputting a multiset of birth-death pairs
-(the persistence diagram) \citep{edelsbrunner2010}. The Mapper
-algorithm \citep{singh2007} provides a complementary, interpretable
-graph-based summary of high-dimensional data. Both have been applied
+Formally, persistent homology returns a multiset of birth--death
+pairs (the persistence diagram) over a filtered sequence of simplicial
+complexes \citep{edelsbrunner2010}, and Mapper \citep{singh2007}
+returns a complementary graph summary. Both have been applied
 individually to bulk cancer transcriptomes \citep{nicolau2011} and
-developmental scRNA-seq \citep{rizvi2017}. Prior work has not
+developmental scRNA-seq \citep{rizvi2017}; prior work has not
 integrated them into a reproducible, open-source framework for
 longitudinal scRNA-seq with formal null-model testing and standard
 controls --- the gap our contribution addresses.
@@ -200,8 +206,12 @@ controls --- the gap our contribution addresses.
 
 Drug-tolerant persister cells (DTPs) in EGFR-mutant non-small cell lung
 cancer (NSCLC) provide an ideal testbed for a topology-based framework.
-DTPs are a small, slow-growing subpopulation that survives initial
-targeted therapy not by acquiring mutations but by entering a reversible,
+First-line osimertinib gives a median progression-free survival of
+roughly 18 months, yet essentially every patient eventually relapses
+from residual disease, and no approved drug specifically targets the
+persister state \citep{ramalingam2020,piotrowska2018}. DTPs are a
+small, slow-growing subpopulation that survives initial targeted
+therapy not by acquiring mutations but by entering a reversible,
 quiescent transcriptional state --- behaving, in effect, like cells
 hibernating through the drug pressure and waking up when conditions
 relax. This reversible, non-genetic plasticity moves cells between
@@ -258,7 +268,7 @@ maximum values ranging from 1.08 (D11) to 1.77 (D9)
 (\cref{fig:barcodes}, \cref{tab:per_timepoint}). Persistence barcodes
 showed an increased number of long $H_1$ bars at intermediate and late
 timepoints. Pairwise Wasserstein distances between persistence diagrams
-revealed that D0 is separated from all drug-treated timepoints in persistence-diagram space (Wasserstein distance $W = 213$--$265$ vs.~$W = 26$--$66$ among treated timepoints), indicating that the distribution of topological features differs most strongly between untreated and treated conditions (\cref{fig:wasserstein}).
+revealed that D0 is separated from all drug-treated timepoints in persistence-diagram space (Wasserstein distance $W = 213$--$265$ between D0 and treated timepoints vs.~$W = 26$--$66$ among treated timepoints --- roughly an order of magnitude larger), indicating that the distribution of topological features differs most strongly between untreated and treated conditions (\cref{fig:wasserstein}).
 
 Permutation tests in the discovery cohort (GSE134839) did not reach
 $p < 0.05$ at any timepoint, likely due to per-timepoint sample sizes of
@@ -489,7 +499,11 @@ Three patients had matched TN + post-treatment biopsies with sufficient cell cou
 \paragraph{Inter-patient variability.}
 Raw max $H_1$ values span a wide range across patients ($\sim 1.2$ to $\sim 7$) at a given stage, reflecting inter-patient biological and technical heterogeneity. The within-patient trajectory (always up) is a stronger signal than the absolute $H_1$ magnitude across patients, which supports treating the topological statistic as a \emph{relative change} readout rather than an absolute cross-patient comparison.
 
-This patient-cohort result is the most clinically relevant validation of our framework: the same topological signature that rises under drug treatment in PC9 cell lines and osimertinib-treated PDX models also rises in real EGFR-mutant NSCLC patient biopsies, in a three-of-three within-patient matched design.
+This patient-cohort result is the most clinically proximal evidence
+we provide: the same topological signature that rises under drug
+treatment in PC9 cell lines and osimertinib-treated PDX models also
+rises in real EGFR-mutant NSCLC patient biopsies, in a hypothesis-generating
+three-of-three within-patient matched design.
 
 \subsection*{Topological cyclicity is robust to Mapper parameter choice}
 
@@ -562,7 +576,7 @@ perturbation-response setting (rather than developmental) and introduce
 controls (cell-cycle ablation, formal permutation null) absent from the
 original formulation.
 
-The broader non-genetic drug-tolerance literature --- including YAP-mediated senescent DTPs \citep{kurppa2020}, melanoma minimal residual disease four-state plasticity \citep{rambow2018}, and the recent Marine et al.~review of non-genetic resistance mechanisms \citep{marine2020,shen2020} --- provides the biological context in which our topological framework operates. These studies establish that non-tree-like, multi-state, reversible plasticity is a widespread cancer drug-tolerance phenotype; our contribution is a quantitative, isometry-invariant, reproducible statistic for detecting and comparing such structures.
+The broader non-genetic drug-tolerance literature --- including YAP-mediated senescent DTPs \citep{kurppa2020}, melanoma minimal residual disease four-state plasticity \citep{rambow2018}, and the recent Marine et al.~review of non-genetic resistance mechanisms \citep{marine2020,shen2020} --- provides the biological context in which our topological framework operates. These studies establish that non-tree-like, multi-state, reversible plasticity is a widespread cancer drug-tolerance phenotype; our contribution is a quantitative, reproducible statistic --- topologically invariant in the existence of a loop, metric-dependent in its numerical scale (Methods; Supplementary Methods~S4) --- for detecting and comparing such structures.
 
 \subsection*{Limitations}
 
@@ -625,7 +639,7 @@ Mapper algorithm --- to longitudinal single-cell RNA-seq data, with
 integrated permutation null testing, cell-cycle ablation control, and
 gene attribution. Applying this framework without modification to five
 independent EGFR-mutant lung cancer scRNA-seq datasets, we show that
-the maximum $H_1$ persistence is an isometry-invariant, reproducible
+the maximum $H_1$ persistence is a reproducible
 statistic that increases with osimertinib exposure across validation
 cohorts of cell lines and patient-derived xenografts (the discovery
 cohort showed elevated $H_1$ throughout the time course but a
@@ -640,10 +654,12 @@ open-source pipeline with complete documentation, tests, and
 Docker/conda environment specifications.
 
 In plain language: drug treatment does not simply push lung cancer
-cells along a one-way road to resistance. It reorganizes the
-cell-state landscape so that cells can reversibly cycle among
-multiple transcriptional states --- states that include
-epithelial-mesenchymal-transition-like programs. The topological
+cells along a one-way road to resistance. It reshapes the
+cell-state landscape into a form that admits reversible cycling
+among multiple transcriptional states --- including
+epithelial-mesenchymal-transition-like programs --- consistent with
+the cycling subpopulations established by Watermelon lineage
+tracing in PC9 \citep{oren2021}. The topological
 statistic we propose (max $H_1$) quantifies how robust this cycling
 becomes, across cell line, xenograft, and patient tissue, without
 requiring lineage tracing or prior knowledge of which states
@@ -676,10 +692,12 @@ We used scanpy 1.11 \citep{wolf2018} with standard QC
 (\texttt{min\_genes} $= 200$, \texttt{max\_genes} $= 5000$,
 \texttt{max\_pct\_mito} $= 20\%$, \texttt{min\_cells} $= 3$),
 total-count normalisation to 10{,}000 counts per cell, log1p
-transformation, 3{,}000 highly-variable genes (per-dataset batch keys
-in Supplementary Methods~S2), regression of total counts and
-mitochondrial percentage, scaling to max 10, and PCA with 50 components
-(\texttt{random\_state} $= 42$). For PDX data, mouse genes were removed
+transformation, 3{,}000 highly-variable genes, regression of total
+counts and mitochondrial percentage, scaling to max 10, and PCA with
+50 components (\texttt{random\_state} $= 42$). HVG batch keys per
+cohort: \texttt{timepoint} for GSE134839 and GSE150949,
+\texttt{pdx} for GSE243562, and \texttt{Sample} for GSE131907
+(rationale in Supplementary Methods~S2). For PDX data, mouse genes were removed
 by a symbol-pattern heuristic (Supplementary Methods~S3; 29\% of
 features filtered; limitations in Discussion). Cell-cycle scores were
 computed from \citet{tirosh2016} S- and G2/M-phase gene lists via
@@ -689,14 +707,16 @@ computed from \citet{tirosh2016} S- and G2/M-phase gene lists via
 
 We used \texttt{ripser} 0.6 \citep{bauer2021,tralie2018} to compute the
 Vietoris--Rips filtration up to $H_1$ with the Euclidean metric on the
-top-30 PCA coordinates. Maximum persistence is defined as
+top-30 PCA coordinates; homology is computed over $\mathbb{F}_2$
+coefficients (ripser default). Maximum persistence is defined as
 $\max(\text{death} - \text{birth})$ over finite $H_1$ bars; this is a
 hybrid statistic whose existence is a topological invariant but whose
 numerical scale is metric-dependent (Supplementary Methods~S4).
 Wasserstein distances between diagrams were computed with
-\texttt{persim} 0.3 using the 2-Wasserstein metric, which is stable
-under Hausdorff perturbations of the input point cloud
-\citep{cohen-steiner2007}.
+\texttt{persim} 0.3 using the 2-Wasserstein metric. The $p$-Wasserstein
+distance between persistence diagrams is stable under bounded
+perturbations of the input point cloud given a finite-degree-$p$
+total-persistence hypothesis \citep{cohen-steiner2007,cohen-steiner2010}.
 
 \subsection*{Principal component count sensitivity}
 

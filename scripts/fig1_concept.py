@@ -64,28 +64,36 @@ def _draw_mug(ax, cx, cy, scale=1.0):
 
 
 def _draw_intermediate(ax, cx, cy, scale=1.0):
-    """Mug-into-donut midstage: tilted oblong shape with a slit-like hole.
-
-    Visually distinct from both the upright mug and the symmetric donut to
-    read as a continuous-deformation snapshot.
+    """Mug-into-donut midstage: a thick-walled bowl seen in perspective,
+    with the handle still attached. The handle and cavity are drawn
+    explicitly so genus = 1 is visually preserved throughout the
+    deformation (mug → bowl-with-handle → donut).
     """
     s = scale
-    angle = 25.0
-    outer = mpatches.Ellipse(
-        (cx, cy), 0.56 * s, 0.36 * s,
-        angle=angle,
-        linewidth=1.6, edgecolor=NAVY, facecolor=NAVY, alpha=0.85, zorder=2,
+    # Bowl body (wider and flatter than the mug, suggesting it has
+    # been "squashed" toward becoming a torus). Filled navy with a
+    # darker rim outline.
+    body = mpatches.Ellipse(
+        (cx, cy - 0.02 * s), 0.46 * s, 0.34 * s,
+        linewidth=1.8, edgecolor=NAVY, facecolor=NAVY, alpha=0.85, zorder=2,
     )
-    ax.add_patch(outer)
-    # off-centre slit hole (vestigial mug handle)
-    rad = np.deg2rad(angle)
-    dx, dy = -0.08 * np.cos(rad), -0.08 * np.sin(rad)
-    hole = mpatches.Ellipse(
-        (cx + dx, cy + dy), 0.20 * s, 0.10 * s,
-        angle=angle,
-        linewidth=0, facecolor="white", zorder=3,
+    ax.add_patch(body)
+    # Cavity / opening — a smaller upper ellipse in white showing the
+    # bowl is concave (not a solid disc). Off-centre to the right so
+    # the handle on the left reads as separate from the cavity.
+    cavity = mpatches.Ellipse(
+        (cx + 0.03 * s, cy + 0.05 * s), 0.22 * s, 0.10 * s,
+        linewidth=1.2, edgecolor="white", facecolor="white", zorder=3,
     )
-    ax.add_patch(hole)
+    ax.add_patch(cavity)
+    # Handle preserved on the left side — C-shape arc, smaller than the
+    # mug's but unambiguously a topological handle (one hole through it).
+    handle = mpatches.Arc(
+        (cx - 0.23 * s, cy - 0.02 * s), 0.14 * s, 0.22 * s,
+        angle=0, theta1=90, theta2=270,
+        linewidth=1.8, edgecolor=NAVY, zorder=4,
+    )
+    ax.add_patch(handle)
 
 
 def _draw_donut(ax, cx, cy, scale=1.0):
