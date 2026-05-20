@@ -21,8 +21,7 @@ Re-analysis of these public datasets is consistent with the data-use terms of ea
 ## Data availability
 
 - **Raw scRNA-seq data:** GEO accessions GSE134839, GSE150949, GSE243562, GSE131907; Maynard *et al.* 2020 EGFR-mutant cohort via the authors' public Google Drive archive cited in that paper.
-- **Processed AnnData objects, persistence diagrams, and Mapper graphs:** regenerable end-to-end via `make pipeline` (see Code availability). A version-tagged release of intermediate outputs will be deposited at **Zenodo** prior to acceptance and the DOI added here.
-  - *Zenodo DOI:* `<to be assigned at submission>`.
+- **Processed AnnData objects, persistence diagrams, and Mapper graphs:** regenerable end-to-end from the raw GEO data via `make pipeline` (see Code availability). Seeds and parameters are pinned so derived outputs are bit-stable across runs.
 - **Supplementary Tables S1–S11** are provided as separate files at submission.
 
 ## Code availability
@@ -30,7 +29,7 @@ Re-analysis of these public datasets is consistent with the data-use terms of ea
 - **Repository:** <https://github.com/htlin222/sctda-cancer-plasticity> (MIT license).
 - **Reproducibility:** the complete pipeline runs from raw GEO data to all figures and tables via `make pipeline`. A `CITATION.cff` provides machine-readable software-citation metadata.
 - **Environment:** conda environment in `envs/environment.yml`; tested on macOS arm64 and Linux x86_64.
-- **Versioned release:** a release tag following the existing `vX.Y.Z-submission` convention (current: `v2.7.0-submission` plus the NC-prep delta — final tag TBD) and a Zenodo software DOI will be created at submission (`<DOI to be assigned>`).
+- **Versioned release:** `v2.7.1-submission`, archived as a public GitHub release at <https://github.com/htlin222/sctda-cancer-plasticity/releases/tag/v2.7.1-submission>. This tag is the authoritative software citation for the present submission.
 
 ## Funding
 

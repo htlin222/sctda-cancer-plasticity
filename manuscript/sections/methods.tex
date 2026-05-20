@@ -117,7 +117,7 @@ Methods~S8--S9.
 
 \subsection*{Code availability}
 
-Code is available at \url{https://github.com/htlin222/sctda-cancer-plasticity} (MIT license). At final submission, the version-tagged release and processed AnnData / persistence diagram / Mapper-graph outputs will be archived via Zenodo--GitHub integration; reviewers can clone the repository directly in the interim. The complete pipeline is reproducible via \texttt{make pipeline} from raw GEO data to all figures and tables. A unified \texttt{sctda} CLI is planned for v2.0; the current pipeline is invoked via the Makefile and individual \texttt{scripts/0X\_*.py} files. A \texttt{CITATION.cff} file at the repository root provides machine-readable citation metadata for software-citation tooling.
+Code is available at \url{https://github.com/htlin222/sctda-cancer-plasticity} (MIT license). The version-tagged software release accompanying this submission is \texttt{v2.7.1-submission}, archived as a public GitHub release at \url{https://github.com/htlin222/sctda-cancer-plasticity/releases/tag/v2.7.1-submission}. The complete pipeline is reproducible via \texttt{make pipeline} from raw GEO data to all figures and tables. A unified \texttt{sctda} CLI is planned for v2.0; the current pipeline is invoked via the Makefile and individual \texttt{scripts/0X\_*.py} files. A \texttt{CITATION.cff} file at the repository root provides machine-readable citation metadata for software-citation tooling.
 
 \subsection*{Data availability}
 
@@ -126,6 +126,6 @@ the Gene Expression Omnibus under accessions GSE134839, GSE150949,
 GSE243562, and GSE131907; the Maynard et al.\ 2020 EGFR-mutant cohort
 was obtained from the authors' public Google Drive archive referenced in
 \citet{maynard2020}. Processed AnnData objects, persistence diagrams,
-and Mapper graphs can be regenerated end-to-end by running \texttt{make
-pipeline}; see Code availability above for the archival plan at final
-submission.
+and Mapper graphs are regenerable end-to-end from the raw GEO data by
+running \texttt{make pipeline}; seeds and parameters are pinned in the
+repository so derived outputs are bit-stable across runs.

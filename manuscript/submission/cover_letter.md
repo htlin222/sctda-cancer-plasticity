@@ -40,7 +40,7 @@ We are pleased to submit our manuscript, **"Drug tolerance takes shape: persiste
 **Competing interests, ethics, data and code availability:** see `declarations.md`.
 **Submission checklist:** see `checklist.md`.
 
-This manuscript is not under consideration elsewhere. A preprint is posted on bioRxiv (DOI to be supplied at upload). We will release a tagged software release and Zenodo deposit prior to acceptance.
+This manuscript is not under consideration elsewhere. The accompanying software is publicly archived as GitHub release `v2.7.1-submission` (<https://github.com/htlin222/sctda-cancer-plasticity/releases/tag/v2.7.1-submission>) under the MIT license; the complete analysis pipeline is reproducible end-to-end from raw GEO data via `make pipeline`.
 
 Thank you for considering the manuscript. We look forward to your response.
 
