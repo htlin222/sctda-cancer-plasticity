@@ -1,0 +1,152 @@
+===
+title: Inference audit — Results → Discussion → Conclusions
+subtitle: scTDA cancer plasticity manuscript (preprint.tex)
+mode: strict
+model:
+    mode: strict
+map:
+    statementLabelMode: text
+    argumentLabelMode: title
+    rankdir: TB
+===
+
+// =========================================================================
+// AUDIT GOAL
+// For every Discussion or Conclusion claim, link it back to the
+// supporting Result(s). Flag claims that overreach the Results, that
+// borrow evidence from cited literature without making that borrowing
+// explicit, or that contain unsupported inferential jumps.
+// Critique nodes are marked with the <critique-*> argument titles.
+// =========================================================================
+
+
+# Results — primary empirical claims
+
+[R-PC9-erl-baseline]: PC9 erlotinib-treated cells display non-zero H1 persistence across six timepoints, max 1.08–1.77, D9 highest at 1.77; D0 is separated from drug-treated timepoints in Wasserstein space; permutation tests do not reach p<0.05 at any single timepoint (closest D9 p=0.098, D2 p=0.126) due to per-timepoint n=200–379.
+
+[R-tirosh-ablation]: After removing 39 Tirosh cell-cycle genes from the HVG set, ratio of post- to pre-ablation max H1 ranges 0.71–1.11 across six erlotinib timepoints (mean 0.90, SD 0.14); D11 increases (ratio 1.11). A separate 100-permutation null on post-ablation data finds individual-timepoint p=0.11–0.58 (acknowledged as underpowered at n=200–379).
+
+[R-stringent-regress]: Stringent regression on S-score and G2M-score on 1000-cell subsamples gives post/pre max-H1 ratio 1.07–4.05 across five cohorts (erlotinib D0/D9/D11, PDX YU-006 untreated/residual); mean 1.97; every value above 1. The osimertinib cohort cannot be tested this way because zero Tirosh cell-cycle genes are present in its HVG set.
+
+[R-osi-monotonic]: PC9 osimertinib max H1 grew monotonically D0=1.41 → D3=1.82 → D7=2.67 → D14=3.78 (2.7×). Permutation tests confirmed p<0.01 at D7 and D14.
+
+[R-pdx-replication]: Two EGFR-mutant PDX models showed max-H1 increase under osimertinib residual disease: YU-003 2.79→3.85 (1.4×, p<0.01); YU-006 2.81→6.08 (2.2×, p<0.01).
+
+[R-patient-baseline]: Treatment-naive patient LUAD (GSE131907, Kim atlas, mixed-driver, NOT EGFR-selected) max H1 = 4.77 on a 1500-cell subsample of tLung epithelial cells. Higher than cell-line (1.41) or PDX (2.79, 2.81) untreated baselines.
+
+[R-timepoint-permnull]: A timepoint-label permutation null on osimertinib D14 vs D0 (50 permutations) found the observed ΔH1=2.07 exceeds the 95th percentile (1.18) of the permuted distribution, giving p<0.02 (0/50 exceedances). This tests drug-exposure dependence specifically.
+
+[R-alt-summaries]: Total H1 persistence grew 402 (D0) → 568 (D7) → 588 (D14), replicating the monotonic trend; persistence entropy remained 6.7–7.0 across conditions, indicating growth is driven by larger-scale features rather than more numerous small ones.
+
+[R-emt-enrichment]: With EMT score as Mapper filter, top-100 Mapper-connected genes in PC9 are EMT-dominated; MSigDB Hallmark EMT ranks #1 in pathway enrichment. PDX top-100 are broader mesenchymal/secretory. 11 genes overlap between the two top-100 lists: hypergeometric p=1.25e-11 against 13955-gene universe (operational definition: non-zero expression in both analyses); p=2.1e-4 against the more conservative HVG-intersection background.
+
+[R-filter-sensitivity]: With PC1 as an unbiased Mapper filter, top-100 contains only 4/33 Hallmark EMT genes (vs 8/33 with EMT-filter); cell-cycle/proliferation genes (MKI67, TOP2A, etc.) co-rank with EMT markers; PC1↔EMT top-100 overlap is 53/100. This shows the EMT enrichment depends partially on filter choice.
+
+[R-variance-norm]: Variance-normalized Mapper scores raise Hallmark-EMT hit count to 13/33 in the top 100 and drop housekeeping genes out of top rankings, arguing the EMT enrichment is not an expression-magnitude artifact.
+
+[R-framework-modular]: Pipeline is implemented as numbered modules coordinated through `make pipeline`; applied without modification to Drop-seq cell-line, 10x cell-line, 10x PDX (with mouse-gene filtering), and 10x atlas data; deterministic seeds throughout.
+
+[R-resampling-stability]: Coefficient of variation of max H1 under five subsampling seeds: 8.9% (osi D14), 12.4% (osi D0), 12.8% (YU-006 residual), 23.5% (YU-006 untreated). Ordering (D14>D0; residual>untreated) preserved in every resample.
+
+[R-harmony-survival]: After Harmony batch correction on top-50 PCs, the osi monotonic trend is preserved (1.35→3.94, 2.9×); YU-006 untreated→residual preserved (2.59→5.19); YU-003 effect becomes more modest but directionally consistent; Kim baseline robust (4.52 corrected vs 4.77 uncorrected).
+
+[R-maynard-cohort]: In 14 EGFR-mutant NSCLC patients (Maynard 2020, Smart-seq2), pooled max H1 grew monotonically across treatment stages: TN 5.37 → PER 7.13 → PD 8.05 (TN-to-PD 1.50×). In 3/3 patients with matched pre/post biopsies, post-treatment max H1 exceeded treatment-naive (median 1.60×, range 1.35–3.25×). Sign-test p=0.125 — directionally consistent but underpowered for individual significance.
+
+[R-mapper-robust]: Across a 4×5 Mapper-parameter sweep, pairwise Spearman rank correlation of gene connectivity vs the reference parameter set was mean ρ=0.994 (range 0.990–0.998).
+
+
+# Discussion — what the paper concludes from those Results
+
+<D1-framework-claim>: The primary contribution is a reproducible framework, not a single-dataset finding. Max H1 increases monotonically with osimertinib exposure in three independent systems (PC9, YU-003, YU-006); 6/6 significance tests on 1000-cell validation subsamples yield p<0.05, 5/6 at p<0.01.
+    + [R-osi-monotonic]
+    + [R-pdx-replication]
+    + [R-framework-modular]
+
+<D2-convergent-topology>: The topological signature replicates across cell-line and PDX with higher fidelity than the underlying gene programs (only 11/100 top-Mapper-connected genes overlap).
+    + [R-pdx-replication]
+    + [R-emt-enrichment]
+
+<D3-divergent-genes>: Cell-state plasticity is realized through partially different but related gene-expression repertoires depending on microenvironment.
+    + [R-emt-enrichment]
+    - <critique-mechanism>
+
+<D4-lit-context>: The framework is complementary to Watermelon lineage tracing (Oren 2021) and discrete-state DTP analyses (Aissa 2021); extends scTDA (Rizvi 2017) from development to perturbation-response and adds permutation null + cell-cycle controls.
+    + [R-framework-modular]
+
+<D5-limits-batch>: Cross-system H1 ordering (cell line < PDX < patient) could partly reflect platform/batch confounding; we did Harmony correction and the within-system monotonic trends survive.
+    + [R-harmony-survival]
+
+<D5-limits-null>: Gene-label-within-cell permutation destroys all covariance and is close to isotropic-Gaussian; significance at p<0.01 only tests for non-random point-cloud structure. A timepoint-label permutation null directly tests drug dependence and gives p<0.02 on osimertinib D14 vs D0.
+    + [R-timepoint-permnull]
+
+<D5-limits-patient>: Three matched pre/post patients is underpowered; full pooled-cohort monotonic trend across 14 patients (5.37→7.13→8.05) and the 3/3 within-patient increases are supportive.
+    + [R-maynard-cohort]
+
+<D5-limits-cc>: Tirosh ablation is the standard but not exhaustive cell-cycle control; the more demanding S/G2M regression rules out cell-cycle as a confounder; the PC1-filter Mapper shows cell-cycle genes are prominent among loop-associated genes, suggesting the topological signature is multi-program.
+    + [R-tirosh-ablation]
+    + [R-stringent-regress]
+    + [R-filter-sensitivity]
+
+<D6-implications>: Therapeutic strategies that fix cells in a single state may be more effective than those that target one state in isolation; the framework provides a principled readout for benchmarking such interventions across systems.
+    + <D1-framework-claim>
+    - <critique-therapeutic-extrapolation>
+
+<D7-mechanistic-speculation>: A robust 1-cycle corresponds to a Waddington-style limit cycle around a shallow basin; cyclic plasticity is predicted to be adaptive under fluctuating/targeted selection (bet-hedging); osimertinib likely both selects pre-existing cycles and induces new ones.
+    + [R-osi-monotonic]
+    + [R-patient-baseline]
+    - <critique-selection-vs-induction>
+
+
+# Conclusions — what the paper states it has shown
+
+[C1-framework]: An open-source, reproducible framework applies persistent homology and Mapper to longitudinal scRNA-seq with integrated permutation null, cell-cycle ablation control, and gene attribution.
+    + <D1-framework-claim>
+
+[C2-isometry-invariant-stat]: Max H1 persistence is an isometry-invariant, reproducible statistic that increases with osimertinib exposure across validation cohorts of cell lines and PDX (discovery erlotinib cohort showed elevated H1 throughout but non-monotonic, attributable to small per-timepoint n=200–379).
+    + [R-osi-monotonic]
+    + [R-pdx-replication]
+    + [R-resampling-stability]
+    + [R-harmony-survival]
+    - <critique-isometry-terminology>
+
+[C3-patient-comparison]: Max H1 is quantitatively comparable with — but not directly calibrated against — the baseline complexity of treatment-naive patient tumors.
+    + [R-patient-baseline]
+    + [R-harmony-survival]
+
+[C4-cc-survival]: The cyclic structure survives cell-cycle ablation.
+    + [R-tirosh-ablation]
+    + [R-stringent-regress]
+
+[C5-emt-enrichment]: Loop-associated genes are enriched for EMT programs in both cell line and PDX, with statistically significant but system-specific overlap.
+    + [R-emt-enrichment]
+    - <critique-emt-conclusion-overstates>
+
+[C6-plain-language]: Drug treatment reorganises the cell-state landscape so cells can reversibly cycle among multiple transcriptional states including EMT-like programs.
+    + [R-osi-monotonic]
+    + [R-pdx-replication]
+    + [R-maynard-cohort]
+    - <critique-static-vs-dynamic>
+
+
+# Critiques — overclaims, hallucinations, unsupported jumps
+
+<critique-isometry-terminology>: The Conclusion calls max H1 "isometry-invariant", but max H1 from a Vietoris–Rips filtration is metric-dependent — its numerical lifespan is measured in filtration-parameter units (Euclidean distance in PCA space). Supplementary Methods S4 explicitly calls this a hybrid statistic. "Isometry-invariant" reads stronger than the underlying Methods. Suggested fix: replace with "reproducible across resampling and batch correction" or "topologically invariant in existence and reproducibly ordered in magnitude".
+    {category: "overclaim", severity: "moderate"}
+
+<critique-static-vs-dynamic>: The Conclusion sentence "cells can reversibly cycle among multiple transcriptional states" describes a dynamic process; persistent homology on snapshot scRNA-seq detects a static one-dimensional hole in the state-space cloud. Demonstrating that individual cells traverse that loop requires temporal data (lineage tracing) — borrowed from Oren 2021 (PC9 osimertinib) and not directly shown by the topology here. Suggested fix: "consistent with cells reversibly cycling, as established by lineage tracing in PC9 (Oren et al. 2021)".
+    {category: "borrowed-evidence", severity: "moderate"}
+
+<critique-emt-conclusion-overstates>: The Conclusion says loop-associated genes are enriched for EMT. With the EMT-score Mapper filter, EMT is #1 enriched (8/33 Hallmark EMT in top 100). With an unbiased PC1 filter, only 4/33 Hallmark EMT genes are in the top 100, and cell-cycle genes co-rank prominently. The body acknowledges this is "multi-program rather than purely EMT"; the Conclusion drops that hedge. Suggested fix: "Loop-associated genes are enriched for EMT programs in both cell line and PDX when an EMT-aware filter is used (partially shared filter-dependence noted in the body)" — or just "include EMT programs".
+    {category: "filter-dependence-lost", severity: "minor"}
+
+<critique-therapeutic-extrapolation>: "Therapeutic strategies that fix cells in a single state may be more effective" is properly hedged with "may be", but the paper provides no data on state-trapping interventions. The framework's claim to serve as a "principled readout for benchmarking such interventions" is a future-use claim, not a current result. Reading the sentence cleanly with the hedge intact is fine; sharpen by marking it explicitly as a testable hypothesis.
+    {category: "framing", severity: "minor"}
+
+<critique-selection-vs-induction>: "Osimertinib likely both selects pre-existing cycles and induces new ones" — the paper does not distinguish selection from induction. Distinguishing them would require either lineage tracing or a controlled-clonal-bottleneck design. As speculation it is reasonable and cited (huang2012, pisco2015, brock2009, gupta2011); the word "likely" is doing real work. Keep but make the speculative status explicit ("We speculate that ...").
+    {category: "speculation-not-flagged", severity: "minor"}
+
+<critique-mechanism>: "Cell-state plasticity is realized through partially different but related gene-expression repertoires depending on microenvironment" — the data show different top-Mapper-connected gene lists between PC9 (in vitro) and PDX (in vivo). Attributing the difference to *microenvironment* specifically (vs cell-line vs PDX biology in general, vs species filtering, vs platform) is one explanation among several. Citation to dongre2019 is supportive but the causal attribution is not directly tested. Suggested fix: "with microenvironment as one plausible driver (Dongre 2019)".
+    {category: "causal-attribution", severity: "minor"}
+
+<critique-D1-numerics>: D1 states "6/6 significance tests on 1000-cell validation subsamples yield p<0.05 (5/6 at p<0.01)". The body shows D7 and D14 of osi (R-osi-monotonic) and both PDX models (R-pdx-replication) at p<0.01; that's 4/X at p<0.01. The 6/6 and 5/6 figures must be cross-checked against Table validation (tab:validation, not shown in this audit). Action: verify the table; if D0 and D3 of osi do not reach p<0.05 the "6/6" claim breaks.
+    {category: "verification-required", severity: "moderate"}

@@ -1,0 +1,108 @@
+% =========================================================================
+% Nature Communications submission build
+%
+% This file is the *submission* build. The working bioRxiv build lives in
+% preprint.tex (article class). The two files share figures, references,
+% and supplementary methods but use different document classes.
+%
+% TWO CLASS OPTIONS — pick one by toggling the \snjnltrue / \snjnlfalse
+% line below:
+%
+% OPTION A (RECOMMENDED, official):
+%   Springer Nature `sn-jnl.cls` with the `nature` option. NOT bundled
+%   with TeX Live — must be installed manually from Overleaf or
+%   <https://www.springernature.com/gp/authors/campaigns/latex-author-support>.
+%   See manuscript/submission/template_setup.md for step-by-step.
+%
+% OPTION B (FALLBACK, community):
+%   The TeX Live `nature.cls` (Peter Czoschke, 2004). Produces a Nature-
+%   styled PDF but is not the official Springer Nature class. Useful as
+%   a stand-in until sn-jnl.cls is installed.
+% =========================================================================
+
+\newif\ifsnjnl
+\snjnlfalse  % switch to \snjnltrue once sn-jnl.cls is installed
+
+\ifsnjnl
+  % ---- Option A: official Springer Nature class (post-install) ----
+  \documentclass[Numbered, sn-mathphys-num]{sn-jnl}
+\else
+  % ---- Option B: community Nature class (works out of the box) -----
+  \documentclass[fleqn,10pt]{nature}
+\fi
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\graphicspath{{./figures/}{../results/figures/}}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\DeclareSIUnit{\molar}{M}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+% =========================================================================
+% Title block
+% =========================================================================
+\title{Drug tolerance takes shape: persistent homology reveals cyclic
+       cell-state plasticity in EGFR-mutant lung cancer}
+
+\author{Hsieh-Ting Lin$^{1}$ and Yueh-Hua Tu$^{2,\ast}$\\
+  \\
+  \small $^{1}$Department of Medical Oncology, Koo Foundation Sun Yat-Sen Cancer Center, Taipei, Taiwan\\
+  \small $^{2}$Center for Computational and Systems Biology, National Taiwan University, Taipei, Taiwan\\
+  \small $^{\ast}$Corresponding author: \texttt{<email TBD>}}
+
+\begin{document}
+\maketitle
+
+% =========================================================================
+% Abstract (Nature unstructured, ~150 words — DE-STRUCTURE the
+% Background/Results/Conclusions form used in the bioRxiv build)
+% =========================================================================
+\begin{abstract}
+  % TODO: paste the un-structured abstract here (max ~150 words, no
+  % citations). Current bioRxiv abstract is structured and too long;
+  % needs a separate editorial pass.
+\end{abstract}
+
+% =========================================================================
+% Main text — for the first submission round, the simplest path is to
+% \input{} from manuscript/sections/*.tex (split out from preprint.tex)
+% so the two builds share prose. Until that split is done, copy the body
+% inline here, or compile preprint.pdf and extract section text manually.
+% =========================================================================
+
+% TODO: \input{sections/background.tex}
+% TODO: \input{sections/results.tex}
+% TODO: \input{sections/discussion.tex}
+% TODO: \input{sections/methods.tex}    % Nature Comms: Methods in main text, not separate
+% TODO: \input{sections/conclusions.tex}
+
+% =========================================================================
+% References
+% =========================================================================
+\bibliographystyle{naturemag}  % use sn-nature.bst if Option A
+\bibliography{references}
+
+% =========================================================================
+% Acknowledgements (Nature places these between References and Author info)
+% =========================================================================
+\section*{Acknowledgements}
+% TODO: paste acknowledgements block from preprint.tex.
+
+\section*{Author contributions}
+% See manuscript/submission/credit_taxonomy.md. Brief here:
+H.-T.L. conceived the study, designed and implemented the pipeline,
+performed all analyses, and wrote the manuscript. Y.-H.T. supervised
+the project, contributed to methodology and validation strategy, and
+edited the manuscript. Both authors approved the final version.
+
+\section*{Competing interests}
+The authors declare no competing financial or non-financial interests.
+
+\section*{Data and code availability}
+% TODO: paste from manuscript/submission/declarations.md, with the
+% Zenodo software DOI and Zenodo data DOI inserted at submission time.
+
+\end{document}
