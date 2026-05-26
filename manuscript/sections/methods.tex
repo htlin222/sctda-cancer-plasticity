@@ -2,20 +2,29 @@
 
 \subsection*{Datasets}
 
-GSE134839 \citep{aissa2021}: PC9 cells treated with
-\SI{2}{\micro\molar} erlotinib; six Drop-seq DGE matrices
-(D0, D1, D2, D4, D9, D11); 6{,}508 total cells.
-GSE150949 \citep{oren2021}: PC9 cells with Watermelon lineage tracing
-under osimertinib; 56{,}419 cells across D0/D3/D7/D14; subsampled to
-5{,}000.
+All cell models harbour activating \emph{EGFR} mutations sensitising
+them to EGFR-TKIs; PC9 carries the canonical exon 19 deletion
+E746-A750del. Per-cohort details:
+GSE134839 \citep{aissa2021}: PC9 erlotinib time-series; six Drop-seq
+DGE matrices at \SI{2}{\micro\molar} (D0, D1, D2, D4, D9, D11);
+6{,}508 total cells, 2{,}942 post-QC.
+GSE150949 \citep{oren2021}: PC9 with Watermelon lineage tracing under
+osimertinib; 10x Chromium; 56{,}419 cells across D0/D3/D7/D14;
+subsampled to 5{,}000 (4{,}999 post-QC).
 GSE243562 \citep{wurtz2024}: two EGFR-mutant PDX models (YU-003,
-YU-006) under osimertinib; 22{,}032 cells across four samples
-(untreated and residual disease for each model).
-GSE131907 \citep{kim2020}: treatment-naive patient LUAD atlas;
-208{,}506 cells across 44 patients; subsampled to 5{,}000 tLung
-epithelial cells, then a further 1{,}500 cells for tractable
-Vietoris--Rips computation (filter and seed details in
+YU-006) under matched untreated and osimertinib-residual conditions;
+10x Chromium; 22{,}032 cells (18{,}874 post-QC) across four samples,
+subsampled to 1{,}500 per group for VR computation.
+GSE131907 \citep{kim2020}: treatment-naive patient LUAD atlas (mixed
+driver genotypes); 10x Chromium; 208{,}506 cells across 44 patients;
+subsampled to 5{,}000 tLung epithelial cells, then 1{,}500 for
+tractable Vietoris--Rips computation (filter and seed details in
 Supplementary Methods~S1).
+Maynard 2020 \citep{maynard2020}: EGFR-mutant NSCLC longitudinal
+cohort; Smart-seq2; 13{,}244 epithelial cells across 14 patients with
+biopsies at three treatment stages (treatment-naive TN, 3{,}287
+cells; persister/residual disease PER, 4{,}893 cells; progressive
+disease PD, 5{,}064 cells); 1{,}500-cell subsamples per stage.
 
 \subsection*{Preprocessing}
 

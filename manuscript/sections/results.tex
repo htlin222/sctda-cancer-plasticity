@@ -2,15 +2,11 @@
 
 \subsection*{Erlotinib-treated PC9 cells display robust $H_1$ persistence (max $H_1 = 3.78$ at day 9)}
 
-We first asked whether drug-treated PC9 cells (harboring EGFR exon 19
-deletion E746-A750del) exhibit non-trivial $H_1$ features consistent
-with cyclic state-space structure. We analyzed
-GSE134839 \citep{aissa2021}, a Drop-seq time-series of PC9 cells treated
-with \SI{2}{\micro\molar} erlotinib at days 0, 1, 2, 4, 9, and 11
-(\cref{fig:study_overview}). After standard QC and preprocessing
-(Methods), 2{,}942 cells across six timepoints were projected into the
-top-30 principal components and used to compute the persistence diagrams
-via the Vietoris--Rips filtration.
+We first asked whether drug-treated NSCLC PC9 cells exhibit
+non-trivial $H_1$ features consistent with cyclic state-space
+structure. We analysed an erlotinib time-series in PC9
+(GSE134839 \citep{aissa2021}; six timepoints D0--D11;
+\cref{fig:study_overview}; Methods).
 
 All drug-treated timepoints showed non-zero $H_1$ persistence, with
 maximum values ranging from 1.08 (D11) to 1.77 (D9)
@@ -55,22 +51,20 @@ to that cohort by absence.
 
 \subsection*{Osimertinib drives a 2.7$\times$ monotonic max $H_1$ increase over 14 days}
 
-On GSE150949 \citep{oren2021}, a PC9 lineage-tracing osimertinib
-time-series (56{,}419 cells subsampled to 5{,}000; D0/D3/D7/D14;
-4{,}999 post-QC), max $H_1$ rose monotonically $1.41 \to 1.82 \to
-2.67 \to 3.78$ (2.7$\times$; \cref{fig:validation}), with
-permutation tests confirming $p < 0.01$ at D7 and D14
-(\cref{tab:validation}).
+In a PC9 osimertinib time-series with Watermelon lineage tracing
+(GSE150949 \citep{oren2021}; D0/D3/D7/D14; Methods), max $H_1$ rose
+monotonically $1.41 \to 1.82 \to 2.67 \to 3.78$ (2.7$\times$;
+\cref{fig:validation}), with permutation tests confirming $p < 0.01$
+at D7 and D14 (\cref{tab:validation}).
 
 \subsection*{PDX xenografts replicate the osimertinib-driven cycle (YU-006: 2.2$\times$, YU-003: 1.4$\times$)}
 
-In GSE243562 \citep{wurtz2024} --- two EGFR-mutant PDX models
-(YU-003, YU-006) under matched untreated and osimertinib-residual
-conditions, 18{,}874 cells subsampled to 1{,}500 per group --- both
-models showed an increase in max $H_1$ under residual disease:
-YU-003 $2.79 \to 3.85$ ($1.4\times$, $p < 0.01$); YU-006
-$2.81 \to 6.08$ ($2.2\times$, $p < 0.01$) (\cref{fig:validation},
-\cref{tab:validation}). YU-006 matches the cell-line D14 effect;
+In two EGFR-mutant PDX models (YU-003, YU-006) under matched
+untreated and osimertinib-residual conditions (GSE243562
+\citep{wurtz2024}; Methods), both models showed an increase in max
+$H_1$ under residual disease: YU-003 $2.79 \to 3.85$ ($1.4\times$,
+$p < 0.01$); YU-006 $2.81 \to 6.08$ ($2.2\times$, $p < 0.01$)
+(\cref{fig:validation}, \cref{tab:validation}). YU-006 matches the cell-line D14 effect;
 YU-003 is more modest but directionally consistent. This replicates
 the cell-line finding in an \emph{in vivo} system with stromal,
 vascular, and host-immune context.
@@ -78,10 +72,9 @@ vascular, and host-immune context.
 \subsection*{Max $H_1$ in drug-treated cells approaches patient-tumor levels}
 
 To establish a topological reference for untreated human lung
-adenocarcinoma, we analysed GSE131907 \citep{kim2020} --- a
-208{,}506-cell LUAD atlas across 44 patients --- subsampling 5{,}000
-primary-tumour epithelial cells (tLung), then 1{,}500 for VR
-computation. Treatment-naive patient LUAD shows max $H_1 = 4.77$,
+adenocarcinoma, we analysed a treatment-naive patient LUAD atlas
+(GSE131907 \citep{kim2020}; Methods). Treatment-naive patient LUAD
+shows max $H_1 = 4.77$,
 substantially higher than treatment-naive PC9 cell line (1.41) or
 PDX (2.79, 2.81) baselines (\cref{fig:master}). The Kim atlas is
 mixed-driver (EGFR-, KRAS- and other-mutant tumours; not
@@ -188,13 +181,11 @@ rather than within-dataset batch structure.
 \subsection*{In 14 EGFR-mutant NSCLC patients, max $H_1$ grew monotonically TN $\to$ PER $\to$ PD ($5.37 \to 7.13 \to 8.05$)}
 
 To directly test the framework on clinical tissue, we analysed the
-full EGFR-mutant subset of \citet{maynard2020}: 13{,}244 Smart-seq2
-cells across 14 patients with biopsies at three treatment stages ---
-treatment-naive (TN, 3{,}287 cells), persister/residual disease (PER,
-4{,}893 cells), and progressive disease (PD, 5{,}064 cells). Across
-1{,}500-cell subsamples per stage, pooled max $H_1$ grew monotonically
-$5.37 \to 7.13 \to 8.05$ (TN-to-PD $1.50\times$;
-\cref{fig:patient}a).
+EGFR-mutant subset of \citet{maynard2020} (14 patients with biopsies
+at treatment-naive, persister/residual, and progressive disease
+stages; Methods). Pooled max $H_1$ grew monotonically across the
+three stages: TN $5.37 \to$ PER $7.13 \to$ PD $8.05$ (TN-to-PD
+$1.50\times$; \cref{fig:patient}a).
 
 \paragraph{Per-patient matched trajectories.}
 Three patients had matched TN + post-treatment biopsies: TH218
