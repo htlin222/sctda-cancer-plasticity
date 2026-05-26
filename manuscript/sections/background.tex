@@ -3,30 +3,35 @@
 \subsection*{Trajectory methods systematically miss cyclic cell-state structure}
 
 Single-cell RNA sequencing has transformed our view of cellular
-heterogeneity, but the dominant trajectory toolkit for ordering cells
---- Monocle and Slingshot (tree backbones), PAGA (connectivity graph),
-and RNA velocity (vector field) --- was designed to summarise
-progression rather than to quantify reversible cycling
-\citep{saelens2019}. PAGA admits non-tree graphs and velocity defines
-a field, but neither yields a scalar that scores how robustly cells
-trace a closed loop across analysis scales. That gap matters whenever
-cell populations reversibly transition between states --- as in the
-epithelial-to-mesenchymal transition (EMT), the cell cycle, and
-adaptive drug tolerance \citep{shaffer2017,oren2021} --- because a
-reversible cycle is mathematically a one-dimensional hole in the
-data's point cloud.
+heterogeneity, but the dominant trajectory toolkit --- Monocle and
+Slingshot (tree backbones), PAGA (connectivity graph), and RNA
+velocity (vector field) --- was designed to summarise one-directional
+progression rather than to quantify reversible inter-state cycling,
+i.e.\ cells visiting and revisiting several transcriptional states
+\citep{saelens2019}.
+PAGA admits non-tree graphs and velocity defines a field, but neither
+yields a scalar that scores how robustly cells trace a closed loop.
+It matters in EMT and adaptive drug tolerance
+\citep{shaffer2017,oren2021}. The canonical cell cycle is cyclic in
+only one direction per cell (G1$\to$S$\to$G2$\to$M) yet produces a
+snapshot $H_1$ signature indistinguishable from bidirectional
+inter-state cycling, so we explicitly control for it. Geometrically,
+inter-state cycling traces a closed loop --- a one-dimensional hole
+that persistent homology detects; directionality is supplied
+separately by lineage tracing \citep{oren2021}.
 
 \subsection*{Topological data analysis as a framework-level remedy}
 
 \paragraph{An intuitive picture for biomedical readers.}
-Drug-tolerant cancer cells appear not to die or jump to one resistant
-state but to reversibly cycle between several transcriptional states
+Drug-tolerant cancer cells appear neither to die outright nor to jump
+into a single resistant state; instead, individual cells visit and
+revisit \emph{several} transcriptional states over time
 (\cref{fig:concept}a). When each cell is plotted as a point in
-gene-expression space, this reversible cycling traces a closed loop
---- the same kind of one-dimensional ``hole'' that distinguishes a
-donut from a sphere in topology, and which tree-based trajectory
-methods discard by force-fitting branching graphs
-(\cref{fig:concept}b). Persistent homology quantifies the loop's
+gene-expression space, this inter-state cycling traces a closed loop
+--- the same kind of
+one-dimensional ``hole'' that distinguishes a donut from a sphere in
+topology, and which tree-based trajectory methods discard by
+force-fitting branching graphs (\cref{fig:concept}b). Persistent homology quantifies the loop's
 robustness across spatial scales: the lifespan of the longest such
 loop is the \emph{maximum $H_1$ persistence} statistic used
 throughout this paper. The headline finding is that this statistic
@@ -53,18 +58,17 @@ lung cancer (NSCLC) provide an ideal testbed for a topology-based
 framework. First-line osimertinib gives a median progression-free
 survival of roughly 18 months, yet essentially every patient relapses
 from residual disease, and no approved drug specifically targets the
-persister state \citep{ramalingam2020,piotrowska2018}. DTPs are a
-small, slow-growing subpopulation that survives targeted therapy not
-by acquiring mutations but by entering a reversible, quiescent
-transcriptional state --- behaving like cells hibernating through
-drug pressure and waking up when conditions relax
-\citep{sharma2010,hata2016,aissa2021,oren2021}. Multiple public
-scRNA-seq datasets cover longitudinal treatment with erlotinib (1st-
-generation TKI) or osimertinib (3rd-generation TKI) at cell-line and
-patient-derived xenograft (PDX) scales, and lineage tracing
-\citep{oren2021} has established that DTPs contain cycling
-subpopulations --- but the topological signature of this dynamic has
-not been formally quantified.
+persister state \citep{ramalingam2020,piotrowska2018}. DTPs are a small, slow-growing subpopulation that survives targeted
+therapy without acquiring mutations \citep{sharma2010,hata2016}. Early
+work framed DTPs as a single quiescent state \citep{sharma2010}; more
+recent lineage tracing in PC9 osimertinib refines this picture,
+showing DTPs span multiple transcriptional states and can revert to
+drug-sensitive phenotypes \citep{oren2021,aissa2021} --- the
+inter-state cycling our framework quantifies, distinct from a single
+quiescence$\leftrightarrow$activation switch. Public scRNA-seq datasets cover
+longitudinal erlotinib and osimertinib treatment at cell-line and PDX
+scales, but the topological signature has not been formally
+quantified.
 
 \subsection*{Contribution}
 

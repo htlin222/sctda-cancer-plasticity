@@ -6,14 +6,12 @@ The primary contribution of this work is an open-source, modular
 framework for applying topological data analysis to longitudinal
 scRNA-seq data, with integrated permutation null testing, cell-cycle
 ablation, Wasserstein diagram comparison, and Mapper-based gene
-attribution. The five datasets analyzed here are a deliberately
-heterogeneous benchmark (two drugs, three biological scales, two PDX
-models, one patient atlas, one 14-patient longitudinal cohort) chosen to stress-test reproducibility rather
-than to maximize statistical significance on any single cohort. This
-reframes the question from ``does drug tolerance produce topological
-cyclicity?'' to ``is topological cyclicity a reproducible, quantitative
-phenotype across biological systems that can be detected and compared
-with a standardized pipeline?'' Our answer is yes: max $H_1$ increases
+attribution. The five datasets here span two drugs, three biological
+scales, and a 14-patient cohort, chosen to stress-test reproducibility
+rather than to maximise single-cohort significance. This reframes the
+question from ``does drug tolerance produce topological cyclicity?''
+to ``is topological cyclicity a reproducible cross-system phenotype?''
+Our answer is yes: max $H_1$ increases
 monotonically with osimertinib exposure in three independent systems
 (PC9 cell line, YU-003 PDX, YU-006 PDX), and all six 1{,}000-cell
 permutation tests in \cref{tab:validation} reach $p < 0.05$ (5/6 at
@@ -22,36 +20,32 @@ $p = 0.030$).
 
 \subsection*{Convergent topology, divergent gene programs}
 
-A less obvious but perhaps more biologically informative finding is
-that the topological signature replicates across cell line and PDX with
-much higher fidelity than the underlying gene programs. Cell line
-top-connected genes are dominated by canonical EMT markers (\emph{TPM1}, \emph{KRT8},
-\emph{KRT19}), while PDX top-connected genes are a broader
-mesenchymal/secretory signature (\emph{S100A4}, \emph{LGALS3}, \emph{COL1A1}, \emph{AGR2}). The
-11-gene overlap between the two top-100 lists, although highly
-significant statistically (hypergeometric $p = 1.25 \times 10^{-11}$),
-is a minority of either list. We interpret this as evidence that the
-cell-state plasticity underlying DTP emergence is realized through
-partially different but related gene expression repertoires depending
-on microenvironment --- an observation consistent with recent findings
-on context-dependent EMT programs \citep{dongre2019}. The topological
-statistic abstracts over these specific gene choices, making it a more
-stable cross-system phenotype than any individual gene signature.
+A less obvious but biologically informative finding is that the
+topological signature replicates across cell line and PDX with higher
+fidelity than the underlying gene programs. Cell-line top-connected
+genes are dominated by canonical EMT markers
+(\emph{TPM1}, \emph{KRT8}, \emph{KRT19}); PDX top genes form a broader
+mesenchymal/secretory signature
+(\emph{S100A4}, \emph{LGALS3}, \emph{COL1A1}, \emph{AGR2}). The
+11-gene overlap between the two top-100 lists is highly significant
+(hypergeometric $p = 1.25 \times 10^{-11}$) but a minority of either
+list. We interpret this as evidence that plasticity is realised
+through partially different gene repertoires depending on
+microenvironment, consistent with context-dependent EMT programs
+\citep{dongre2019}. The topological statistic abstracts over these
+specific gene choices, making it a more stable cross-system phenotype
+than any individual gene signature.
 
 \subsection*{Relationship to existing literature}
 
-Our work is complementary to and independent of \citet{oren2021}, who
-used Watermelon lineage tracing to establish that PC9 DTPs contain
-cycling subpopulations, and \citet{aissa2021}, who identified discrete
-DTP transcriptional states in the source GSE134839 dataset. Our
-framework provides an orthogonal method of detecting cyclic behavior
-directly from the scRNA-seq transcriptome without lineage-tracing
-infrastructure, and extends the signal to PDX data Oren et al.\ did not
-analyze. Relative to \citet{rizvi2017} scTDA, which pioneered TDA on
-mouse embryonic stem cell differentiation, we extend the framework to a
-perturbation-response setting (rather than developmental) and introduce
-controls (cell-cycle ablation, formal permutation null) absent from the
-original formulation.
+Our framework complements \citet{oren2021}, who used Watermelon
+lineage tracing to establish PC9 DTP cycling subpopulations, and
+\citet{aissa2021}, who identified discrete DTP states in GSE134839.
+It detects cyclic behaviour directly from scRNA-seq without
+lineage-tracing infrastructure, and extends the signal to PDX data.
+Relative to \citet{rizvi2017} scTDA on mouse ES differentiation, we
+extend the framework to perturbation-response and add cell-cycle /
+permutation-null controls absent from the original.
 
 The broader non-genetic drug-tolerance literature --- YAP-mediated
 senescent DTPs \citep{kurppa2020}, melanoma minimal-residual-disease
@@ -99,11 +93,15 @@ artefact.
 
 If drug tolerance operates through topologically cyclic plasticity,
 state-trapping combinations that collapse the cycle may outperform
-single-state-targeting strategies. The cross-scale reproducibility of
-the signature argues that max $H_1$ is a quantitative phenotype for
+single-state-targeting strategies. The bidirectional nature of
+inter-state cycling further provides a conceptual basis for the
+partial clinical efficacy of TKI rechallenge after a drug holiday in
+EGFR-mutant NSCLC: cells that survived prior treatment can revert to
+drug-sensitive states. The cross-scale reproducibility of the
+signature argues that max $H_1$ is a quantitative phenotype for
 cell-state plasticity, suitable for benchmarking drug responses
-across labs and platforms and likely to generalise to adjacent
-perturbation-response settings.
+across labs and likely to generalise to adjacent perturbation-response
+settings.
 
 \paragraph{Why might cyclic plasticity be adaptive?}
 We speculate that a robust 1-cycle corresponds to a Waddington-style
