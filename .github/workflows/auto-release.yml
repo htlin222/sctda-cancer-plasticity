@@ -1,0 +1,217 @@
+name: Auto-release on push to main
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build PDFs and publish auto-release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip release]')
+    steps:
+      - name: Checkout (full history + tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Compute next version
+        id: ver
+        run: |
+          set -euo pipefail
+          latest=$(git tag --list 'v*-submission' --sort=-v:refname | head -1)
+          if [ -z "${latest}" ]; then
+            next="v2.7.0-submission"
+          else
+            base=${latest#v}
+            base=${base%-submission}
+            IFS=. read -r MAJ MIN PAT <<< "${base}"
+            PAT=$((PAT + 1))
+            next="v${MAJ}.${MIN}.${PAT}-submission"
+          fi
+          echo "Latest tag: ${latest:-none}"
+          echo "Next tag:   ${next}"
+          {
+            echo "next=${next}"
+            echo "head_sha=$(git rev-parse --short HEAD)"
+          } >> "$GITHUB_OUTPUT"
+          # Multi-line head message (kept for use in release notes)
+          {
+            echo "head_msg<<__EOF_MSG__"
+            git log -1 --pretty=%B
+            echo "__EOF_MSG__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Install TeX Live + audit tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-extra \
+            texlive-science \
+            texlive-bibtex-extra \
+            texlive-publishers \
+            texlive-extra-utils \
+            texlive-pictures \
+            poppler-utils \
+            zip
+
+      - name: Build all three PDFs
+        working-directory: manuscript
+        run: |
+          set -euo pipefail
+          PDFLATEX="pdflatex -interaction=nonstopmode -halt-on-error"
+
+          # Review build (preprint.tex with article class, default toggles)
+          $PDFLATEX preprint.tex
+          bibtex preprint || true
+          $PDFLATEX preprint.tex
+          $PDFLATEX preprint.tex
+
+          # Nature Communications build (preprint_ncomms.tex)
+          $PDFLATEX preprint_ncomms.tex
+          bibtex preprint_ncomms || true
+          $PDFLATEX preprint_ncomms.tex
+          $PDFLATEX preprint_ncomms.tex
+
+          # bioRxiv-toggled build (\def\biorxiv{1} → preprint_biorxiv.pdf)
+          $PDFLATEX -jobname=preprint_biorxiv "\def\biorxiv{1}\input{preprint.tex}"
+          bibtex preprint_biorxiv || true
+          $PDFLATEX -jobname=preprint_biorxiv "\def\biorxiv{1}\input{preprint.tex}"
+          $PDFLATEX -jobname=preprint_biorxiv "\def\biorxiv{1}\input{preprint.tex}"
+
+      - name: Audit builds (cross-refs, placeholder leakage, word count)
+        id: audit
+        working-directory: manuscript
+        run: |
+          set -euo pipefail
+          fail=0
+          for f in preprint.pdf preprint_ncomms.pdf preprint_biorxiv.pdf; do
+            if [ ! -s "$f" ]; then
+              echo "::error::MISSING: $f"
+              fail=1
+              continue
+            fi
+            refs=$(pdftotext "$f" - 2>/dev/null | grep -c '??' || true)
+            zen=$(pdftotext  "$f" - 2>/dev/null | grep -ciE 'ZENODODATADOI|ZENODOSOFTWAREDOI' || true)
+            echo "$f: ${refs} unresolved cross-refs, ${zen} placeholder strings"
+            if [ "${refs}" -ne 0 ] || [ "${zen}" -ne 0 ]; then
+              fail=1
+            fi
+          done
+          if [ "${fail}" -ne 0 ]; then
+            echo "::error::Build audit failed"
+            exit 1
+          fi
+          words=$(texcount -merge -inc -sum -1 preprint_ncomms.tex 2>/dev/null | tail -1 | tr -d ' \t' || echo 0)
+          echo "NC main words: ${words}"
+          echo "nc_words=${words}" >> "$GITHUB_OUTPUT"
+          if [ "${words}" -gt 5000 ]; then
+            echo "::warning::NC main text ${words} words exceeds 5000-word cap"
+          fi
+
+      - name: Stage release assets
+        env:
+          V: ${{ steps.ver.outputs.next }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/release
+          cp manuscript/preprint.pdf            "/tmp/release/sctda-plasticity_preprint_${V}.pdf"
+          cp manuscript/preprint_biorxiv.pdf    "/tmp/release/sctda-plasticity_preprint_biorxiv_${V}.pdf"
+          cp manuscript/preprint_ncomms.pdf     "/tmp/release/sctda-plasticity_preprint_ncomms_${V}.pdf"
+          cp manuscript/supplements/methods_extended.pdf "/tmp/release/sctda-plasticity_supplements_${V}.pdf"
+          (cd manuscript/submission && \
+            zip -q "/tmp/release/sctda-plasticity_submission_package_${V}.zip" \
+              cover_letter.md checklist.md credit_taxonomy.md declarations.md template_setup.md)
+          (cd manuscript/submission/figures_for_portal && \
+            zip -q "/tmp/release/sctda-plasticity_figures_portal_${V}.zip" \
+              Fig*.pdf Fig*.png README.md)
+          ls -la /tmp/release/
+
+      - name: Create + push tag
+        env:
+          V: ${{ steps.ver.outputs.next }}
+          HEAD_SHA: ${{ steps.ver.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${V}" -m "Auto-release ${V} at ${HEAD_SHA}"
+          git push origin "${V}"
+
+      - name: Compose release notes
+        env:
+          V: ${{ steps.ver.outputs.next }}
+          NC_WORDS: ${{ steps.audit.outputs.nc_words }}
+          HEAD_SHA: ${{ steps.ver.outputs.head_sha }}
+          HEAD_MSG: ${{ steps.ver.outputs.head_msg }}
+        run: |
+          set -euo pipefail
+          {
+            echo "Auto-release built from commit \`${HEAD_SHA}\`."
+            echo
+            echo "**Head commit:**"
+            echo
+            # Indent the head commit message as a blockquote
+            printf '%s\n' "${HEAD_MSG}" | sed 's/^/> /'
+            echo
+            echo "---"
+            echo
+            echo "**Build verification (all passed):**"
+            echo "- All three builds (\`preprint\`, \`preprint_biorxiv\`, \`preprint_ncomms\`) compile exit-0"
+            echo "- Zero unresolved \`??\` cross-references in any PDF"
+            echo "- Zero placeholder strings (Zenodo etc.) in any PDF"
+            echo "- NC main: ${NC_WORDS} words (cap 5,000)"
+            echo
+            echo "**Assets:**"
+            echo "- \`sctda-plasticity_preprint_${V}.pdf\` — main review build"
+            echo "- \`sctda-plasticity_preprint_biorxiv_${V}.pdf\` — bioRxiv build"
+            echo "- \`sctda-plasticity_preprint_ncomms_${V}.pdf\` — Nature Communications build"
+            echo "- \`sctda-plasticity_supplements_${V}.pdf\` — supplementary methods"
+            echo "- \`sctda-plasticity_submission_package_${V}.zip\` — cover letter + CRediT + declarations + checklist"
+            echo "- \`sctda-plasticity_figures_portal_${V}.zip\` — 7 figure PDFs + 7 300-dpi PNGs"
+            echo
+            echo "_To skip auto-release on a push to main, include \`[skip release]\` anywhere in the commit message._"
+          } > /tmp/release/RELEASE_NOTES.md
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          V: ${{ steps.ver.outputs.next }}
+          HEAD_SHA: ${{ steps.ver.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          gh release create "${V}" \
+            --repo "${{ github.repository }}" \
+            --title "${V} — auto-release from ${HEAD_SHA}" \
+            --notes-file /tmp/release/RELEASE_NOTES.md \
+            --latest \
+            /tmp/release/sctda-plasticity_preprint_${V}.pdf \
+            /tmp/release/sctda-plasticity_preprint_biorxiv_${V}.pdf \
+            /tmp/release/sctda-plasticity_preprint_ncomms_${V}.pdf \
+            /tmp/release/sctda-plasticity_supplements_${V}.pdf \
+            /tmp/release/sctda-plasticity_submission_package_${V}.zip \
+            /tmp/release/sctda-plasticity_figures_portal_${V}.zip
+
+      - name: Summary
+        env:
+          V: ${{ steps.ver.outputs.next }}
+          NC_WORDS: ${{ steps.audit.outputs.nc_words }}
+        run: |
+          {
+            echo "## Auto-release ${V}"
+            echo
+            echo "- Tag: \`${V}\`"
+            echo "- NC main: ${NC_WORDS} words"
+            echo "- Release: https://github.com/${{ github.repository }}/releases/tag/${V}"
+          } >> "$GITHUB_STEP_SUMMARY"
