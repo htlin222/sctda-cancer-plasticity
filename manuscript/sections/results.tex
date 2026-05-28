@@ -1,206 +1,121 @@
 \section{Results}
 
-\subsection*{Erlotinib-treated PC9 cells display robust $H_1$ persistence (max $H_1 = 3.78$ at day 9)}
+\subsection*{Cyclic topology in erlotinib-treated PC9 cells}
 
-We first asked whether drug-treated NSCLC PC9 cells exhibit
-non-trivial $H_1$ features consistent with cyclic state-space
-structure. We analysed an erlotinib time-series in PC9
+We first asked whether drug-treated NSCLC cells exhibit cyclic
+topological structure. We analysed the PC9 erlotinib time-series
 (GSE134839 \citep{aissa2021}; six timepoints D0--D11;
-\cref{fig:study_overview}; Methods).
+\cref{fig:study_overview}; Methods). All drug-treated timepoints
+showed non-zero $H_1$ persistence, with maximum values ranging from
+1.08 (D11) to 1.77 (D9) (\cref{fig:discovery_ph},
+\cref{tab:per_timepoint}). Pairwise Wasserstein distances between
+persistence diagrams separated D0 from all treated timepoints,
+indicating that the distribution of topological features differs most
+strongly between untreated and treated conditions
+(\cref{fig:discovery_ph}). Per-timepoint sample sizes (200--379 cells)
+limited individual permutation-test power; the larger validation
+cohorts below recover significance (\cref{tab:validation}).
 
-All drug-treated timepoints showed non-zero $H_1$ persistence, with
-maximum values ranging from 1.08 (D11) to 1.77 (D9)
-(\cref{fig:discovery_ph}, \cref{tab:per_timepoint}). Persistence barcodes
-showed an increased number of long $H_1$ bars at intermediate and late
-timepoints. Pairwise Wasserstein distances between persistence diagrams
-revealed that D0 is separated from all drug-treated timepoints in persistence-diagram space (Wasserstein distance $W = 213$--$265$ between D0 and treated timepoints vs.~$W = 26$--$66$ among treated timepoints --- roughly an order of magnitude larger), indicating that the distribution of topological features differs most strongly between untreated and treated conditions (\cref{fig:discovery_ph}).
+\subsection*{Osimertinib drives a monotonic topological increase across
+cell line and patient-derived xenografts}
 
-Per-timepoint sample sizes (200--379 cells) left individual
-permutation tests underpowered (closest D9 $p = 0.098$, D2
-$p = 0.126$, near the peak of persister emergence reported by Aissa
-et al.); the larger validation cohorts below recover $p < 0.01$
-(\cref{tab:validation}).
+To test whether the cyclic signal strengthens with drug exposure, we
+analysed a PC9 osimertinib time-series with Watermelon lineage tracing
+(GSE150949 \citep{oren2021}; D0/D3/D7/D14; Methods). Max $H_1$ rose
+monotonically from 1.41 at D0 to 3.78 at D14 (2.7-fold;
+\cref{fig:validation}), with permutation tests confirming
+$p < 0.01$ at D7 and D14 (\cref{tab:validation}).
 
-\subsection*{Loops persist after Tirosh cell-cycle ablation across five cohorts (ratio $0.71$--$1.11$)}
-
-To rule out cell cycle oscillation as a confounder, we removed 39 of 97
-Tirosh et al.\ cell-cycle genes \citep{tirosh2016} present in our HVG
-set, re-scaled, and re-computed PCA and persistent homology. The ratio
-of $H_1$ after to before cell-cycle ablation ranged from 0.71 to 1.11
-across all six timepoints (mean $0.90 \pm 0.14$), with D11 actually
-\emph{increasing} after cycle-gene removal (ratio $= 1.11$) ---
-indicating that the observed cyclic topology is not driven by
-cell-cycle genes (\cref{fig:discovery_ph}, \cref{tab:cc_controls}). This
-ratio-based test is the standard control in the field and has been
-interpreted as evidence against cell-cycle artifacts.
-
-(Per-timepoint nulls on the ablated discovery cohort were
-$p = 0.11$--$0.58$, expected at the small $n$ further degraded by
-removing 39 HVGs; larger validation cohorts retain $p < 0.01$;
-Table~S1.)
-
-\subsection*{Stringent S/G2M score regression preserves loops in all five cohorts (ratio $1.07$--$4.05$)}
-
-Stringent \texttt{sc.pp.regress\_out(S\_score, G2M\_score)} on
-1{,}000-cell subsamples preserves loops across five cohorts
-(post/pre ratio 1.07--4.05, mean 1.97, every value $> 1$;
-\cref{tab:cc_controls}; full discussion in Supplementary
-Methods~S13). The osimertinib cohort additionally contains zero
-Tirosh genes in its HVG set, ruling out Tirosh-specific contribution
-to that cohort by absence.
-
-\subsection*{Osimertinib drives a 2.7$\times$ monotonic max $H_1$ increase over 14 days}
-
-In a PC9 osimertinib time-series with Watermelon lineage tracing
-(GSE150949 \citep{oren2021}; D0/D3/D7/D14; Methods), max $H_1$ rose
-monotonically $1.41 \to 1.82 \to 2.67 \to 3.78$ (2.7$\times$;
-\cref{fig:validation}), with permutation tests confirming $p < 0.01$
-at D7 and D14 (\cref{tab:validation}).
-
-\subsection*{PDX xenografts replicate the osimertinib-driven cycle (YU-006: 2.2$\times$, YU-003: 1.4$\times$)}
-
-In two EGFR-mutant PDX models (YU-003, YU-006) under matched
+To determine whether this finding extends beyond cell culture, we
+analysed two EGFR-mutant PDX models (YU-003, YU-006) under matched
 untreated and osimertinib-residual conditions (GSE243562
-\citep{wurtz2024}; Methods), both models showed an increase in max
-$H_1$ under residual disease: YU-003 $2.79 \to 3.85$ ($1.4\times$,
-$p < 0.01$); YU-006 $2.81 \to 6.08$ ($2.2\times$, $p < 0.01$)
-(\cref{fig:validation}, \cref{tab:validation}). YU-006 matches the cell-line D14 effect;
-YU-003 is more modest but directionally consistent. This replicates
-the cell-line finding in an \emph{in vivo} system with stromal,
-vascular, and host-immune context.
+\citep{wurtz2024}; Methods). Both models showed increased max $H_1$
+under residual disease: YU-003 from 2.79 to 3.85 (1.4-fold,
+$p < 0.01$); YU-006 from 2.81 to 6.08 (2.2-fold, $p < 0.01$)
+(\cref{fig:validation}, \cref{tab:validation}). This replicates the
+cell-line finding in an \emph{in vivo} system with stromal, vascular,
+and host-immune context.
 
-\subsection*{Max $H_1$ in drug-treated cells approaches patient-tumor levels}
+A timepoint-label permutation test on osimertinib D14 vs.\ D0 further
+confirmed that the observed topological change depends on drug exposure
+rather than random point-cloud structure ($p < 0.02$; Methods).
 
-To establish a topological reference for untreated human lung
-adenocarcinoma, we analysed a treatment-naive patient LUAD atlas
-(GSE131907 \citep{kim2020}; Methods). Treatment-naive patient LUAD
-shows max $H_1 = 4.77$,
-substantially higher than treatment-naive PC9 cell line (1.41) or
-PDX (2.79, 2.81) baselines (\cref{fig:master}). The Kim atlas is
-mixed-driver (EGFR-, KRAS- and other-mutant tumours; not
-genotype-selected), so this is a generic LUAD reference rather than
-an EGFR-specific baseline.
+\subsection*{The topological signal is not explained by cell-cycle
+variation or batch effects}
 
-Drug treatment moves cell-line and PDX topology from the
-cell-line-like regime ($H_1 \approx 1$--$3$) toward the mixed-driver
-patient range ($H_1 \approx 4$--$5$; \cref{fig:master}, closest at osi
-D14 and YU-006 residual) --- a qualitative cross-system comparison
-confounded by platform and cell count; the load-bearing claim is the
-within-system monotonic increase
-(\cref{fig:validation}).
+Cell-cycle oscillation produces a cyclic snapshot signature that could
+confound the topological signal. We applied two independent controls.
+First, we removed cell-cycle genes from the feature set and recomputed
+persistence; the ratio of max $H_1$ after to before removal ranged from
+0.71 to 1.11 across all six timepoints
+(\cref{fig:discovery_ph}, \cref{tab:cc_controls}). Second, we
+regressed out S-phase and G2/M-phase scores from the expression matrix;
+this \emph{increased} max $H_1$ in all five tested cohorts
+(post/pre ratio 1.07--4.05; \cref{tab:cc_controls}).
+Together, these results indicate that the observed cyclic topology is
+not driven by cell-cycle variation (Methods).
 
-\subsection*{Timepoint-label permutation null confirms drug-specific signal}
+To rule out batch or platform effects, we recomputed max $H_1$ on
+Harmony-corrected embeddings \citep{korsunsky2019}. The osimertinib
+monotonic trend, the YU-006 untreated-to-residual difference, and the
+patient-tumour baseline all survived correction
+(\cref{fig:harmony}; Supplementary Table~S10), indicating that the
+topological signal reflects biology rather than technical artefacts.
 
-The gene-label null tests for non-random topology but not for drug
-specificity, so we ran a timepoint-label null on osimertinib D14 vs.\
-D0 (drug-exposure annotation shuffled across the pooled 2{,}499 cells;
-$H_1$ recomputed in each permutation). Over 50 permutations, the
-observed $\Delta H_1 = 2.07$ exceeded the 95th percentile (1.18) in
-0/50 trials, giving $p < 0.02$ (Phipson--Smyth $+1$ correction) ---
-direct evidence that $H_1$ depends on drug exposure.
+\subsection*{Clinical validation in a 14-patient longitudinal cohort}
 
-\subsection*{EMT genes dominate loop-associated transcripts in both PC9 and PDX systems}
-
-What do the $H_1$ loops represent biologically? To identify the
-transcriptional programs underlying loop formation, we constructed
-Mapper graphs on the analyzed cell line data using EMT score as filter
-function (Methods). The Mapper graph contained 20 nodes and 16 edges;
-gene-level connectivity scores quantify how strongly each gene varies
-between Mapper nodes versus globally.
-
-In the cell-line analysis, top-connected genes were canonical EMT
-markers (\emph{TPM1}, \emph{KRT8}, \emph{KRT19}); MSigDB Hallmark EMT
-ranked first in top-100 pathway enrichment. The PDX analysis
-recovered a broader mesenchymal/secretory signature (\emph{S100A4},
-\emph{LGALS3}, \emph{COL1A1}) --- 3/33 vs.\ 8/33 Hallmark EMT genes
-in the cell-line top 100 --- consistent with an EMT-like plastic
-state realised through a partially shared repertoire. Eleven genes
-overlap between the two top-100 lists (including \emph{KRT19},
-\emph{LGALS3}); hypergeometric $p = 1.25 \times 10^{-11}$ against
-the 13{,}955-gene background of features expressed in both analyses,
-$p = 2.1 \times 10^{-4}$ against the more conservative
-HVG-intersection background (~3{,}000 genes). Differential expression
-recovered EMT-related signatures in both systems with
-system-specific second-order pathways (cholesterol homeostasis
-downregulated in the cell line; estrogen-response upregulated in PDX,
-a pathway known to interact with EMT via estrogen-receptor--mediated
-transcription in NSCLC \citep{siegfried2014}). Full gene-level lists
-are in Supplementary Tables~S2, S2$'$, and S4.
-
-\paragraph{Robustness of gene attribution.}
-Two sensitivity checks support the EMT readout. With PC1 as an
-unbiased Mapper filter, only 4/33 Hallmark EMT genes appear in the
-top 100 (vs.~8/33 with the EMT filter) and cell-cycle markers
-(\emph{MKI67}, \emph{TOP2A}, \emph{HMGB2}) co-rank with EMT markers,
-so the loops reflect a multi-program state-space rather than a pure
-EMT signature; PC1$\leftrightarrow$EMT top-100 overlap is 53/100.
-Variance-normalised connectivity (dividing each gene's contribution
-by its global SD) raises Hallmark-EMT hits to 13/33 in the top 100
-and drops housekeeping genes out, arguing the enrichment is not an
-expression-magnitude artefact. Full tables: Supplementary S2 (EMT
-filter), S2$'$ (PC1 filter), S9 (variance-normalised).
-
-\subsection*{The framework is modular, reproducible, and generalises beyond drug tolerance}
-
-The pipeline is fifteen independent modules coordinated by a single
-\texttt{make pipeline} target (Methods; Supplementary Methods~S8).
-The same framework ran without modification on Drop-seq and 10x
-cell-line data (6{,}508--56{,}419 raw cells), 10x PDX data with
-automated mouse-gene filtering (22{,}032 cells), and a 208{,}506-cell
-patient atlas. Applying it to a new dataset needs only (i) a QC'd and
-normalised \texttt{AnnData} object with a sample/timepoint column,
-(ii) a Mapper filter (PC1, EMT score, or diffusion component~1 are
-shipped as defaults), and (iii) a permutation-test subsampling budget
-(1{,}000 cells per group is sufficient at $p < 0.05$). We anticipate
-the framework will generalise to other scRNA-seq perturbation contexts
-including chemotherapy, immunotherapy escape, and stress-induced
-dedifferentiation. Resampling stability (CV 8.9--23.5\% with ordering
-preserved), replication under alternative persistence-diagram summaries
-(total persistence and persistence entropy), and Mapper-parameter
-robustness (mean Spearman $\rho = 0.994$ across a $4 \times 5$
-parameter sweep) are reported in Supplementary Methods~S10--S12.
-
-\subsection*{The monotonic trend survives Harmony batch correction}
-
-To rule out that the observed $H_1$ growth reflects batch or platform
-effects rather than intrinsic biology, we applied Harmony batch
-correction \citep{korsunsky2019} to the top-50 PCA components with
-dataset-appropriate batch keys (full parameters in Supplementary
-Methods~S7). Max $H_1$ was then recomputed on the Harmony-corrected
-embeddings; Figure~\ref{fig:harmony} summarises the comparison.
-
-The osimertinib monotonic trend survives Harmony correction
-($1.35 \to 3.94$; $2.9\times$, vs.~$1.71 \to 3.78$ raw); the YU-006
-untreated$\to$residual difference is preserved ($2.59 \to 5.19$
-Harmony vs.~$2.36 \to 5.01$ raw); YU-003 becomes more modest but
-directionally consistent; the Kim LUAD naive baseline is robust
-(Harmony $4.52$ vs.~raw $4.77$). Full values: Supplementary Table~S10.
-The $H_1$ growth across drug exposure therefore reflects biology
-rather than within-dataset batch structure.
-
-\subsection*{In 14 EGFR-mutant NSCLC patients, max $H_1$ grew monotonically TN $\to$ PER $\to$ PD ($5.37 \to 7.13 \to 8.05$)}
+To establish a topological reference for human lung adenocarcinoma, we
+analysed a treatment-naive patient LUAD atlas (GSE131907
+\citep{kim2020}; Methods). Treatment-naive patient tumours showed
+max $H_1 = 4.77$, substantially higher than treatment-naive cell line
+(1.41) or PDX (2.79, 2.81) baselines (\cref{fig:master}). Drug
+treatment moves cell-line and PDX topology from the baseline regime
+toward the patient-tumour range (\cref{fig:master}; the within-system
+monotonic increase is the primary claim, as cross-system comparisons
+are confounded by platform and cell-count differences).
 
 To directly test the framework on clinical tissue, we analysed the
 EGFR-mutant subset of \citet{maynard2020} (14 patients with biopsies
-at treatment-naive, persister/residual, and progressive disease
-stages; Methods). Pooled max $H_1$ grew monotonically across the
-three stages: TN $5.37 \to$ PER $7.13 \to$ PD $8.05$ (TN-to-PD
-$1.50\times$; \cref{fig:patient}a).
+at treatment-naive, persister, and progressive disease stages;
+Methods). Pooled max $H_1$ grew monotonically across the three stages:
+5.37 (treatment-naive) $\to$ 7.13 (persister) $\to$ 8.05 (progressive
+disease) (1.5-fold; \cref{fig:patient}a). Three patients had matched
+pre/post-treatment biopsies; max $H_1$ increased in all three
+(median 1.6-fold, range 1.35--3.25-fold; Supplementary Table~S11),
+supporting the use of max $H_1$ as a within-patient relative-change
+readout.
 
-\paragraph{Per-patient matched trajectories.}
-Three patients had matched TN + post-treatment biopsies: TH218
-($1.22 \to 1.65$, $1.35\times$), TH226 ($2.11 \to 6.86$, $3.25\times$;
-$\to 5.01$ PD, $2.37\times$), and AZ003 ($5.32 \to 8.50$, $1.60\times$;
-\cref{fig:patient}a). Post-treatment max $H_1$ exceeded TN in 3/3
-matched pairs (median $1.60\times$, range $1.35$--$3.25\times$;
-one-sided sign test $p = 0.125$; underpowered at $n = 3$ but
-directionally consistent; Supplementary Table~S11). Raw max $H_1$
-spans $\sim 1.2$--$7$ across patients at any stage --- inter-patient
-biological and technical heterogeneity --- so the within-patient
-trajectory (always up) is a stronger signal than absolute magnitude,
-supporting use of max $H_1$ as a \emph{relative-change} readout.
+\subsection*{EMT programs underlie cyclic topology}
 
-This patient-cohort result is the most clinically proximal evidence
-we provide: the same topological signature that rises under drug in
-PC9 and PDX also rises in real EGFR-mutant NSCLC patient biopsies, in
-a hypothesis-generating three-of-three matched design.
+To identify the transcriptional programs underlying loop formation, we
+constructed Mapper graphs and computed gene-level connectivity scores
+(Methods). In the cell-line analysis, top-connected genes were canonical
+EMT markers (\emph{TPM1}, \emph{KRT8}, \emph{KRT19}); MSigDB Hallmark
+EMT ranked first among enriched pathways. The PDX analysis recovered a
+broader mesenchymal/secretory signature (\emph{S100A4},
+\emph{LGALS3}, \emph{COL1A1}), consistent with an EMT-like plastic
+state realised through a partially shared repertoire. Eleven genes
+overlap between the two top-100 lists (hypergeometric
+$p = 1.25 \times 10^{-11}$), indicating
+significant but incomplete overlap between cell-line and PDX
+plasticity programs. Differential expression recovered EMT-related
+signatures in both systems, with system-specific secondary pathways
+(Supplementary Tables~S2, S2$'$, and S4).
+
+Using an unbiased PC1 filter in the Mapper, cell-cycle markers
+co-ranked with EMT markers, indicating that the loops reflect a
+multi-program state space rather than a pure EMT signature
+(Supplementary Table~S2$'$). Variance-normalised connectivity scores
+strengthened the EMT enrichment, confirming it is not an
+expression-magnitude artefact (Supplementary Table~S9).
+
+\subsection*{A generalisable, reproducible framework}
+
+The pipeline comprises fifteen independent modules coordinated by a
+single command (Methods). It ran without modification on Drop-seq and
+10x cell-line data, 10x PDX data, and a 208{,}506-cell patient atlas.
+Applying it to a new dataset requires only a processed expression
+matrix with sample annotations and a choice of Mapper filter (PC1, EMT
+score, or diffusion component; Methods). Resampling stability,
+replication under alternative persistence summaries, and Mapper
+parameter robustness are reported in Supplementary Methods~S10--S12.

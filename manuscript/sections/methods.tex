@@ -28,7 +28,7 @@ disease PD, 5{,}064 cells); 1{,}500-cell subsamples per stage.
 
 \subsection*{Preprocessing}
 
-We used scanpy 1.11 \citep{wolf2018} with standard QC
+We used scanpy v1.11 \citep{wolf2018} with standard QC
 (\texttt{min\_genes} $= 200$, \texttt{max\_genes} $= 5000$,
 \texttt{max\_pct\_mito} $= 20\%$, \texttt{min\_cells} $= 3$),
 total-count normalisation to 10{,}000 counts per cell, log1p
@@ -70,13 +70,54 @@ Methods~S4--S5 and Supplementary Table S5.
 
 \subsection*{Permutation tests}
 
-For each group, we shuffled expression values within each cell
-(permuting gene labels independently for every cell), re-fit PCA using
-\texttt{sklearn}, and recomputed $H_1$ max persistence. The $p$-value
-is the fraction of null permutations with max $H_1 \geq$ the observed
-value. Discovery cohort used 500 permutations per timepoint; validation
-cohorts used 100 permutations on 1{,}000-cell subsamples for
-tractability.
+Two complementary null models were used. For the \emph{gene-label null},
+we shuffled expression values within each cell (permuting gene labels
+independently for every cell), re-fit PCA using \texttt{sklearn}, and
+recomputed max $H_1$ persistence. The $p$-value is the fraction of null
+permutations with max $H_1 \geq$ the observed value. Discovery cohort
+used 500 permutations per timepoint; validation cohorts used 100
+permutations on 1{,}000-cell subsamples for tractability.
+
+For the \emph{timepoint-label null}, we pooled cells from osimertinib
+D0 and D14 ($n = 2{,}499$), shuffled the drug-exposure annotation across
+cells, and recomputed $H_1$ on the pooled set in each permutation.
+Over 50 permutations, the observed $\Delta H_1 = 2.07$ exceeded the
+95th percentile of the null (1.18) in 0/50 trials, giving
+$p < 0.02$ (Phipson--Smyth $+1$ correction). This test directly
+assesses whether $H_1$ depends on drug exposure rather than on
+non-random point-cloud structure alone.
+
+\subsection*{Cell-cycle controls}
+
+Two independent controls were applied. For \emph{Tirosh cell-cycle gene
+ablation}, we removed 39 of 97 Tirosh et al.\ cell-cycle genes
+\citep{tirosh2016} present in the HVG set, re-scaled the remaining
+features, and recomputed PCA and persistent homology. The ratio of max
+$H_1$ after to before ablation ranged from 0.71 to 1.11 across all six
+timepoints (mean $0.90 \pm 0.14$); D11 actually increased after
+cycle-gene removal (ratio $= 1.11$). The osimertinib cohort additionally
+contains zero Tirosh genes in its HVG set, ruling out Tirosh-specific
+contribution to that cohort by absence.
+
+For \emph{S/G2M score regression}, we applied
+\texttt{sc.pp.regress\_out} on S\_score and G2M\_score for 1{,}000-cell
+subsamples across five cohorts. Post/pre ratios ranged from 1.07 to
+4.05 (mean 1.97), with every value exceeding 1, confirming that the
+$H_1$ signal is preserved after removing the dominant cell-cycle
+variance axis. Full ratios are reported in \cref{tab:cc_controls}.
+
+\subsection*{Harmony batch correction}
+
+To assess sensitivity to batch effects, we applied Harmony
+\citep{korsunsky2019} to the top-50 PCA components with
+dataset-appropriate batch keys (full parameters in Supplementary
+Methods~S7). Max $H_1$ was recomputed on the Harmony-corrected
+embeddings. The osimertinib monotonic trend survived ($1.35 \to 3.94$;
+2.9-fold, vs.\ $1.71 \to 3.78$ raw); the YU-006
+untreated$\to$residual difference was preserved ($2.59 \to 5.19$
+Harmony vs.\ $2.36 \to 5.01$ raw); YU-003 was directionally consistent;
+the Kim LUAD naive baseline was robust (Harmony $4.52$ vs.\ raw
+$4.77$). Full values: Supplementary Table~S10.
 
 \subsection*{Mapper}
 

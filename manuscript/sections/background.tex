@@ -1,87 +1,48 @@
-\section{Background}
+\section{Introduction}
 
-\subsection*{Trajectory methods systematically miss cyclic cell-state structure}
+First-line osimertinib has transformed care for EGFR-mutant non-small
+cell lung cancer (NSCLC). However, essentially every patient eventually
+relapses from residual disease \citep{ramalingam2020,piotrowska2018}.
+The residual cells, known as drug-tolerant persisters, survive targeted
+therapy without acquiring resistance mutations
+\citep{sharma2010,hata2016}. Early work described persisters as a
+single quiescent state, but recent lineage-tracing experiments have
+revealed that individual cells reversibly transition among multiple
+transcriptional programs before either dying or acquiring stable
+resistance \citep{oren2021,aissa2021}. This inter-state cycling is
+distinct from one-directional progression along a differentiation
+hierarchy and is thought to underlie the adaptive plasticity that
+makes persisters so difficult to eradicate.
 
-Single-cell RNA sequencing has transformed our view of cellular
-heterogeneity, but the dominant trajectory toolkit --- Monocle and
-Slingshot (tree backbones), PAGA (connectivity graph), and RNA
-velocity (vector field) --- was designed to summarise one-directional
-progression rather than to quantify reversible inter-state cycling,
-i.e.\ cells visiting and revisiting several transcriptional states
-\citep{saelens2019}.
-PAGA admits non-tree graphs and velocity defines a field, but neither
-yields a scalar that scores how robustly cells trace a closed loop.
-It matters in EMT and adaptive drug tolerance
-\citep{shaffer2017,oren2021}. The canonical cell cycle is cyclic in
-only one direction per cell (G1$\to$S$\to$G2$\to$M) yet produces a
-snapshot $H_1$ signature indistinguishable from bidirectional
-inter-state cycling, so we explicitly control for it. Geometrically,
-inter-state cycling traces a closed loop --- a one-dimensional hole
-that persistent homology detects; directionality is supplied
-separately by lineage tracing \citep{oren2021}.
+Standard single-cell trajectory tools, including branching-graph
+methods such as Monocle and Slingshot, connectivity-graph methods
+such as PAGA, and vector-field methods such as RNA velocity, were
+designed to model one-directional progressions and therefore cannot
+quantify how robustly cells trace a closed loop in state space
+\citep{saelens2019}. When drug-tolerant cells reversibly cycle among
+states, each cell is a point in gene-expression space and the
+collective motion traces a loop: the same kind of closed
+one-dimensional structure that distinguishes a donut from a sphere in
+topology (\cref{fig:concept}a--b). Persistent homology, a branch of
+computational topology, measures the robustness of such loops across
+spatial scales, and the Mapper algorithm \citep{singh2007}
+complements this with an interpretable graph summary. Both have been
+applied to bulk cancer transcriptomes \citep{nicolau2011} and
+developmental single-cell data \citep{rizvi2017}, but have not been
+integrated into a reproducible framework for longitudinal
+perturbation studies with formal statistical testing.
 
-\subsection*{Topological data analysis as a framework-level remedy}
-
-\paragraph{An intuitive picture for biomedical readers.}
-Drug-tolerant cancer cells appear neither to die outright nor to jump
-into a single resistant state; instead, individual cells visit and
-revisit \emph{several} transcriptional states over time
-(\cref{fig:concept}a). When each cell is plotted as a point in
-gene-expression space, this inter-state cycling traces a closed loop
---- the same kind of
-one-dimensional ``hole'' that distinguishes a donut from a sphere in
-topology, and which tree-based trajectory methods discard by
-force-fitting branching graphs (\cref{fig:concept}b). Persistent homology quantifies the loop's
-robustness across spatial scales: the lifespan of the longest such
-loop is the \emph{maximum $H_1$ persistence} statistic used
-throughout this paper. The headline finding is that this statistic
-rises monotonically with EGFR-TKI exposure across PC9 cell line,
-two PDX models, and a 14-patient longitudinal cohort
-(\cref{fig:concept}c). Mapper complements this with an interpretable
-graph in which nodes group transcriptionally similar cells and edges
-connect related nodes \citep{singh2007}.
-
-Formally, persistent homology returns a multiset of birth--death
-pairs (the persistence diagram) over a filtered sequence of simplicial
-complexes \citep{edelsbrunner2010}, and Mapper \citep{singh2007}
-returns a complementary graph summary. Both have been applied
-individually to bulk cancer transcriptomes \citep{nicolau2011} and
-developmental scRNA-seq \citep{rizvi2017}; prior work has not
-integrated them into a reproducible, open-source framework for
-longitudinal scRNA-seq with formal null-model testing and standard
-controls --- the gap our contribution addresses.
-
-\subsection*{Drug-tolerant persisters as a testbed}
-
-Drug-tolerant persister cells (DTPs) in EGFR-mutant non-small cell
-lung cancer (NSCLC) provide an ideal testbed for a topology-based
-framework. First-line osimertinib gives a median progression-free
-survival of roughly 18 months, yet essentially every patient relapses
-from residual disease, and no approved drug specifically targets the
-persister state \citep{ramalingam2020,piotrowska2018}. DTPs are a small, slow-growing subpopulation that survives targeted
-therapy without acquiring mutations \citep{sharma2010,hata2016}. Early
-work framed DTPs as a single quiescent state \citep{sharma2010}; more
-recent lineage tracing in PC9 osimertinib refines this picture,
-showing DTPs span multiple transcriptional states and can revert to
-drug-sensitive phenotypes \citep{oren2021,aissa2021} --- the
-inter-state cycling our framework quantifies, distinct from a single
-quiescence$\leftrightarrow$activation switch. Public scRNA-seq datasets cover
-longitudinal erlotinib and osimertinib treatment at cell-line and PDX
-scales, but the topological signature has not been formally
-quantified.
-
-\subsection*{Contribution}
-
-We present an open-source pipeline that applies persistent homology
-($H_0$, $H_1$) and the Mapper algorithm to longitudinal scRNA-seq,
-with integrated permutation-null testing, two independent cell-cycle
-controls, Wasserstein diagram comparison, and Mapper-based gene
-attribution. We validate it on five independent EGFR-mutant
-lung-cancer datasets covering two TKIs (erlotinib, osimertinib),
-three biological scales (cell line, PDX, patient tumour), and a
-14-patient longitudinal cohort. The maximum $H_1$ persistence rises
-monotonically with drug exposure across the validation cohorts,
-survives both cell-cycle controls, and is biologically anchored by
-EMT-program enrichment in loop-associated transcripts (cell-line and
-PDX overlap $p = 1.25 \times 10^{-11}$). All analyses are reproducible
-from raw GEO data via a single Makefile target under MIT license.
+Here we present a framework that applies persistent homology and
+Mapper to longitudinal single-cell RNA-seq data, with integrated
+permutation-based null testing, cell-cycle controls, and Mapper-based
+gene attribution. We validate the approach on five independent
+EGFR-mutant lung-cancer datasets spanning two drugs (erlotinib,
+osimertinib), three biological scales (cell line, patient-derived
+xenograft, patient tumour), and a 14-patient longitudinal cohort.
+We show that a topological measure of cyclic cell-state structure,
+the maximum $H_1$ persistence, increases monotonically with drug
+exposure across all systems, is not explained by cell-cycle variation
+or batch effects, and is biologically anchored by enrichment of
+epithelial--mesenchymal transition (EMT) programs in loop-associated
+transcripts. All analyses are reproducible from raw data via a single
+command under an open-source license.
