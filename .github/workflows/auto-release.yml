@@ -16,7 +16,7 @@ jobs:
   release:
     name: Build PDFs and publish auto-release
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip release]')
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip-release]')
     steps:
       - name: Checkout (full history + tags)
         uses: actions/checkout@v4
@@ -181,7 +181,7 @@ jobs:
             echo "- \`sctda-plasticity_submission_package_${V}.zip\` — cover letter + CRediT + declarations + checklist"
             echo "- \`sctda-plasticity_figures_portal_${V}.zip\` — 7 figure PDFs + 7 300-dpi PNGs"
             echo
-            echo "_To skip auto-release on a push to main, include \`[skip release]\` anywhere in the commit message._"
+            echo "_To skip auto-release on a push to main, include \`[skip-release]\` anywhere in the commit message._"
           } > /tmp/release/RELEASE_NOTES.md
 
       - name: Publish GitHub Release
