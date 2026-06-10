@@ -23,12 +23,14 @@ control (raw max-$H_1$ preserved after regression) is inadequate; and (iv) **boo
 directional testing**, because max-$H_1$ point estimates are subsample-unstable. On synthetic
 data with known ground truth the framework is sensitive (it passes a genuine traversed loop) and
 specific (it rejects benign dispersion and non-Gaussian non-cyclic structure). Applied as a
-worked case study to five longitudinal EGFR-mutant lung-cancer systems, an apparently compelling,
-cross-system, drug-associated max-$H_1$ signal fails every control: cells do not traverse the
+worked case study to five longitudinal EGFR-mutant lung-cancer systems, the framework decomposes
+an apparently compelling, cross-system, drug-associated max-$H_1$ signal: cells never traverse the
 loop (Rayleigh $R \ge 0.965$ vs $0.881$ for a 12%-occupied control), baseline max-$H_1$ equals a
-dispersion-matched null, and the drug-induced excess is contributed by proliferating cells and
-does not survive cell-cycle regression. We recommend these controls as a standard for topological
-analyses of perturbation single-cell data and release them as open-source code.
+dispersion-matched null in every system, the in-vitro drug excess is contributed by proliferating
+cells and vanishes after cell-cycle regression, and the in-vivo (PDX) excess is genuine
+non-cell-cycle structure that nonetheless still fails the traversal test. In no system does
+max-$H_1$ evidence a cell-traversed cycle. We recommend these controls as a standard for
+topological analyses of perturbation single-cell data and release them as open-source code.
 
 ## Contributions
 
@@ -158,11 +160,20 @@ falls from 1.18 to 0.99, and D14 $>$ D0 holds in only 31% of bootstraps after re
 (**Fig. 2b**). This exposes a methodological error in common practice: the usual cell-cycle
 control reports that *raw* max-$H_1$ is preserved after regression and concludes "not cell cycle,"
 but raw max-$H_1$ is dispersion-dominated; the cell-cycle contribution is visible only as a ratio
-to the dispersion null. We demonstrate the cell-cycle attribution directly in the osimertinib
-cell-line system, where gene-level expression is available; in the PDX system the strongest excess
-(residual, ratio 1.95) could not be cell-cycle-scored from the processed object (its HVG set lacks
-cell-cycle genes) and its attribution is left open (Limitations). Dispersion and traversal, by
-contrast, are demonstrated across all five systems.
+to the dispersion null.
+
+The framework decomposes rather than uniformly debunks. In the *in-vivo* PDX system the result is
+the opposite: the residual-disease excess (the strongest in the study) is **not** explained by the
+cell cycle. Excluding cycling cells leaves it intact — the G1-only dispersion ratio is 2.07
+(90% bootstrap CI $[1.37, 2.61]$; excess $>1$ in 100% of bootstraps), indistinguishable from a
+size-matched random subset (1.95). The PDX therefore carries genuine non-Gaussian, non-cell-cycle
+topological structure under drug. Crucially, this structure still fails the traversal test
+($R=0.965$, Control 1): even where structure is real, the population does not occupy or traverse
+it, so the "cyclic plasticity" reading remains unsupported. The identity of this in-vivo structure
+(microenvironmental, mesenchymal, or otherwise) is left to future work. Across all five systems,
+then: dispersion accounts for the baseline; the cell cycle accounts for the in-vitro drug excess;
+the in-vivo residual structure is genuine but non-traversed — and in no system does max-$H_1$
+evidence a cell-traversed cycle.
 
 ### A confound-resistant clonal statistic is under-powered on standard data
 
@@ -225,9 +236,10 @@ figures via `scripts/24_cautionary_figures.py`.
 ## Discussion
 
 We have shown that a cross-system topological signal of drug tolerance — rising max-$H_1$ — is
-explained by transcriptional dispersion and the cell cycle, and does not evidence cyclic
-plasticity. None of the three confounds is exotic; each is the kind of control that, once stated,
-is obviously necessary. That the apparent signal nonetheless looked compelling across five
+largely explained by transcriptional dispersion and, in vitro, by the cell cycle; and that where
+genuine non-confound structure remains (the in-vivo PDX residual), it still does not evidence
+cyclic plasticity, because the population does not traverse it. The controls that establish this
+are not exotic; each is the kind that, once stated, is obviously necessary. That the apparent signal nonetheless looked compelling across five
 independent systems, survived published-style cell-cycle controls, and "replicated" in patient
 tumours is exactly why a standard control framework matters: a confounded statistic can be
 reproducible, cross-scale, and wrong.
@@ -245,8 +257,8 @@ by a dispersion-matched null, a traversal test, cell-cycle regression in the dis
 frame, and bootstrap directional testing.
 
 **Limitations.** The cell-cycle attribution (Control 3) is demonstrated on the osimertinib cell
-line; dispersion and traversal carry the cross-system load (5/5), and the PDX excess is flagged as
-not yet attributed. We address max-$H_1$; the dispersion null derives from the same Vietoris–Rips
+line; the PDX residual excess is shown to be non-cell-cycle but its positive identity is not
+established here. We address max-$H_1$; the dispersion null derives from the same Vietoris–Rips
 filtration and is expected to apply to other persistence summaries (persistence images, Adams et
 al. 2017; landscapes, Bubenik 2015) and to higher-degree homology, though we do not test this.
 Traversal is inferred from snapshot circular-coordinate concentration plus the clonal-spread
