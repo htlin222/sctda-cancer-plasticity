@@ -1,0 +1,139 @@
+\section{Results}
+
+\subsection*{A dispersion-matched null distinguishes genuine topological
+structure from point-cloud spread}
+
+Persistent homology summarises a single-cell state space by the
+persistence of its one-dimensional loops (max $H_1$), but this statistic
+is sensitive to the overall spread of the point cloud: a featureless but
+highly dispersed Gaussian cloud can yield large $H_1$ persistence with no
+underlying structure. To separate genuine non-Gaussian organisation from
+mere dispersion, we compared every observed max $H_1$ against a
+covariance-matched Gaussian null --- a synthetic point cloud drawn with
+the same mean and covariance as the data but containing no real
+topological structure (Methods). For each cohort we report the observed
+max $H_1$ with a 90\% bootstrap confidence interval, the null max $H_1$,
+their ratio, and the fraction of bootstrap subsamples in which the
+observed value exceeds the matched null. This dispersion-matched null is
+the central methodological element of this study: a ratio near or below
+$1$ indicates that the apparent loop is consistent with dispersion alone,
+whereas a ratio above $1$ that is stable across subsamples indicates
+genuine excess structure.
+
+\subsection*{Osimertinib exposure raises max $H_1$ in PC9 cells, robustly
+across subsamples}
+
+We analysed a PC9 osimertinib time-series with Watermelon lineage tracing
+(D0/D3/D7/D14; Methods). Observed max $H_1$ increased with drug exposure,
+from $1.41$ (90\% CI $[1.31, 1.60]$) at D0 to $1.82$ $[1.82, 2.15]$ at D3,
+$2.67$ $[2.45, 3.04]$ at D7, and $3.78$ $[2.99, 3.78]$ at D14
+(\cref{fig:validation}). Because the point estimates carry appreciable
+sampling variability, we did not rely on them directly but instead tested
+the \emph{direction} of change across bootstrap subsamples. The increase
+was directionally robust: D7 exceeded D0, and D14 exceeded D0, in
+$100\%$ of bootstrap subsample pairs. Thus drug exposure raises max $H_1$
+in the osimertinib cell-line model reproducibly, independent of the
+instability of any single point estimate.
+
+\subsection*{The dispersion-matched null shows the rise reflects genuine
+non-Gaussian structure under drug, but not at baseline}
+
+The increase in max $H_1$ is informative only if it exceeds what
+dispersion alone would produce. Against the covariance-matched Gaussian
+null, the two early conditions were indistinguishable from dispersion:
+at D0 the observed-to-null ratio was $0.95$ (null max $H_1 = 1.49$;
+observed exceeded the null in only $31\%$ of subsamples), and at D3 the
+ratio was $0.91$ (null $2.00$; $18\%$ of subsamples). In both cases the
+observed loop is no larger than that of a structureless Gaussian cloud
+with the same covariance --- i.e.\ at baseline, max $H_1$ is dispersion.
+Under drug, the relationship inverted. At D7 the ratio rose to $1.31$
+(null $2.04$), with the observed value exceeding the matched null in
+$100\%$ of bootstrap subsamples, and at D14 the ratio was $1.42$
+(null $2.66$) with the null exceeded in $98\%$ of subsamples
+(\cref{fig:validation}). The emergence of excess, non-Gaussian
+topological structure is therefore specific to the drug-exposed
+timepoints rather than a property of the cell line, and it appears only
+after the dispersion contribution has been controlled.
+
+\subsection*{The drug-induced structure replicates in EGFR-mutant
+patient-derived xenografts}
+
+To test whether this controlled signal extends beyond cell culture, we
+analysed an EGFR-mutant PDX model under matched untreated and
+osimertinib-residual conditions (Methods). In the untreated state the
+observed max $H_1$ was $2.79$ (90\% CI $[2.23, 4.03]$), only marginally
+above the matched Gaussian null (ratio $1.21$; observed exceeded null in
+$86\%$ of subsamples). Under residual disease, max $H_1$ rose to $5.46$
+$[3.58, 7.34]$, well above the null (ratio $1.95$; observed exceeded null
+in $99\%$ of subsamples). The within-model increase was directionally
+robust, with the residual condition exceeding the untreated condition in
+$97\%$ of bootstrap subsample pairs (\cref{fig:validation}). The PDX thus
+reproduces the cell-line pattern --- weak, dispersion-consistent
+structure before treatment and strong, non-Gaussian excess structure
+under drug --- in an \emph{in vivo} system with stromal, vascular, and
+host context.
+
+\subsection*{Negative control: cells do not traverse the loop}
+
+A persistent loop in max $H_1$ does not by itself imply that cells move
+\emph{around} that loop. To test the stronger, traversal-based
+interpretation directly, we computed circular coordinates (DREiMac) on
+the persistent loop and assessed how cells are distributed around it
+(Methods). If cells genuinely traversed the loop, their angular
+coordinates would spread around the circle; if they do not, the angles
+collapse to a narrow arc. Across all cohorts the circular coordinates
+collapsed: the angular distribution had a Rayleigh concentration
+$R \geq 0.965$, compared with $R = 0.881$ for a control loop occupied by
+$12\%$ of cells. Consistent with this, Watermelon lineage clones were
+\emph{tighter} on the loop than randomly chosen cells, rather than spread
+around it as transit through a cycle would require. We therefore treat
+this as a built-in negative control and explicitly do \emph{not} claim
+that cells cycle or traverse the loop. The structure we detect is a
+\emph{sparse persistent loop occupied by a minority of cells}, not
+population-wide reversible cycling; the topological reorganisation is real
+but static in the sense relevant here.
+
+\subsection*{Scope of the claim: erlotinib and patient tumours}
+
+The drug-induction signal is specific, and two further cohorts bound its
+scope honestly. First, the PC9 erlotinib time-series did not show excess
+topological structure at any timepoint: observed max $H_1$ values were
+$1.49$ (D0), $1.77$ (D9), and $1.08$ (D11), with dispersion-matched
+ratios of $0.93$, $0.99$, and $0.70$ respectively --- at or below the
+Gaussian null throughout. Erlotinib thus produces no excess structure
+over dispersion, and we report it not as a positive finding but as
+evidence for the specificity of the osimertinib signal; the contrast
+between the two TKIs is itself part of the evidence that the controlled
+signal is drug- and context-dependent rather than a generic feature of
+EGFR-TKI exposure.
+
+Second, in EGFR-mutant patient tumours (Maynard cohort), max $H_1$
+exceeded the dispersion-matched null at \emph{every} stage, including
+treatment-naive tissue: observed values were $5.49$ (treatment-naive),
+$6.04$ (persister), and $5.58$ (progressive disease), with ratios of
+$1.52$, $1.69$, and $1.51$ respectively. Because excess structure is
+present already in untreated tumours, the patient signal cannot be
+attributed to drug induction. We interpret it instead as a reflection of
+baseline tumour heterogeneity, which produces non-Gaussian topological
+structure independent of treatment. Accordingly, we scope the
+drug-induction claim to the controlled osimertinib cell-line and PDX
+systems --- where baseline structure is dispersion-consistent and the
+excess appears only under drug --- and present the patient data as a
+heterogeneity caveat rather than as a drug-response claim.
+
+\subsection*{Summary}
+
+Across controlled models, EGFR-TKI (osimertinib) exposure is accompanied
+by genuine non-Gaussian reorganisation of the cell-state space: max $H_1$
+rises above a covariance-matched Gaussian dispersion null specifically
+under drug (osimertinib D7 and D14; PDX residual disease), robustly
+across bootstrap subsamples, whereas baseline conditions are consistent
+with dispersion alone. The signal is a sparse persistent loop occupied by
+a minority of cells and is not traversed by those cells, as the
+circular-coordinate negative control demonstrates. Erlotinib shows no
+excess structure, and patient tumours show excess structure already at
+baseline, together delimiting the claim to drug-induced topological
+reorganisation in the controlled osimertinib cell-line and PDX systems.
+The dispersion-matched null that makes these distinctions is a
+generalisable, dispersion-controlled topological readout applicable to
+any single-cell state space.

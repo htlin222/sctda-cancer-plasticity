@@ -1,0 +1,102 @@
+\section{Introduction}
+
+First-line osimertinib has transformed care for EGFR-mutant
+non-small cell lung cancer (NSCLC), yet essentially every patient
+eventually relapses from residual disease
+\citep{ramalingam2020,piotrowska2018}. The residual cells, known as
+drug-tolerant persisters, survive targeted therapy without acquiring
+resistance mutations \citep{sharma2010,hata2016}. Persisters were
+initially described as a single quiescent state, but lineage-tracing
+and single-cell transcriptomic studies have since shown that the
+tolerant population is transcriptionally heterogeneous, spanning
+several co-existing programs as cells emerge under continuous drug
+pressure \citep{oren2021,aissa2021,shaffer2017}. Characterising the
+geometry of this heterogeneous cell-state space---and distinguishing
+a genuinely reorganised state space from one that has merely become
+more variable---is central to understanding how persisters arise.
+
+Standard single-cell trajectory tools are not designed for this
+question. Branching-graph methods such as Monocle and Slingshot,
+connectivity-graph methods such as PAGA, and vector-field methods
+such as RNA velocity all model one-directional progression along a
+tree or hierarchy \citep{saelens2019,wolf2018}. By construction they
+summarise a state space as a set of connected branches and therefore
+cannot quantify whether that space contains non-tree-like structure:
+multi-scale features that no acyclic graph can represent. When a
+minority of persister cells occupies a region of expression space
+whose connectivity is not captured by any spanning tree, trajectory
+inference reports a branch or a gap rather than a measurement of the
+feature itself.
+
+Persistent homology, a branch of computational topology, is built to
+measure exactly such non-tree-like structure. It tracks how
+$k$-dimensional features appear and disappear across a continuous
+range of spatial scales and assigns each feature a persistence---the
+range of scales over which it survives---yielding a scale-free,
+coordinate-free summary of a point cloud's shape
+\citep{edelsbrunner2010,cohen-steiner2007}. The first-homology
+($H_1$) persistence quantifies the robustness of one-dimensional
+structure that a connectivity tree cannot encode, and the Mapper
+algorithm \citep{singh2007} provides a complementary interpretable
+graph summary. Both have been applied to bulk cancer transcriptomes
+\citep{nicolau2011} and to developmental single-cell data
+\citep{rizvi2017}.
+
+A critical limitation, however, has prevented persistent homology
+from yielding defensible biological claims on single-cell data: prior
+applications have not controlled for dispersion. The persistence of
+$H_1$ features grows with the spread and anisotropy of a point cloud
+even in the complete absence of organised structure, because a more
+dispersed or more elongated sample of points will, by chance, enclose
+larger empty regions at larger scales. Drug treatment changes the
+variance and covariance of single-cell expression profiles for many
+reasons unrelated to any reorganisation of the state space---altered
+cell-cycle composition, shifts in library size, and broad
+transcriptional adaptation. Reporting that a topological statistic
+rises under treatment, or differs between conditions, is therefore
+uninterpretable unless it is measured against a null that holds
+dispersion fixed. Without such a control, an apparent topological
+signal cannot be distinguished from a simple increase in variance,
+and existing TDA-on-scRNA analyses do not make this distinction.
+
+Here we address this gap directly. Our central methodological
+contribution is a covariance-matched Gaussian null: for each cell
+population we draw surrogate point clouds from a multivariate Gaussian
+with the same mean and covariance as the data but no real structure,
+and we ask whether the observed maximum $H_1$ persistence exceeds what
+that dispersion alone produces. This converts persistent homology from
+a descriptive statistic into a controlled readout that isolates
+genuinely non-Gaussian topological reorganisation from changes in
+spread. We pair the null with bootstrap subsampling to report
+distributions rather than single point estimates, and with
+cell-cycle controls.
+
+Applying this framework, we find that in osimertinib-treated PC9
+cells the maximum $H_1$ persistence is indistinguishable from the
+dispersion-matched null at baseline (ratio $0.95$ at day~0, $0.91$ at
+day~3) but rises above it specifically as drug-tolerant cells emerge
+(ratio $1.31$ at day~7, $1.42$ at day~14), exceeding the null in
+$100\%$ and $98\%$ of bootstrap subsamples respectively; the
+day-7-over-day-0 and day-14-over-day-0 increases hold in $100\%$ of
+bootstrap pairs. The same pattern appears in an EGFR-mutant
+patient-derived xenograft, where residual disease shows a strong
+excess over the null (ratio $1.95$, exceeding it in $99\%$ of
+subsamples) relative to a marginal untreated baseline (ratio $1.21$),
+with the residual-over-untreated increase holding in $97\%$ of
+bootstrap pairs. The signal is sparse---a persistent loop occupied by
+a minority of cells---and, as we show through a circular-coordinate
+negative control, cells do not traverse it (Rayleigh
+$R \geq 0.965$ across cohorts, versus $0.881$ for a control loop
+genuinely occupied around its circumference). We therefore describe a
+non-traversed topological reorganisation of the persister state space,
+not population-wide cyclic motion. Erlotinib-treated cells show no
+excess over the null (ratios $0.93$, $0.99$, $0.70$ at days~0, 9 and
+11), which we report as specificity evidence rather than a second
+positive finding, and we show that patient tumours exhibit excess
+topological structure already at the treatment-naive stage (ratios
+$1.52$--$1.69$ across stages), indicating that in patients this
+readout reflects baseline tumour heterogeneity rather than
+drug induction. All analyses are reproducible from raw data via a
+single command under an open-source license, providing a
+generalisable, dispersion-controlled topological readout of
+single-cell state-space reorganisation.
