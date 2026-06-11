@@ -1,0 +1,71 @@
+{
+  "driver_cluster": "6",
+  "maxh1_drop": 0.9503183364868164,
+  "top_DE": [
+    "PIFO",
+    "AGR2",
+    "C20orf85",
+    "C5orf49",
+    "AGR3",
+    "RSPH1",
+    "CETN2",
+    "C1orf194",
+    "PLTP",
+    "METRN",
+    "CAPS",
+    "CFAP126",
+    "TUBA1A",
+    "MORN2",
+    "TPPP3",
+    "TUBB4B",
+    "CFAP45",
+    "WDR38",
+    "CAPSL",
+    "LRRC23",
+    "PRR29",
+    "CFAP157",
+    "C12orf75",
+    "C9orf116",
+    "FAM81B"
+  ],
+  "programs": {
+    "EMT_mesenchymal": {
+      "present": 18,
+      "up": [],
+      "score_struct_minus_rest": 0.067
+    },
+    "epithelial": {
+      "present": 8,
+      "up": [],
+      "score_struct_minus_rest": 0.213
+    },
+    "alveolar_AT1_AT2": {
+      "present": 8,
+      "up": [],
+      "score_struct_minus_rest": -0.266
+    },
+    "neuroendocrine": {
+      "present": 4,
+      "up": [],
+      "score_struct_minus_rest": -0.154
+    },
+    "drug_tolerant_persister": {
+      "present": 13,
+      "up": [
+        "ALDH1A1",
+        "GPX4"
+      ],
+      "score_struct_minus_rest": 0.285
+    },
+    "stress_AP1_hypoxia": {
+      "present": 11,
+      "up": [],
+      "score_struct_minus_rest": -0.237
+    },
+    "interferon_inflam": {
+      "present": 8,
+      "up": [],
+      "score_struct_minus_rest": 0.191
+    }
+  }
+}
