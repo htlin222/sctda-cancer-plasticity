@@ -110,3 +110,4 @@ results/figures/_drafts/
 .conda/
 venv/
 .venv/
+.pybiomart.sqlite
