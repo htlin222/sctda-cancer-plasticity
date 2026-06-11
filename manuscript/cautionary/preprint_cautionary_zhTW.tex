@@ -11,6 +11,7 @@
 \usepackage{graphicx}
 \graphicspath{{../../figures/cautionary/}}
 \usepackage{amsmath,amssymb}
+\usepackage{booktabs}
 \usepackage{caption}
 \usepackage{xcolor}
 \usepackage{enumitem}
@@ -28,6 +29,21 @@
 
 \begin{document}
 \maketitle
+
+\begin{center}
+\fbox{\begin{minipage}{0.94\linewidth}\small
+\textbf{重點摘要。}
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=2pt]
+\item 一個熱門的拓撲統計量——\maxh，即最具持續性之「環」的大小——\emph{看似}在量化環狀的藥物耐受可塑性，
+且在五個癌症系統中隨藥物上升。
+\item 它通不過三道簡單對照：細胞從未繞行該環；基線訊號只是資料的散佈（離散度）；藥物誘發的部分是細胞週期
+（其本身就是一個環）。
+\item 我們把這些對照打包成一套可重複使用的檢查（圖~\ref{fig:flow}），在合成資料上驗證，並以我們自己的分析
+示範這個陷阱。
+\item \textbf{要點：} 在把任何「持續性大小的差異」讀作生物學之前，先跑這套檢查。
+\end{itemize}
+\end{minipage}}
+\end{center}
 
 \begin{abstract}
 \noindent 隨著拓撲資料分析（TDA）進入單細胞生物學，持續同調的純量摘要——最簡單者為最大一維持續性
@@ -81,7 +97,9 @@ TDA「可能不提供嚴謹的統計評估」、且對前處理敏感，卻未�
 
 \section{結果}
 \subsection*{對照框架}
-對每個條件，回報三個量加上一條決策規則。(1)~\emph{離散度檢定}：觀測 \maxh{} 與「對嵌入之均值與共變異數匹配
+用白話說（圖~\ref{fig:flow}）：持續性的「大小」就是資料中最穩固的「環」有多大，但一個「環」可能是被細胞變得
+更分散（離散度）或被細胞週期（表達空間中的一個圓）偽造出來的；因此我們依序問三個問題——環有沒有比單純的分散
+更多？細胞有沒有真的繞著它走？剩下的是不是只是細胞週期？對每個條件，回報三個量加上一條決策規則。(1)~\emph{離散度檢定}：觀測 \maxh{} 與「對嵌入之均值與共變異數匹配
 的多元高斯」之 \maxh{} 的比值；比值接近 1 表示該統計量可由離散度解釋，穩健地 $>1$ 則表示存在超越離散度的
 結構。(2)~\emph{繞行檢定}：取自最具持續性之 $H_1$ 類的圓形座標 [10] 之 Rayleigh 集中度 $R$；$R$ 接近 1 表示
 族群擠在單一角度（環未被佔據）。(3)~\emph{細胞週期檢定}：在 S/G2M 分數回歸 [12] 後重算離散度比值。三者皆以
@@ -118,7 +136,18 @@ BIRC5，5/6），且在 S/G2M 回歸後不存活：D14 比值由 1.18$\to$0.99�
 原始 \maxh{} 被離散度主導 [3]。該框架是「分解」而非一律「拆穿」：在體內的 PDX 中，殘存超額\emph{並非}細胞週期
 （去除增殖細胞後的 G1-only 比值為 2.07，90\% CI $[1.37,2.61]$，在 100\% 的自助法中 $>1$），但仍未通過繞行檢定
 （$R=0.965$）。橫跨全部五個系統：離散度解釋基線；細胞週期解釋體外超額；體內殘存則是真實但未被繞行——而在
-任何系統中，\maxh{} 都未能佐證一個被細胞繞行的環。
+任何系統中，\maxh{} 都未能佐證一個被細胞繞行的環（表~\ref{tab:summary}）。
+
+\begin{table}[h]\centering\small
+\caption{各系統在每道對照下的結果。}\label{tab:summary}
+\begin{tabular}{@{}lllll@{}}\toprule
+系統 & 離散度 & 繞行 $R$ & 細胞週期 & 判決 \\\midrule
+osimertinib 細胞株 & 基線 $\approx$1、藥物 1.4 & 0.997（否） & 超額\emph{是}細胞週期 & 被混淆 \\
+PDX（YU-006） & 藥物 1.95 & 0.965（否） & 超額\emph{非}細胞週期 & 真實、未被繞行 \\
+erlotinib 細胞株 & $\approx$1（無超額） & --- & --- & 無訊號 \\
+病人腫瘤 & 基線也有超額 & 高 & 不適用 & 異質性 \\\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection*{一個抗混淆的譜系統計量在標準資料上力量不足}
 一個對抗譜系洗牌虛無模型的譜系狀態記憶統計量 $M(t)=1-H_{\mathrm{obs}}/H_{\mathrm{null}}$ 在 Watermelon 資料
@@ -158,6 +187,10 @@ S/G2M 回歸 [12]，並以自助法重算離散度比值。體內身分：對原
 模型或病人殘存病灶檢體中重現，以及功能性測試該分化狀態是否賦予耐受。
 \paragraph{限制。} 細胞週期歸因僅在 osimertinib 細胞株上示範；PDX 殘存超額已證明非細胞週期，但其細胞來源未解。
 我們處理的是 \maxh；離散度虛無模型源自同一濾流，理應可推廣至其他持續性摘要 [6,7] 與更高維同調，惟此處未測。
+
+\begin{figure}[t]\centering\includegraphics[width=0.92\linewidth]{fig5_framework_flowchart.pdf}
+\caption{框架作為一棵決策樹：輸入 $\to$ 離散度檢定 $\to$ 繞行檢定 $\to$ 細胞週期檢定 $\to$ 判決（綠色＝真結構；
+灰色＝偽影）。「環狀可塑性」需要一個被繞行的環；其餘皆為離散度、細胞週期、或未被繞行的結構。}\label{fig:flow}\end{figure}
 
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{fig1_dispersion_null.pdf}
 \caption{觀測 \maxh{} 對共變異數匹配高斯（離散度）虛無模型，橫跨五個系統。百分比：觀測 $>$ 虛無模型的自助法

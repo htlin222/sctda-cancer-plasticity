@@ -28,6 +28,21 @@ single-cell RNA-seq: a dispersion-matched null, a traversal test, and a cautiona
 \begin{document}
 \maketitle
 
+\begin{center}
+\fbox{\begin{minipage}{0.94\linewidth}\small
+\textbf{Key points.}
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=2pt]
+\item A popular topological statistic --- \maxh, the size of the most persistent ``loop'' ---
+\emph{appears} to measure cyclic drug-tolerant plasticity and rises with drug across five cancer systems.
+\item It fails three simple controls: cells never traverse the loop; the baseline signal is just data
+spread (dispersion); the drug-induced part is the cell cycle (itself a loop).
+\item We package the controls into one reusable check (Fig.~\ref{fig:flow}), validate it on synthetic
+data, and demonstrate the trap on our own analysis.
+\item \textbf{Takeaway:} run this check before reading any persistence-magnitude difference as biology.
+\end{itemize}
+\end{minipage}}
+\end{center}
+
 \begin{abstract}
 \noindent As topological data analysis (TDA) enters single-cell biology, scalar summaries of
 persistent homology --- most simply the maximum degree-1 persistence (\maxh) --- are beginning to
@@ -94,7 +109,11 @@ ourselves. We present our own five-system analysis as the cautionary example.
 
 \section{Results}
 \subsection*{The control framework}
-Per condition, report: (1)~\emph{dispersion test}, observed \maxh{} over the \maxh{} of a Gaussian
+In plain terms (Fig.~\ref{fig:flow}): persistence magnitude is how big the most robust ``loop'' in
+the data is, but a loop can be faked by cells being more spread out (dispersion) or by the cell cycle
+(a circle in expression space); we therefore ask three questions in turn --- more loop than spread
+alone? do cells go around it? is the rest just the cell cycle? Per condition, report:
+(1)~\emph{dispersion test}, observed \maxh{} over the \maxh{} of a Gaussian
 matched to the embedding's mean and covariance (ratio $\sim1$ = dispersion; robustly $>1$ =
 structure beyond dispersion); (2)~\emph{traversal test}, the Rayleigh $R$ of circular coordinates
 [10] ($R\sim1$ = loop not occupied); (3)~\emph{cell-cycle test}, the ratio after S/G2M regression
@@ -129,7 +148,18 @@ regression --- would have wrongly concluded ``not cell cycle,'' because raw \max
 dispersion-dominated [3]. The framework decomposes: in the in-vivo PDX the residual excess is
 \emph{not} cell cycle (G1-only ratio 2.07, 90\% CI $[1.37,2.61]$, $>1$ in 100\% of bootstraps), yet
 still fails the traversal test ($R=0.965$). Across all five systems: dispersion = baseline; cell
-cycle = in-vitro excess; in-vivo residual = genuine but non-traversed.
+cycle = in-vitro excess; in-vivo residual = genuine but non-traversed (Table~\ref{tab:summary}).
+
+\begin{table}[h]\centering\small
+\caption{What each control returns per system.}\label{tab:summary}
+\begin{tabular}{@{}lllll@{}}\toprule
+System & Dispersion & Traversal $R$ & Cell cycle & Verdict \\\midrule
+Osimertinib line & base $\approx$1, drug 1.4 & 0.997 (no) & excess \emph{is} CC & confounded \\
+PDX (YU-006) & drug 1.95 & 0.965 (no) & excess \emph{not} CC & genuine, non-traversed \\
+Erlotinib line & $\approx$1 (no excess) & --- & --- & no signal \\
+Patient tumours & excess at baseline too & high & n/a & heterogeneity \\\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection*{A confound-resistant clonal statistic is under-powered}
 $M(t)=1-H_{\mathrm{obs}}/H_{\mathrm{null}}$ against a lineage-shuffle null is non-robust: M(D0) point
@@ -177,6 +207,12 @@ of tolerance.
 \paragraph{Limitations.} Cell-cycle attribution is shown on the cell line; the PDX cell-of-origin is
 unresolved. We address \maxh; the dispersion null should extend to other persistence summaries [6,7]
 and higher homology, untested here.
+
+\begin{figure}[t]\centering\includegraphics[width=0.92\linewidth]{fig5_framework_flowchart.pdf}
+\caption{The framework as a decision tree: input $\to$ dispersion test $\to$ traversal test $\to$
+cell-cycle test $\to$ verdict (green = real structure; grey = artefact). ``Cyclic plasticity''
+requires a traversed loop; everything else is dispersion, cell cycle, or non-traversed
+structure.}\label{fig:flow}\end{figure}
 
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{fig1_dispersion_null.pdf}
 \caption{Observed \maxh{} vs a covariance-matched Gaussian (dispersion) null across five systems.

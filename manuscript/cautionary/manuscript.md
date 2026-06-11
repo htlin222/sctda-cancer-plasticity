@@ -8,6 +8,21 @@
 
 ---
 
+## Key points
+
+- A popular topological statistic — max-$H_1$, the size of the most persistent "loop" — *appears*
+  to measure cyclic drug-tolerant cell-state plasticity, and rises with drug exposure across five
+  cancer systems.
+- It does not survive three simple controls: **cells never traverse the loop**; the baseline signal
+  is just **data spread (dispersion)**; and the drug-induced part is the **cell cycle** (which is
+  itself a loop).
+- We package the controls — a dispersion-matched null, a traversal test, cell-cycle regression
+  judged against dispersion, and bootstrap testing — into one reusable check (**Fig. 5**), validated
+  on synthetic data, and demonstrate the trap on our own analysis.
+- **Takeaway:** run this check before reading any persistence-magnitude difference as biology.
+
+---
+
 ## Abstract
 
 As topological data analysis (TDA) enters single-cell biology, scalar summaries of persistent
@@ -100,7 +115,11 @@ cautionary example.
 ### The control framework
 
 The framework takes a cell-by-PC embedding per condition and reports three quantities plus a
-decision rule. (1) *Dispersion test:* the ratio of observed max-$H_1$ to that of a multivariate
+decision rule (**Fig. 5**). In plain terms: persistence magnitude measures how big the most
+robust "loop" in the data is, but a loop can be faked by cells simply being more spread out
+(*dispersion*) or by the cell cycle (which traces a circle in expression space), so we ask three
+questions in turn — is there more loop than spread alone would give? do cells actually go around
+it? and is what's left just the cell cycle? (1) *Dispersion test:* the ratio of observed max-$H_1$ to that of a multivariate
 Gaussian matched to the embedding's mean and covariance; a ratio near 1 means the statistic is
 explained by dispersion, a ratio robustly $>1$ indicates structure beyond dispersion.
 (2) *Traversal test:* the Rayleigh concentration $R$ of circular coordinates [deSilva2011] from the
@@ -156,6 +175,15 @@ ratio 2.07, 90% CI $[1.37,2.61]$, $>1$ in 100% of bootstraps), yet still fails t
 ($R=0.965$). Across all five systems: dispersion accounts for the baseline; the cell cycle for the
 in-vitro excess; the in-vivo residual is genuine but non-traversed — and in no system does
 max-$H_1$ evidence a cell-traversed cycle.
+
+**Summary of the case study.** What each control returns per system:
+
+| System | Dispersion test | Traversal ($R$) | Cell-cycle test | Verdict |
+|--------|-----------------|-----------------|-----------------|---------|
+| Osimertinib cell line | baseline $\approx$1, drug 1.4 | 0.997 (not traversed) | excess **is** cell cycle | confounded |
+| PDX (YU-006) | drug 1.95 | 0.965 (not traversed) | excess **not** cell cycle | genuine but non-traversed |
+| Erlotinib cell line | $\approx$1 (no excess) | — | — | no signal |
+| Patient tumours (Maynard/Kim) | excess at baseline too | high | n/a | heterogeneity, not drug |
 
 ### A confound-resistant clonal statistic is under-powered
 
