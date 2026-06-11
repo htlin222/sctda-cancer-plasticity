@@ -1,0 +1,38 @@
+{
+  "a_gaussian_blob": {
+    "desc": "no structure",
+    "ground_truth": "true negative",
+    "maxh1": 0.31,
+    "gaussian_ratio": 0.93,
+    "perm_ratio": 0.93,
+    "rayleigh_R": 0.985,
+    "toolkit_verdict": "no structure"
+  },
+  "b_traversed_loop": {
+    "desc": "real cyclic structure",
+    "ground_truth": "true positive",
+    "maxh1": 3.06,
+    "gaussian_ratio": 8.35,
+    "perm_ratio": 8.03,
+    "rayleigh_R": 0.415,
+    "toolkit_verdict": "traversed loop"
+  },
+  "c_sparse_arc": {
+    "desc": "sparse non-traversed (real-data-like)",
+    "ground_truth": "structure, not cycling",
+    "maxh1": 0.53,
+    "gaussian_ratio": 1.54,
+    "perm_ratio": 0.96,
+    "rayleigh_R": 0.961,
+    "toolkit_verdict": "structure (not traversed)"
+  },
+  "d_two_clusters": {
+    "desc": "non-Gaussian, non-cyclic",
+    "ground_truth": "specificity test",
+    "maxh1": 0.31,
+    "gaussian_ratio": 0.93,
+    "perm_ratio": 1.02,
+    "rayleigh_R": 0.994,
+    "toolkit_verdict": "no structure"
+  }
+}

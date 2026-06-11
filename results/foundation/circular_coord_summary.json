@@ -1,0 +1,54 @@
+{
+  "D0": {
+    "persistence": 1.5695791244506836,
+    "n_landmarks": 400,
+    "n_cells": 1249,
+    "rayleigh_R": 0.9976094691946318,
+    "rayleigh_p": -0.0,
+    "circle_coverage": 0.25,
+    "n_lineages_ge3": 25,
+    "lineage_cv_mean": 3.69735337502064e-08,
+    "lineage_cv_null_mean": 0.0025610368816867484,
+    "lineage_cv_p_concentrated": 0.1978021978021978,
+    "lineage_cv_p_spread": 0.8031968031968032
+  },
+  "D3": {
+    "persistence": 2.2221994400024414,
+    "n_landmarks": 400,
+    "n_cells": 1250,
+    "rayleigh_R": 0.9992245492022858,
+    "rayleigh_p": -0.0,
+    "circle_coverage": 0.3333333333333333,
+    "n_lineages_ge3": 29,
+    "lineage_cv_mean": 5.283727580068595e-06,
+    "lineage_cv_null_mean": 0.0005471576703401565,
+    "lineage_cv_p_concentrated": 0.36563436563436563,
+    "lineage_cv_p_spread": 0.6353646353646354
+  },
+  "D7": {
+    "persistence": 2.447995185852051,
+    "n_landmarks": 400,
+    "n_cells": 1250,
+    "rayleigh_R": 0.9961278916242557,
+    "rayleigh_p": -0.0,
+    "circle_coverage": 0.5,
+    "n_lineages_ge3": 12,
+    "lineage_cv_mean": 3.4355943724454865e-06,
+    "lineage_cv_null_mean": 0.004346922022811267,
+    "lineage_cv_p_concentrated": 0.1888111888111888,
+    "lineage_cv_p_spread": 0.8121878121878122
+  },
+  "D14": {
+    "persistence": 3.776317596435547,
+    "n_landmarks": 400,
+    "n_cells": 1250,
+    "rayleigh_R": 0.9974513630127986,
+    "rayleigh_p": -0.0,
+    "circle_coverage": 0.3333333333333333,
+    "n_lineages_ge3": 33,
+    "lineage_cv_mean": 0.000184007564009115,
+    "lineage_cv_null_mean": 2.645892485043119e-05,
+    "lineage_cv_p_concentrated": 0.965034965034965,
+    "lineage_cv_p_spread": 0.03596403596403597
+  }
+}

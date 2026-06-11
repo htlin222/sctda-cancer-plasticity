@@ -1,0 +1,245 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{graphicx}
+\graphicspath{{../../figures/cautionary/}}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{authblk}
+
+\title{\bfseries Structure-aware controls for topological data analysis of perturbation
+single-cell RNA-seq: a dispersion-matched null, a traversal test, and a cautionary case study}
+\author[1]{H.-T.\ Lin}
+\author[1]{Y.-H.\ Tu}
+\affil[1]{\small Preprint --- methods report. Code: \url{https://github.com/htlin222/sctda-cancer-plasticity}}
+\date{\today}
+
+\newcommand{\maxh}{\ensuremath{\max\text{-}H_1}}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fbox{\begin{minipage}{0.94\linewidth}\small
+\textbf{Key points.}
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=2pt]
+\item A popular topological statistic --- \maxh, the size of the most persistent ``loop'' ---
+\emph{appears} to measure cyclic drug-tolerant plasticity and rises with drug across five cancer systems.
+\item It fails three simple controls: cells never traverse the loop; the baseline signal is just data
+spread (dispersion); the drug-induced part is the cell cycle (itself a loop).
+\item We package the controls into one reusable check (Fig.~\ref{fig:flow}), validate it on synthetic
+data, and demonstrate the trap on our own analysis.
+\item \textbf{Takeaway:} run this check before reading any persistence-magnitude difference as biology.
+\end{itemize}
+\end{minipage}}
+\end{center}
+
+\begin{abstract}
+\noindent As topological data analysis (TDA) enters single-cell biology, scalar summaries of
+persistent homology --- most simply the maximum degree-1 persistence (\maxh) --- are beginning to
+be read as quantitative measures of ``cyclic'' cell-state structure and compared across conditions.
+This is hazardous for two reasons that are individually known but not jointly controlled in
+practice: Vietoris--Rips persistence magnitude grows with the spread (dispersion) and sampling of a
+point cloud even in pure noise [3], and the cell cycle is an intrinsic loop in expression space
+[1,5]. We assemble four controls into one reusable significance procedure for perturbation
+scRNA-seq --- (i)~a \textbf{covariance-matched Gaussian null} preserving transcriptional
+dispersion; (ii)~a \textbf{circular-coordinate traversal test} that asks whether a detected loop is
+occupied before any cyclic reading; (iii)~\textbf{cell-cycle regression evaluated relative to the
+dispersion null} rather than on raw persistence; and (iv)~\textbf{bootstrap directional testing}
+--- and validate it on synthetic data with known ground truth (sensitive to a genuine traversed
+loop, specific against benign dispersion and non-Gaussian non-cyclic structure). As a cautionary
+case study we report our own analysis of five longitudinal EGFR-mutant lung-cancer systems, in
+which an apparently compelling, reproducible, cross-scale drug-associated \maxh{} signal dissolves
+under the controls: cells never traverse the loop ($R \ge 0.965$ vs $0.881$ for a 12\%-occupied
+control), baseline \maxh{} equals the dispersion null, and the in-vitro drug excess is the
+cell-cycle loop. The framework also isolates genuine structure where it exists --- a drug-emergent
+multiciliated program in PDX residual disease --- showing it passes real signal as well as
+rejecting confounded signal.
+\end{abstract}
+
+\paragraph{Contributions and relation to prior work.} The individual confounds and several remedies
+are known; our contribution is their \emph{integration into one corrected significance procedure for
+single-cell $H_1$}, with a validated operating point, plus an honest worked failure.
+\begin{enumerate}[leftmargin=1.4em,itemsep=1pt]
+\item A \textbf{covariance-matched Gaussian null} for \maxh{} on scRNA-seq. The dominant published
+scTDA null is within-cell gene-label shuffling [1], which destroys covariance and is beaten by
+essentially any real data; the principled TDA-theory alternative is subsampling confidence sets
+[4]. A dispersion-preserving null for single-cell persistence appears not to have been used before,
+though weak-vs-strong-null critiques exist for embedding geometry [9].
+\item A \textbf{circular-coordinate traversal test} [10] establishing loop occupancy as a
+precondition for any ``cyclic'' interpretation.
+\item Made explicit: \textbf{a cell-cycle control based on raw \maxh{} surviving S/G2M regression is
+inadequate}, because raw persistence is dispersion-dominated [3]; the cell-cycle contribution must
+be judged relative to the dispersion null. The cell-cycle-as-loop confound is established [1,5]; the
+inadequacy of the raw-persistence control, to our knowledge, is not.
+\item A \textbf{synthetic benchmark} (sensitivity/specificity) and a five-system \textbf{cautionary
+case study} --- our own --- of a confounded signal that is reproducible, cross-scale, and wrong.
+\end{enumerate}
+
+\section{Introduction}
+Topological data analysis is entering single-cell biology, with reviews now cataloguing
+applications of persistent homology and Mapper to scRNA-seq [8]. As the field matures, a natural
+step is to summarise topology with a scalar --- \maxh, total persistence, persistence entropy ---
+and compare it across conditions, reading an increase as more cyclic structure or plasticity. We
+argue this step needs controls current practice does not jointly apply. Two confounds are
+individually documented. First, Vietoris--Rips persistence is sensitive to spread and sampling: the
+maximally persistent cycle of pure random points grows with sample size [3], raw magnitude is
+metric/scale-dependent (motivating stabilised summaries [6,7]) and outlier-sensitive (motivating
+density-robust filtrations [8b]). Second, the cell cycle traces a circle in expression space [5]
+and is the canonical $H_1$ generator in scRNA-seq; the field-defining scTDA method states the cell
+cycle ``will give rise to periodic structures in the expression space'' [1]. The common nulls do
+not control the first (gene-label shuffling [1] destroys dispersion), and a recent review notes
+single-cell TDA ``may not provide rigorous statistical assessments'' [8].
+
+This is a \emph{preventive} contribution, not a claim of widespread error: scalar
+persistence-vs-condition comparison on scRNA-seq is still uncommon (established scTDA methods use
+Mapper graphs and per-cell features [1,2]), and careful applications controlling sample size with
+diagram distances exist [11]. Our point is that as the scalar-readout step becomes attractive,
+these controls should accompany it --- and that the trap is real, because we fell into it
+ourselves. We present our own five-system analysis as the cautionary example.
+
+\section{Results}
+\subsection*{The control framework}
+In plain terms (Fig.~\ref{fig:flow}): persistence magnitude is how big the most robust ``loop'' in
+the data is, but a loop can be faked by cells being more spread out (dispersion) or by the cell cycle
+(a circle in expression space); we therefore ask three questions in turn --- more loop than spread
+alone? do cells go around it? is the rest just the cell cycle? Per condition, report:
+(1)~\emph{dispersion test}, observed \maxh{} over the \maxh{} of a Gaussian
+matched to the embedding's mean and covariance (ratio $\sim1$ = dispersion; robustly $>1$ =
+structure beyond dispersion); (2)~\emph{traversal test}, the Rayleigh $R$ of circular coordinates
+[10] ($R\sim1$ = loop not occupied); (3)~\emph{cell-cycle test}, the ratio after S/G2M regression
+[12]. All bootstrapped [4]. Decision: structure if ratio robustly $>1$; traversed loop only if also
+$R<0.6$; cell-cycle driven if the excess does not survive regression.
+
+\subsection*{Sensitive and specific on synthetic ground truth (Fig.~\ref{fig:bench})}
+Gaussian blob: ratio 0.93, $R=0.99$ (no structure). Traversed loop: ratio 8.35, $R=0.42$ (traversed
+loop; sensitivity). Sparse arc: ratio 1.54, $R=0.96$ (structure, not traversed). Two clusters
+(non-Gaussian, non-cyclic): ratio 0.93 (no structure; specificity --- the Gaussian null does not
+false-positive on benign non-Gaussianity). A per-PC permutation null agrees and is more
+conservative.
+
+\subsection*{Case study and Control 1 --- cells do not traverse the loop}
+\maxh{} rises with drug in osimertinib cell line and PDX (D0$\to$D14 $1.41\to3.78$; PDX
+$2.79\to5.46$; Fig.~\ref{fig:disp}); erlotinib is already weak/non-monotonic (D9 1.77, D11 1.08).
+Circular coordinates collapse to one angle in every cohort: $R\ge0.965$ (Fig.~\ref{fig:ctrl}a) ---
+more concentrated than the $R=0.881$ 12\%-occupied control. Clonal lineages are \emph{more}
+concentrated than random. The loop is sparse and unoccupied.
+
+\subsection*{Control 2 --- baseline \maxh{} is dispersion}
+Against the Gaussian null, baseline \maxh{} does not exceed dispersion (osimertinib D0/D3 ratio
+$\approx0.9$; observed $>$ null in 18--31\% of subsamples; Fig.~\ref{fig:disp}); an excess appears
+only under drug (D7/D14 in 100\%/98\%; PDX residual 99\%). A Gaussian preserves only second
+moments, so its failure mode is conservative for a negative conclusion.
+
+\subsection*{Control 3 --- in-vitro excess is the cell cycle; in-vivo excess is not}
+The osimertinib D14 excess is proliferating cells (DE: PTTG1, CKS1B, MYBL2; MKI67/PCNA/CCNB1/CDK1/
+BIRC5) and does not survive S/G2M regression (ratio 1.18$\to$0.99; D14$>$D0 in only 31\% of
+bootstraps; Fig.~\ref{fig:ctrl}b). The common control --- \emph{raw} \maxh{} preserved after
+regression --- would have wrongly concluded ``not cell cycle,'' because raw \maxh{} is
+dispersion-dominated [3]. The framework decomposes: in the in-vivo PDX the residual excess is
+\emph{not} cell cycle (G1-only ratio 2.07, 90\% CI $[1.37,2.61]$, $>1$ in 100\% of bootstraps), yet
+still fails the traversal test ($R=0.965$). Across all five systems: dispersion = baseline; cell
+cycle = in-vitro excess; in-vivo residual = genuine but non-traversed (Table~\ref{tab:summary}).
+
+\begin{table}[h]\centering\small
+\caption{What each control returns per system.}\label{tab:summary}
+\begin{tabular}{@{}lllll@{}}\toprule
+System & Dispersion & Traversal $R$ & Cell cycle & Verdict \\\midrule
+Osimertinib line & base $\approx$1, drug 1.4 & 0.997 (no) & excess \emph{is} CC & confounded \\
+PDX (YU-006) & drug 1.95 & 0.965 (no) & excess \emph{not} CC & genuine, non-traversed \\
+Erlotinib line & $\approx$1 (no excess) & --- & --- & no signal \\
+Patient tumours & excess at baseline too & high & n/a & heterogeneity \\\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{A confound-resistant clonal statistic is under-powered}
+$M(t)=1-H_{\mathrm{obs}}/H_{\mathrm{null}}$ against a lineage-shuffle null is non-robust: M(D0) point
+estimate 0.48 but 90\% CI $[-0.05,0.29]$; decay sign flips across settings (positive in 3/9),
+non-monotonic, halved by a depth-stratified null (Fig.~\ref{fig:mem}). Cause: only 12--33 clones
+with $\ge3$ cells/timepoint.
+
+\subsection*{Beyond rejection: the framework isolates a genuine program}
+The PDX residual excess (surviving every control) is a coherent multiciliated airway program (PIFO,
+RSPH1, CFAP45/126/157, CAPS/CAPSL, CETN2, TPPP3; AGR2/AGR3), drug-emergent in YU-006 (0.1\%$\to$9.6\%;
+$\approx$6$\to$$\approx$187 cells while the tumour contracts threefold), consistent with the
+differentiated states EGFR-TKI persisters adopt. Two bounds: model-specific (absent in YU-003);
+CNV could not resolve transdifferentiation vs an expanded non-malignant population without a
+matched-normal reference. The framework isolates real structure as well as rejecting confounded
+structure.
+
+\section{Methods}
+GEO GSE134839/150949/243562/131907 + Maynard 2020; scanpy QC/HVG/PCA (seed 42), subsampled
+1{,}000--1{,}500 cells; \texttt{ripser} 0.6 Vietoris--Rips to $H_1$ on top-30 PCs ($\mathbb{F}_2$).
+Dispersion null: draws from $\mathcal{N}(\hat\mu,\hat\Sigma)$, ratio $=$ observed/median(null), 30
+bootstrap subsamples + 90\% CIs, second null by per-PC permutation. Traversal: \texttt{dreimac}
+\texttt{CircularCoords} [10], Rayleigh $R$ (validated: noisy circle $R=0.12$; 12\%-occupied loop
+$R=0.88$). Cell-cycle: leave-one-cluster-out, Wilcoxon DE, S/G2M regression [12] with the
+dispersion ratio bootstrapped. In-vivo identity: DE on raw counts, ciliated signature scored across
+PDX, CNV by \texttt{infercnvpy}. Code: \texttt{scripts/16\_*.py}--\texttt{scripts/27\_*.py} (MIT).
+
+\section{Discussion}
+A cross-system \maxh{} signal of drug tolerance is largely explained by dispersion and, in vitro,
+the cell cycle; genuine residual structure still does not evidence cyclic plasticity, because it is
+not traversed. That the signal looked compelling across five systems, survived a published-style
+cell-cycle control, and ``replicated'' in patient tumours is why these controls matter: a confounded
+statistic can be reproducible, cross-scale, and wrong. Our contribution is preventive and
+integrative. Each confound has prior literature --- density/sample-size dependence [3], cell-cycle
+loops [1,5], preprocessing sensitivity and missing significance tests in single-cell TDA [8], and,
+closest to our thesis, the demonstration that geometric structure significant under weak nulls
+vanishes under stronger nulls in single-cell foundation-model embeddings [9]. We differ in target
+and null (raw-expression $H_1$ + dispersion-matched Gaussian null vs embedding geometry + rewiring
+nulls) and contribute the \emph{integration} into one validated procedure. The framework also
+surfaces a drug-emergent multiciliated program in residual disease; whether it is tumour
+transdifferentiation conferring tolerance is a prospective, experiment-bearing programme.
+
+\paragraph{Outlook.} A discovery claim would require resolving cell-of-origin (matched-normal CNV or
+EGFR genotyping), reproduction in further models or patient residual disease, and functional testing
+of tolerance.
+\paragraph{Limitations.} Cell-cycle attribution is shown on the cell line; the PDX cell-of-origin is
+unresolved. We address \maxh; the dispersion null should extend to other persistence summaries [6,7]
+and higher homology, untested here.
+
+\begin{figure}[t]\centering\includegraphics[width=0.92\linewidth]{fig5_framework_flowchart.pdf}
+\caption{The framework as a decision tree: input $\to$ dispersion test $\to$ traversal test $\to$
+cell-cycle test $\to$ verdict (green = real structure; grey = artefact). ``Cyclic plasticity''
+requires a traversed loop; everything else is dispersion, cell cycle, or non-traversed
+structure.}\label{fig:flow}\end{figure}
+
+\begin{figure}[t]\centering\includegraphics[width=\linewidth]{fig1_dispersion_null.pdf}
+\caption{Observed \maxh{} vs a covariance-matched Gaussian (dispersion) null across five systems.
+Percentages: bootstrap fraction observed $>$ null. Excess appears only under drug.}\label{fig:disp}\end{figure}
+\begin{figure}[t]\centering\includegraphics[width=\linewidth]{fig2_controls.pdf}
+\caption{(a)~Traversal test: $R\ge0.965$ in all cohorts vs $0.881$ for a 12\%-occupied control.
+(b)~The in-vitro drug excess vanishes after S/G2M regression.}\label{fig:ctrl}\end{figure}
+\begin{figure}[t]\centering\includegraphics[width=\linewidth]{fig4_synthetic_benchmark.pdf}
+\caption{Synthetic ground truth: sensitive (passes the traversed loop) and specific (rejects the
+Gaussian blob and the two-cluster non-Gaussian case).}\label{fig:bench}\end{figure}
+\begin{figure}[t]\centering\includegraphics[width=0.62\linewidth]{fig3_memory_nonrobust.pdf}
+\caption{Clonal memory-decay is not robust: the sign of the D0$\to$D14 change flips across
+clustering settings.}\label{fig:mem}\end{figure}
+
+\begin{thebibliography}{99}\small
+\bibitem{r1} Rizvi AH, C\'amara PG, Kandror EK, et al. Single-cell topological RNA-seq analysis. \emph{Nat Biotechnol} 2017;35:551--560.
+\bibitem{r2} Nicolau M, Levine AJ, Carlsson G. Topology based data analysis identifies a breast-cancer subgroup. \emph{PNAS} 2011;108:7265--7270.
+\bibitem{r3} Bobrowski O, Kahle M, Skraba P. Maximally persistent cycles in random geometric complexes. \emph{Ann Appl Probab} 2017;27:2032--2060.
+\bibitem{r4} Fasy BT, Lecci F, Rinaldo A, Wasserman L, et al. Confidence sets for persistence diagrams. \emph{Ann Statist} 2014;42:2301--2339.
+\bibitem{r5} Schwabe D, Formichetti S, Junker JP, Falcke M, Rajewsky N. The transcriptome dynamics of single cells during the cell cycle. \emph{Mol Syst Biol} 2020;16:e9946.
+\bibitem{r6} Adams H, Emerson T, Kirby M, et al. Persistence images. \emph{JMLR} 2017;18:1--35.
+\bibitem{r7} Bubenik P. Statistical TDA using persistence landscapes. \emph{JMLR} 2015;16:77--102.
+\bibitem{r8} Hern\'andez-Lemus E. Topological data analysis in single cell biology. \emph{Front Immunol} 2025;16:1615278. (8b: Chazal F, et al. Robust topological inference / DTM filtrations. \emph{JMLR} 2017;18:1--40.)
+\bibitem{r9} Kendiukhov I. What topological and geometric structure do biological foundation models learn? \emph{arXiv} 2026;2602.22289.
+\bibitem{r10} de Silva V, Morozov D, Vejdemo-Johansson M. Persistent cohomology and circular coordinates. \emph{Discrete Comput Geom} 2011;45:737--759.
+\bibitem{r11} Mukherjee S, Wethington D, Dey TK, Das J. Clinically relevant features in cytometry via persistent homology. \emph{PLoS Comput Biol} 2022;18:e1009931.
+\bibitem{r12} Tirosh I, Izar B, Prakadan SM, et al. Dissecting metastatic melanoma by single-cell RNA-seq. \emph{Science} 2016;352:189--196.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,100 @@
+\section{Discussion}
+
+We report that the emergence of drug-tolerant persisters under EGFR
+inhibition is accompanied by a genuine, non-Gaussian topological
+reorganization of the single-cell transcriptomic state space, and that
+this reorganization is detectable only when the relevant null is matched
+to the dispersion of the data. In the osimertinib-treated PC9 cell line,
+the largest $H_1$ persistence sits at or below a covariance-matched
+Gaussian null at baseline (D0 ratio $0.95$, real$>$null in $31\%$ of
+bootstrap subsamples) and after early exposure (D3 ratio $0.91$, $18\%$),
+but rises above the null once persisters establish (D7 ratio $1.31$,
+$100\%$; D14 ratio $1.42$, $98\%$). The within-system directional effect
+is the robust claim: osimertinib D7 and D14 each exceed D0 in $100\%$ of
+bootstrap pairs. The same pattern recurs in an EGFR-mutant
+patient-derived xenograft, where residual disease after treatment carries
+markedly more topological structure than untreated tumour (residual ratio
+$1.95$, $99\%$; untreated ratio $1.21$, $86\%$), and residual exceeds
+untreated in $97\%$ of bootstrap pairs. The methodological contribution is
+the dispersion-matched Gaussian null itself: by simulating point clouds
+with the same mean and covariance but no genuine structure, it separates
+real topological organization from the inflation of $H_1$ persistence that
+high-dimensional dispersion alone produces.
+
+\subsection*{What we do not claim}
+
+We explicitly do not claim that cells traverse a cycle, nor that drug
+tolerance is a reversible cyclic plasticity. A construct-validity analysis
+designed as a negative control argues directly against traversal. When we
+estimate circular coordinates on the candidate loop, the angular
+distribution collapses onto essentially a single phase in every cohort
+(Rayleigh $R \ge 0.965$), far from the dispersed occupancy a traversed
+cycle would produce, and far from the $R = 0.881$ of a synthetic control
+loop occupied by only $12\%$ of cells. Lineage-barcoded Watermelon clones
+are tighter on the candidate loop than random cells, not spread around it.
+The excess $H_1$ persistence we measure therefore reflects a
+\emph{sparse persistent loop occupied by a minority of cells} as a static
+geometric feature of the state space, not a population-wide orbit that
+cells move along. Reframing the circular-coordinate result as a negative
+control is, in our view, the honest reading: it shows where the topology
+is informative (a non-Gaussian feature is present) and where it is silent
+(it says nothing about dynamics or reversibility).
+
+\subsection*{Scope and specificity}
+
+The drug-induction signal is specific to the controlled cell-line and PDX
+systems treated with osimertinib. Under erlotinib, the same statistic
+shows no excess over the dispersion-matched null at any time point (D0,
+D9, D11 ratios $0.93$, $0.99$, $0.70$). Rather than a failure, we read
+this as specificity evidence: the readout does not manufacture structure
+where none is present, and the erlotinib cohort functions as an internal
+negative control alongside baseline and the Gaussian null. We are also
+deliberately conservative about the patient data. In the Maynard cohort,
+excess topological structure is present at \emph{all} disease stages,
+including treatment-naive tumours (TN, PER, PD ratios $1.52$, $1.69$,
+$1.51$). Because the excess is already there before treatment, it most
+plausibly reflects baseline tumour heterogeneity rather than
+drug-induced reorganization. We therefore treat the patient cohorts as a
+heterogeneity caveat, not as a drug-induction claim, and restrict the
+causal reading of treatment-associated reorganization to the osimertinib
+cell-line and PDX systems where a matched untreated or baseline contrast
+is available.
+
+\subsection*{Limitations}
+
+Several limitations bound the interpretation. First, the feature is
+sparse and minority-occupied: it is carried by a small subset of cells,
+so it is invisible to population-averaged summaries and demands the
+dispersion-matched null to be distinguished from background dispersion at
+all. Second, point estimates of max $H_1$ are unstable across subsamples,
+which is why we do not rest any claim on a single persistence value;
+instead we report bootstrap confidence intervals and base every
+conclusion on directional robustness across paired subsamples (the
+fraction of bootstrap pairs in which the treated or residual condition
+exceeds its control). Third, the patient-tumour confound described above
+means our results cannot speak to whether the same reorganization occurs
+under therapy in patients; resolving this would require paired
+pre-treatment and residual-disease sampling within individuals. Fourth,
+the topological statistic characterizes the geometry of the state space
+but is agnostic to its mechanistic origin and to its dynamics; it
+identifies that a non-Gaussian loop exists and which cells lie on it, but
+not why those cells occupy it or whether that occupancy changes over time.
+
+\subsection*{A generalizable readout}
+
+The central transferable element is the dispersion-controlled null. Much
+of the appeal and much of the difficulty of applying persistent homology
+to single-cell data stems from the fact that $H_1$ persistence grows with
+the ambient dispersion and dimensionality of a point cloud even in the
+complete absence of organized structure. A covariance-matched Gaussian
+null absorbs exactly that nuisance variation, so that any residual excess
+is attributable to genuine non-Gaussian geometry. Paired with bootstrap
+directional testing for stability, this yields a readout that reports not
+"is there a loop" in absolute terms, but "is there more loop-like
+structure than dispersion alone would create, and does that excess move
+reproducibly with a perturbation." This framing is portable to other
+perturbation-response settings in single-cell biology, and it positions
+the work as a method-and-observation contribution: a dispersion-controlled
+topological statistic, validated on a drug-tolerance system, with explicit
+construct-validity and specificity controls that guard against the
+overinterpretation such statistics readily invite.

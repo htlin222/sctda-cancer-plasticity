@@ -1,0 +1,134 @@
+%% Methods subsection for the reframed manuscript.
+%% Two hero analyses underpinning the dispersion-controlled topological readout:
+%%   (a) covariance-matched Gaussian dispersion null  (scripts/17_dispersion_null_and_stability.py)
+%%   (b) bootstrap directional robustness             (scripts/17_dispersion_null_and_stability.py)
+%% with the circular-coordinate negative control      (scripts/16_lineage_circular_coords.py)
+%% All quantitative statements trace to the locked evidence in
+%% results/foundation/ and manuscript/audit/RESCUE_STRATEGY_2026-06-10.md.
+%% No traversal/cycling claim is made anywhere in this file.
+
+\subsection*{Covariance-matched Gaussian dispersion null}
+
+The central methodological control of this study isolates genuine
+non-Gaussian topological structure from the trivial dependence of
+$H_1$ persistence on the overall spread of the point cloud. A more
+dispersed cluster of points admits larger empty regions and therefore
+larger $H_1$ bars even in the complete absence of any organised
+loop-like geometry; a rise in max $H_1$ is therefore not, by itself,
+evidence of topological reorganisation. To separate the two, we
+compare each observed value against the max $H_1$ of a multivariate
+Gaussian that is matched to the data in mean and covariance --- and
+hence in dispersion --- but that contains no structure beyond a single
+unimodal ellipsoidal blob.
+
+For a given cohort group we take the cell$\times$PC matrix on the
+top-30 PCA coordinates ($n_{\text{PCs}} = 30$, consistent with the
+rest of the analysis) and estimate its empirical mean $\mu$ and
+covariance $\Sigma$. We then draw synthetic point clouds of identical
+size from $\mathcal{N}(\mu, \Sigma)$ by Cholesky factorisation,
+$\Sigma + 10^{-9} I = L L^{\top}$, generating each null cloud as
+$\mu + Z L^{\top}$ with $Z$ a standard-normal matrix of the same shape
+as the subsample. For every synthetic cloud we recompute the
+Vietoris--Rips $H_1$ persistence diagram with \texttt{ripser} 0.6
+\citep{bauer2021,tralie2018} under the same Euclidean metric and
+$\mathbb{F}_2$ coefficients used for the real data, and record the
+maximum finite-bar persistence $\max(\text{death} - \text{birth})$.
+This yields a null distribution of max $H_1$ that carries exactly the
+data's first- and second-order moments but, by construction, none of
+its higher-order structure. We summarise the comparison as the ratio
+$\text{ratio} = \widetilde{H_1^{\text{real}}} \,/\,
+\widetilde{H_1^{\text{gauss}}}$ of the median real to median null
+persistence. A $\text{ratio} \approx 1$ indicates that max $H_1$ is
+acting as a pure dispersion proxy at that condition, whereas
+$\text{ratio} > 1$ (real exceeding the dispersion-matched null)
+indicates genuine non-Gaussian topological structure beyond spread.
+
+This control is decisive at the level of \emph{when} structure
+appears, not merely whether persistence is large. Under osimertinib in
+the PC9 cell line, the dispersion-matched ratio is $0.95$ at baseline
+(D0) and $0.91$ at D3 --- at or below unity, i.e.\ max $H_1$ is
+indistinguishable from a dispersion artefact early in treatment ---
+and then rises to $1.31$ at D7 and $1.42$ at D14 as drug-tolerant
+persisters emerge, demonstrating structure in excess of dispersion
+specifically under sustained drug exposure. The same contrast holds in
+the EGFR-mutant PDX model YU-006, where the ratio is $1.21$ in the
+untreated condition and $1.95$ in the osimertinib-residual condition.
+In the erlotinib PC9 cohort the ratios remain at or below unity at
+every stage ($0.93$, $0.99$ and $0.70$ at D0, D9 and D11), so this
+cohort shows no excess structure and we treat it as a specificity
+control rather than a positive finding (see Discussion). In the
+patient cohorts (Maynard et al.) the ratio exceeds unity already at the
+treatment-naive stage ($1.52$, with $1.69$ and $1.51$ at the
+persister and progressive-disease stages); because the excess is
+present in naive tumours it reflects baseline tumour heterogeneity
+rather than drug induction, and we accordingly scope the
+drug-induction claim to the controlled osimertinib cell-line and PDX
+systems.
+
+\subsection*{Bootstrap directional robustness}
+
+Point estimates of max $H_1$ are sensitive to which cells are sampled
+(coefficient of variation $7$--$19\%$ across the osimertinib and PDX
+groups), so we do not rest any claim on a single numerical value.
+Instead we test whether the \emph{ordering} of conditions --- drug
+above baseline, and real above the dispersion-matched null --- is
+stable under resampling. For each cohort group we draw $30$
+independent subsamples of $1{,}200$ cells without replacement (or the
+full group size where smaller) under a fixed random seed
+(\texttt{numpy} default generator, seed $42$) and compute max $H_1$
+for each. We report the bootstrap median, the $90\%$ interval as the
+$5$th--$95$th percentiles, and the coefficient of variation; for the
+Gaussian comparison, dispersion-matched null clouds are drawn from the
+subsamples (with an additional richer draw on a representative
+subsample) and pooled into the null distribution against which the
+real values are compared.
+
+Two robustness quantities support the central claims. First, the
+fraction of (real, null) pairs in which the real max $H_1$ exceeds the
+dispersion-matched null measures how reliably structure exceeds
+spread: this is $31\%$ and $18\%$ at osimertinib D0 and D3 (real
+not exceeding null), rising to $100\%$ at D7 and $98\%$ at D14; it is
+$86\%$ for YU-006 untreated and $99\%$ for YU-006 residual. Second,
+directional robustness across condition pairs measures how reliably
+the drug condition exceeds baseline: osimertinib D7 exceeds D0 and
+osimertinib D14 exceeds D0 in $100\%$ of bootstrap subsample pairs,
+and the YU-006 residual condition exceeds untreated in $97\%$ of
+pairs. The reported real max $H_1$ medians and $90\%$ intervals are
+$1.41\,[1.31, 1.60]$ (osi D0), $1.82\,[1.82, 2.15]$ (osi D3),
+$2.67\,[2.45, 3.04]$ (osi D7) and $3.78\,[2.99, 3.78]$ (osi D14) for
+the cell line, and $2.79\,[2.23, 4.03]$ (untreated) and
+$5.46\,[3.58, 7.34]$ (residual) for YU-006. Because the claims are
+phrased as orderings holding in $97$--$100\%$ of resamples rather than
+as differences between point estimates, they are robust to the
+disclosed subsample instability.
+
+\subsection*{Circular-coordinate negative control}
+
+To guard against over-interpreting the persistent $H_1$ loop as a
+trajectory that cells move around, we ran an explicit construct-validity
+check whose purpose is to \emph{bound} the claim, not to extend it. For
+each osimertinib timepoint we computed circular coordinates
+$\theta \in [0, 1)$ for every cell from the most-persistent $H_1$
+cohomology class using the de Silva--Morozov--Vejdemo-Johansson
+algorithm (greedy-permutation landmarks with harmonic smoothing of the
+lifted $\mathbb{Z}/p$ cocycle, odd prime field $p = 47$, up to $400$
+landmarks) as implemented in \texttt{dreimac}
+\citep{perea2023}. If cells were distributed around the loop, these
+coordinates would spread across the circle; instead they collapse to a
+single angular concentration, with a Rayleigh resultant length
+$R \geq 0.965$ across all cohorts, far above the $R = 0.881$ obtained
+for a synthetic control loop occupied at $12\%$ of its circumference.
+Using Watermelon lineage barcodes (GSE150949), the angular dispersion
+(circular variance, $1 - \bar{R}$) of clones with at least three
+co-sampled cells was compared to size-matched random cell groups over
+$1{,}000$ permutations; clonally related cells were \emph{tighter} than
+random, not more spread. These results establish that the structure is
+a sparse persistent loop occupied by a minority of cells; we therefore
+make no claim that cells traverse it, and present this analysis as a
+negative control demonstrating the absence of such traversal.
+
+%% Reproducibility: analyses (a) and (b) are implemented in
+%% scripts/17_dispersion_null_and_stability.py and the negative control in
+%% scripts/16_lineage_circular_coords.py; summaries are written to
+%% results/foundation/dispersion_null_summary.json and
+%% results/foundation/circular_coord_summary.json. Seed 42 throughout.
