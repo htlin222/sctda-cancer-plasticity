@@ -192,6 +192,25 @@ is power: standard lineage-tracing data yield only 12–33 clones with $\ge 3$ c
 result in its own right: clonal-memory statistics require clone-rich designs that current
 drug-timecourse datasets rarely provide.
 
+### Beyond rejection: the framework isolates a genuine, interpretable program
+
+A control framework earns trust only if it passes real structure as well as rejecting confounded
+structure (cf. the synthetic true positive). The PDX residual provides the worked example. Its
+excess is the one signal that survives every control; asked what it *is*, we localised the
+structure-driving cells (leave-one-cluster-out on max-$H_1$) and found a coherent, recognisable
+program: differential expression returns an unambiguous multiciliated airway-epithelial signature
+(PIFO, RSPH1, CFAP45/126/157, CAPS/CAPSL, CETN2, TPPP3, with secretory AGR2/AGR3). This program is
+drug-emergent in the YU-006 model — present in 0.1% of untreated cells but 9.6% under residual
+disease, rising from $\approx$6 to $\approx$187 cells in absolute terms while the tumour
+compartment contracts threefold — consistent with the differentiated lineage states EGFR-TKI
+persisters are known to adopt. Thus the framework does not merely subtract artefacts: it isolates
+genuine structure and localises it to an interpretable biological state. Two honest bounds apply.
+The program is model-specific (absent in the second PDX, YU-003), and copy-number inference could
+not resolve whether these ciliated cells are tumour-derived (transdifferentiation) or an expanded
+non-malignant population — the CNV signal is too weak without a matched-normal reference. And, the
+recurring point, this real structure still fails the traversal test ($R=0.965$): even where
+structure is genuine, the population does not traverse a cycle.
+
 ---
 
 ## Methods
@@ -228,7 +247,12 @@ isotropic noise; the full framework applied to each (`scripts/25_synthetic_bench
 within-timepoint lineage-shuffle null preserving clone sizes and the state marginal; robustness
 over resolution, clone-size threshold, bootstrap, and a depth-stratified null.
 
-**Code availability.** Reproducible from `scripts/16_*.py`–`scripts/25_*.py` (MIT license);
+**In-vivo program identity.** Structure-driving cells localised by leave-one-cluster-out; Wilcoxon
+DE on raw counts (gene symbols recovered); ciliated signature scored across both PDX models and
+conditions; copy-number inference by `infercnvpy` with Ensembl gene positions
+(`scripts/26`–`scripts/27`).
+
+**Code availability.** Reproducible from `scripts/16_*.py`–`scripts/27_*.py` (MIT license);
 figures via `scripts/24_cautionary_figures.py`.
 
 ---
@@ -255,6 +279,14 @@ dataset-independently on synthetic ground truth; the five cancer systems are the
 study. We recommend that topological claims on perturbation scRNA-seq be accompanied, at minimum,
 by a dispersion-matched null, a traversal test, cell-cycle regression in the dispersion-controlled
 frame, and bootstrap directional testing.
+
+**Outlook.** The framework's ability to isolate, not just reject, points to a constructive use:
+the drug-emergent multiciliated program it surfaced in PDX residual disease is a candidate
+tolerant-cell state worth pursuing. Establishing it as a discovery would require resolving the
+cell-of-origin (matched-normal copy-number inference or targeted genotyping for the EGFR driver),
+reproduction in additional models or patient residual-disease specimens, and functional testing of
+whether the differentiated state confers tolerance. That is a prospective, experiment-bearing
+programme rather than a reanalysis, and we flag it as the natural next step.
 
 **Limitations.** The cell-cycle attribution (Control 3) is demonstrated on the osimertinib cell
 line; the PDX residual excess is shown to be non-cell-cycle but its positive identity is not

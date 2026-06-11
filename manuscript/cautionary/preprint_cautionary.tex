@@ -156,6 +156,21 @@ $[-0.05,0.29]$), and its decay under drug is not robust: the sign flips across c
 (Fig.~\ref{fig:mem}). The cause is power: only 12--33 clones with $\ge 3$ cells per timepoint.
 Clonal-memory statistics require clone-rich designs current drug-timecourse datasets rarely provide.
 
+\subsection*{Beyond rejection: the framework isolates a genuine, interpretable program}
+A control framework earns trust only if it passes real structure as well as rejecting confounded
+structure (cf.\ the synthetic true positive). The PDX residual is the worked example: its excess
+is the one signal surviving every control, and the structure-driving cells (leave-one-cluster-out)
+are a coherent multiciliated airway-epithelial program (PIFO, RSPH1, CFAP45/126/157, CAPS/CAPSL,
+CETN2, TPPP3; secretory AGR2/AGR3). It is drug-emergent in YU-006---0.1\% of untreated cells but
+9.6\% under residual disease ($\approx$6 $\to$ $\approx$187 cells in absolute terms while the
+tumour contracts threefold)---consistent with the differentiated lineage states EGFR-TKI
+persisters are known to adopt. The framework thus isolates genuine structure and localises it to
+an interpretable state, not merely subtracts artefacts. Two bounds: the program is model-specific
+(absent in YU-003), and copy-number inference could not resolve tumour-derived
+(transdifferentiation) vs an expanded non-malignant population without a matched-normal reference.
+And this real structure still fails the traversal test ($R=0.965$): even genuine structure is not
+a traversed cycle.
+
 \section{Methods}
 \textbf{Datasets:} GSE134839, GSE150949 (Watermelon), GSE243562 (PDX), GSE131907, and the
 EGFR-mutant subset of Maynard et al.\ 2020; standard scanpy QC/normalisation/HVG/PCA (seed 42),
@@ -179,6 +194,13 @@ lineage tracing, is not in question; we show that static persistent-homology sum
 capture it and instead track nuisance variation. We recommend that topological claims on
 perturbation scRNA-seq be accompanied, at minimum, by a dispersion-matched null, a traversal test,
 cell-cycle regression in the dispersion-controlled frame, and bootstrap directional testing.
+
+\paragraph{Outlook.} The framework's ability to isolate (not just reject) structure points to a
+constructive use: the drug-emergent multiciliated program it surfaced in PDX residual disease is a
+candidate tolerant-cell state. Establishing it as a discovery would require resolving cell-of-origin
+(matched-normal CNV or EGFR-driver genotyping), reproduction in further models or patient
+residual-disease specimens, and functional testing of whether the differentiated state confers
+tolerance---a prospective, experiment-bearing programme rather than a reanalysis.
 
 \paragraph{Limitations.} The cell-cycle attribution is demonstrated on the osimertinib cell line;
 the PDX residual excess is shown to be non-cell-cycle but its positive identity is not established
